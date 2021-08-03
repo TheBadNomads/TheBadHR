@@ -22,15 +22,20 @@ async def on_ready():
     print("the bot is ready")
 
 @slash.slash(name= "RequestLeave", description= "Request an annual leave", options= CreateDateOptions(), guild_ids= guild_ids)
-async def RequestLeave(ctx, startdate, enddate):
-    teamLead= await client.fetch_user(int(os.getenv("5ald_id")))
+async def RequestLeave(ctx, leavetype, startdate, enddate):
+    teamLead= await client.fetch_user(int(os.getenv("Abdo_id")))
     current_time= datetime.now().hour
 
-    if current_time > 12:
-        await SendWarningMessage(ctx= ctx, client= client, startdate= startdate, enddate= enddate, teamLead= teamLead)
-    else:
-        await RequestAnnualLeave(ctx= ctx, client= client, startdate= startdate, enddate= enddate, teamLead= teamLead)
+    if leavetype == "annual":
+        if current_time > 12:
+            await SendWarningMessage(ctx= ctx, client= client, startdate= startdate, enddate= enddate, teamLead= teamLead)
+        else:
+            await RequestAnnualLeave(ctx= ctx, client= client, startdate= startdate, enddate= enddate, teamLead= teamLead)
+            
+    elif leavetype == "emergency":
+        await RequestEmergencyLeave(ctx= ctx, client= client, startdate= startdate, enddate= enddate, teamLead= teamLead)
 
-
+    elif leavetype == "sick":
+        await RequestSickLeave(ctx= ctx, client= client, startdate= startdate, enddate= enddate, teamLead= teamLead)
 
 client.run(os.getenv("Bot_token"))
