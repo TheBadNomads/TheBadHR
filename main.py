@@ -23,8 +23,14 @@ async def on_ready():
 
 @slash.slash(name= "RequestLeave", description= "Request an annual leave", options= CreateDateOptions(), guild_ids= guild_ids)
 async def RequestLeave(ctx, startdate, enddate):
-    teamLead= await client.fetch_user(int(os.getenv("Abdo_id")))
-    await RequestAnnualLeave(ctx= ctx, client= client, startdate= startdate, enddate= enddate, teamLead= teamLead)
+    teamLead= await client.fetch_user(int(os.getenv("5ald_id")))
+    current_time= datetime.now().hour
+
+    if current_time > 12:
+        await SendWarningMessage(ctx= ctx, client= client, startdate= startdate, enddate= enddate, teamLead= teamLead)
+    else:
+        await RequestAnnualLeave(ctx= ctx, client= client, startdate= startdate, enddate= enddate, teamLead= teamLead)
+
 
 
 client.run(os.getenv("Bot_token"))
