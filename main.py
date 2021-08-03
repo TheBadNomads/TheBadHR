@@ -23,7 +23,7 @@ async def on_ready():
 
 @slash.slash(name= "RequestLeave", description= "Request an annual leave", options= CreateDateOptions(), guild_ids= guild_ids)
 async def RequestLeave(ctx, startdate, enddate):
-    teamLead= await client.fetch_user(int(os.getenv("Noah_id")))
+    teamLead= await client.fetch_user(int(os.getenv("Abdo_id")))
     await RequestAnnualLeave(ctx= ctx, client= client, startdate= startdate, enddate= enddate, teamLead= teamLead)
 
 
