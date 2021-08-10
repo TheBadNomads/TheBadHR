@@ -1,6 +1,7 @@
 import discord
 import os
 import Leaves
+import UI
 
 from dotenv import load_dotenv
 from discord.ext import commands
@@ -21,7 +22,8 @@ async def on_ready():
 
 @slash.slash(name = "RequestLeave", description = "Request an annual leave", options = UI.CreateDateOptions(), guild_ids = guild_ids)
 async def RequestLeave(ctx, leavetype, startdate, enddate):
-    Leaves.RequestLeave(ctx, client, leavetype, startdate, enddate)
+    leavesChannel = await client.fetch_channel(int(os.getenv("TestChannel_id")))
+    await Leaves.RequestLeave(ctx, client, leavetype, startdate, enddate, leavesChannel)
    
 
 client.run(os.getenv("Bot_token"))

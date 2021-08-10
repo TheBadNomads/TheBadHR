@@ -1,6 +1,5 @@
 import discord
 import os
-import Leaves
 
 from datetime import date, timedelta, datetime
 from discord_components import DiscordComponents, Button, Select, SelectOption
@@ -154,13 +153,15 @@ async def HandleWarningButtons(ctx, client, message, startdate, enddate, leavesC
 
         if clickedButton == "continue_btn":
             await status.message.delete()
-            await Leaves.RequestEmergencyLeave(ctx, client, startdate, enddate, leavesChannel)
+            return True
 
         elif clickedButton == "cancel_btn":
             await status.message.delete()
 
     else:
         await ctx.author.send("Your Request has failed, try again later")
+        
+    return False
 
 async def ApproveLeave(author, leavetype):
     if leavetype == "annual":  
