@@ -37,6 +37,8 @@ def CreateAnnualLeaveEmbed(ctx, startdate, enddate):
     embed.set_thumbnail(url = os.getenv("Annual_Leave_Link"))
     embed.add_field(name = "Start Date", value = startdate, inline = True)
     embed.add_field(name = "End Date", value = enddate, inline = True)
+    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+    embed.add_field(name = "Status", value = "Pending", inline = False)
     embed.set_footer(text = date.today())
 
     return embed
@@ -50,6 +52,8 @@ def CreateEmergencyLeaveEmbed(ctx, startdate, enddate):
     embed.set_thumbnail(url = os.getenv("Emergency_Leave_Link"))
     embed.add_field(name = "Start Date", value = startdate, inline = True)
     embed.add_field(name = "End Date", value = enddate, inline = True)
+    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+    embed.add_field(name = "Status", value = "Pending", inline = False)
     embed.set_footer(text = date.today())
 
     return embed
@@ -63,6 +67,8 @@ def CreateSickLeaveEmbed(ctx, startdate, enddate):
     embed.set_thumbnail(url = os.getenv("Sick_Leave_Link"))
     embed.add_field(name = "Start Date", value = startdate, inline = True)
     embed.add_field(name = "End Date", value = enddate, inline = True)
+    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+    embed.add_field(name = "Status", value = "Pending", inline = False)
     embed.set_footer(text = date.today())
 
     return embed
@@ -79,9 +85,9 @@ def CreateWarningEmbed():
 #Choises
 def CreateLeaveTypeChoices():
     leaveTypeChoices = []
-    leaveTypeChoices.append(create_choice(name = "Annual", value = "annual"))
-    leaveTypeChoices.append(create_choice(name = "Emergency", value = "emergency"))
-    leaveTypeChoices.append(create_choice(name = "Sick", value = "sick"))
+    leaveTypeChoices.append(create_choice(name = "Annual", value = 1))
+    leaveTypeChoices.append(create_choice(name = "Emergency", value = 2))
+    leaveTypeChoices.append(create_choice(name = "Sick", value = 3))
 
     return leaveTypeChoices
 
@@ -101,7 +107,7 @@ def CreateDateOptions():
         create_option(
             name = "leavetype",
             description = "leave type",
-            option_type = 3,
+            option_type = 4,
             required = True,
             choices = CreateLeaveTypeChoices()
         ),
@@ -124,6 +130,16 @@ def CreateDateOptions():
     return requestLeave_options
 
 #Helper Functions
+async def HandleLeaveReactions(client, payload):
+    channel = await client.fetch_channel(payload.channel_id)
+    message = await channel.fetch_message(payload.message_id)
+    embed = message.embeds[0]
+    
+    if CheckCorrectChannel(payload.channel_id) and CheckLeaveRequestMessage(embed) and CheckLeaveStatus(embed) and CheckBotUser(payload.member):
+        HandleEmoji(payload.emoji)
+
+
+
 async def HandleApprovalsButtons(ctx, client, message, leavetype):
     if message != None:
         def check(res):
@@ -144,40 +160,66 @@ async def HandleApprovalsButtons(ctx, client, message, leavetype):
         await ctx.author.send("Your Request has failed, try again later")
 
 async def HandleWarningButtons(ctx, client, message, startdate, enddate, leavesChannel):
-    if message!= None:
-        def check(res):
-            return res.message.id == message.id
+    def check(res):
+        return res.message.id == message.id
 
-        status = await client.wait_for("button_click", check = check)
-        clickedButton = status.component.custom_id
+    status = await client.wait_for("button_click", check = check)
+    clickedButton = status.component.custom_id
 
-        if clickedButton == "continue_btn":
-            await status.message.delete()
-            return True
+    if clickedButton == "continue_btn":
+        await status.message.delete()
+        return True
 
-        elif clickedButton == "cancel_btn":
-            await status.message.delete()
-
-    else:
-        await ctx.author.send("Your Request has failed, try again later")
+    elif clickedButton == "cancel_btn":
+        await status.message.delete()
         
     return False
 
 async def ApproveLeave(author, leavetype):
-    if leavetype == "annual":  
-        await author.send(content = GetCaption(5))
-    elif leavetype == "emergency":
-        await author.send(content = GetCaption(9))
-    elif leavetype == "sick":
-        await author.send(content = GetCaption(11))
+    types = {
+        1: GetCaption(5),
+        2: GetCaption(9),
+        3: GetCaption(11)
+    }
+
+    await author.send(content = types[leavetype])
 
 async def RejectLeave(author, leavetype):
-    if leavetype == "annual":  
-        await author.send(content = GetCaption(6))
-    elif leavetype == "emergency":
-        await author.send(content = GetCaption(10))
-    elif leavetype == "sick":
-        await author.send(content = GetCaption(12))
+    types = {
+        1: GetCaption(6),
+        2: GetCaption(10),
+        3: GetCaption(12)
+    }
+
+    await author.send(content = types[leavetype])
+
+
+def CheckCorrectChannel(channel_id):
+    return channel_id == int(os.getenv("TestChannel_id"))
+
+def CheckLeaveRequestMessage(embed):
+    leave_embed_title = "Leave Request"
+
+    return leave_embed_title.lower() in embed.title.lower()
+
+def CheckLeaveStatus(embed):
+    leave_status = next((f for f in embed.fields if f.name.lower() == "status"), None).value
+
+    return leave_status.lower() == "pending"
+
+def CheckBotUser(member):
+    return member.bot
+
+def HandleEmoji(emoji):
+    emoji_str = str(emoji)
+
+    if emoji_str == '✅':
+        return "Approved"
+
+    elif emoji_str == '❌':
+        return "Rejected"
+
+    return ""
 
 # to be changed to get captions from DB 
 def GetCaption(captionCode):
