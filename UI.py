@@ -2,69 +2,29 @@ import discord
 import os
 
 from datetime import date, timedelta, datetime
-from discord_components import DiscordComponents, Button, Select, SelectOption
-from discord_components.component import ButtonStyle
 from discord_slash.utils.manage_commands import create_option, create_choice
 
-# Buttons
-def CreateApproveButton():
-    approve_btn = Button(label = 'Approve', style = ButtonStyle.green, custom_id = 'approve_btn')
-
-    return approve_btn
-
-def CreateRejectButton():
-    reject_btn = Button(label = 'Reject', style = ButtonStyle.red, custom_id = 'reject_btn')
-
-    return reject_btn
-
-def CreateContinueButton():
-    continue_btn = Button(label = 'Continue', style = ButtonStyle.gray, custom_id = 'continue_btn')
-
-    return continue_btn
-
-def CreateCancelButton():
-    cancel_btn = Button(label = 'Cancel', style = ButtonStyle.red, custom_id = 'cancel_btn')
-
-    return cancel_btn
-
 #Embeds
-def CreateAnnualLeaveEmbed(ctx, startdate, enddate):
+def CreateLeaveEmbed(ctx, startdate, enddate, leaveType):
+    leaveTypes = {
+        1: "Annual",
+        2: "Emergency",
+        3: "Sick"
+    }
+
+    leaveImages = {
+        1: os.getenv("Annual_Leave_Link"),
+        2: os.getenv("Emergency_Leave_Link"),
+        3: os.getenv("Sick_Leave_Link")
+    }
+
     embed = discord.Embed(
-        title = "Annual Leave Request", 
-        description = f'{ctx.author.mention} is requesting a leave', 
+        title = leaveTypes[leaveType] + " Leave Request", 
+        description = f'{ctx.author.mention} is requesting '+ leaveTypes[leaveType].lower() +' leave', 
         colour = 0x4682B4
     )
-    embed.set_thumbnail(url = os.getenv("Annual_Leave_Link"))
-    embed.add_field(name = "Start Date", value = startdate, inline = True)
-    embed.add_field(name = "End Date", value = enddate, inline = True)
-    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
-    embed.add_field(name = "Status", value = "Pending", inline = False)
-    embed.set_footer(text = date.today())
 
-    return embed
-
-def CreateEmergencyLeaveEmbed(ctx, startdate, enddate):
-    embed = discord.Embed(
-        title = "Emergency Leave Request", 
-        description = f'{ctx.author.mention} is requesting a leave', 
-        colour = 0x4682B4
-    )
-    embed.set_thumbnail(url = os.getenv("Emergency_Leave_Link"))
-    embed.add_field(name = "Start Date", value = startdate, inline = True)
-    embed.add_field(name = "End Date", value = enddate, inline = True)
-    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
-    embed.add_field(name = "Status", value = "Pending", inline = False)
-    embed.set_footer(text = date.today())
-
-    return embed
-
-def CreateSickLeaveEmbed(ctx, startdate, enddate):
-    embed = discord.Embed(
-        title = "Sick Leave Request", 
-        description = f'{ctx.author.mention} is requesting a leave', 
-        colour = 0x4682B4
-    )
-    embed.set_thumbnail(url = os.getenv("Sick_Leave_Link"))
+    embed.set_thumbnail(url = leaveImages[leaveType])
     embed.add_field(name = "Start Date", value = startdate, inline = True)
     embed.add_field(name = "End Date", value = enddate, inline = True)
     embed.add_field(name = '\u200B', value = '\u200B', inline = False)
@@ -75,7 +35,7 @@ def CreateSickLeaveEmbed(ctx, startdate, enddate):
 
 def CreateWarningEmbed():
     embed = discord.Embed(
-        title = "Annual Leave Request", 
+        title = "Warning !!!!!", 
         description = GetCaption(8), 
         colour = 0xFF0000
     )
@@ -134,70 +94,49 @@ async def HandleLeaveReactions(client, payload):
     channel = await client.fetch_channel(payload.channel_id)
     message = await channel.fetch_message(payload.message_id)
     embed = message.embeds[0]
+
+    if CheckCorrectChannel(payload.channel_id) and CheckCorrectMessage(embed) and CheckLeaveStatus(embed) and CheckBotUser(payload.member):
+        status = HandleEmoji(payload.emoji)
+        if status != "":
+            await ChangeLeaveStatus(message, embed, status)
+            await payload.member.send(content = "Your request was " + status)
+
+async def WarnRequester(ctx, client, startdate, enddate, leavesChannel):
+    await ctx.send(content = GetCaption(7))
+    message = await ctx.author.send(embed = CreateWarningEmbed())
+    await message.add_reaction("✅")
+    await message.add_reaction("❌")
+
+    def check(reaction):
+        return (reaction.message_id == message.id) and (reaction.user_id == ctx.author.id) and (str(reaction.emoji) in ["✅", "❌"])
     
-    if CheckCorrectChannel(payload.channel_id) and CheckLeaveRequestMessage(embed) and CheckLeaveStatus(embed) and CheckBotUser(payload.member):
-        HandleEmoji(payload.emoji)
+    reaction = await client.wait_for('raw_reaction_add', check=check)
 
+    if str(reaction.emoji) == "✅":
+        await CompleteRequest(ctx, startdate, enddate, leavesChannel, 2)
 
+async def CompleteRequest(ctx, startdate, enddate, leavesChannel, leaveType):
+    await ctx.send(content = GetCaption(1))
+    embed = CreateLeaveEmbed(ctx, startdate, enddate, leaveType)
+    message = await leavesChannel.send(embed = embed)
+    await message.add_reaction("✅")
+    await message.add_reaction("❌")
 
-async def HandleApprovalsButtons(ctx, client, message, leavetype):
-    if message != None:
-        def check(res):
-            return res.message.id == message.id
+async def ChangeLeaveStatus(message, embed, newStatus):
+    embed_dict = embed.to_dict()
 
-        status = await client.wait_for("button_click", check = check)
-        clickedButton = status.component.custom_id
+    for field in embed_dict["fields"]:
+        if field["name"].lower() == "status":
+            field["value"] = newStatus
 
-        if clickedButton == "approve_btn":
-            await status.respond(content = "The request has been approved")
-            await ApproveLeave(ctx.author, leavetype)
+    embed = discord.Embed.from_dict(embed_dict)
 
-        elif clickedButton == "reject_btn":
-            await status.respond(content = "The request has been rejected")
-            await RejectLeave(ctx.author, leavetype)
-            
-    else:
-        await ctx.author.send("Your Request has failed, try again later")
-
-async def HandleWarningButtons(ctx, client, message, startdate, enddate, leavesChannel):
-    def check(res):
-        return res.message.id == message.id
-
-    status = await client.wait_for("button_click", check = check)
-    clickedButton = status.component.custom_id
-
-    if clickedButton == "continue_btn":
-        await status.message.delete()
-        return True
-
-    elif clickedButton == "cancel_btn":
-        await status.message.delete()
-        
-    return False
-
-async def ApproveLeave(author, leavetype):
-    types = {
-        1: GetCaption(5),
-        2: GetCaption(9),
-        3: GetCaption(11)
-    }
-
-    await author.send(content = types[leavetype])
-
-async def RejectLeave(author, leavetype):
-    types = {
-        1: GetCaption(6),
-        2: GetCaption(10),
-        3: GetCaption(12)
-    }
-
-    await author.send(content = types[leavetype])
-
+    await message.edit(embed=embed)
 
 def CheckCorrectChannel(channel_id):
     return channel_id == int(os.getenv("TestChannel_id"))
 
-def CheckLeaveRequestMessage(embed):
+def CheckCorrectMessage(embed):
     leave_embed_title = "Leave Request"
 
     return leave_embed_title.lower() in embed.title.lower()
@@ -208,7 +147,7 @@ def CheckLeaveStatus(embed):
     return leave_status.lower() == "pending"
 
 def CheckBotUser(member):
-    return member.bot
+    return not member.bot
 
 def HandleEmoji(emoji):
     emoji_str = str(emoji)
@@ -231,7 +170,7 @@ def GetCaption(captionCode):
         5: "Your annual leave request was approved",
         6: "Your annual leave request was rejected",
         7: "Your request is being processed",
-        8: "It is past core hours you leave request with be considered as an emergency leave",
+        8: "It is past core hours your leave request with be considered as an emergency leave",
         9: "Your emergency leave request was approved",
         10: "Your emergency leave request was rejected",
         11: "Your sick leave request was approved",
