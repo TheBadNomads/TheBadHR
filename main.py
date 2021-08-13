@@ -30,6 +30,19 @@ async def on_raw_reaction_add(payload):
 async def RequestLeave(ctx, leavetype, startdate, enddate):
     leavesChannel = await client.fetch_channel(int(os.getenv("TestChannel_id")))
     await Leaves.RequestLeave(ctx, client, leavetype, startdate, enddate, leavesChannel)
+
+@slash.slash(name = "InsertUser", description = "Insert new user into the database", options = UI.CreateUserOptions(), guild_ids = guild_ids)
+async def InsertUser(ctx, firstname, lastname, discorduser, annualbalance, emergencybalance, sickbalance):
+    result = db.InsertUser(firstname, lastname, discorduser.id, annualbalance, emergencybalance, sickbalance)
+
+    await ctx.send(content = result)
+
+@slash.slash(name = "CheckBalance", description = "Checks the available leave balance", options = UI.CreateBalanceOptions(), guild_ids = guild_ids)
+async def CheckBalance(ctx, leavetype):
+    result = db.GetLeaveBalanceID(ctx.author.id, leavetype)
+
+    await ctx.author.send(content = str(result))
+    await ctx.send(content = "Request was sent")
    
 
 client.run(os.getenv("Bot_token"))

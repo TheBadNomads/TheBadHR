@@ -16,12 +16,25 @@ def GetUserByID(id):
 
     return user
 
+def GetLeaveBalanceID(id, leaveType):
+    leaveTypes = {
+        1: "annualBalance",
+        2: "emergencyBalance",
+        3: "sickBalance"
+    }
+
+    cursor.execute(f'SELECT {leaveTypes[leaveType]} FROM [User] WHERE discord_id = {id}')
+    row = cursor.fetchone()
+    balance = row[0]
+
+    return balance
+
 def InsertUser(first_name:str, last_name:str, discord_id:int, annualBalance:float, emergencyBalance:float, sickBalance:float):
     error= False
     try:
         cursor.execute(
-            "INSERT INTO [User] (first_name, last_name, discord_id, annualBalance, emergencyBalance, sickBalance)"
-            f"VALUES ({first_name}, {last_name}, {discord_id}, {annualBalance}, {emergencyBalance}, {sickBalance});"
+            "INSERT INTO [User] (first_name, last_name, discord_id, annualBalance, emergencyBalance, sickBalance) VALUES (?, ?, ?, ?, ?, ?)",
+            (first_name, last_name, discord_id, annualBalance, emergencyBalance, sickBalance)
         )
         
     except:
@@ -29,10 +42,11 @@ def InsertUser(first_name:str, last_name:str, discord_id:int, annualBalance:floa
 
     if not error:
         conn.commit()
+        return "Success"
+
     else:
         conn.rollback()
-
-    return error
+        return "Failed"
 
 def ApplyLeave(user_id:int, leaveType:str, daysAmount:float):
     error= False
