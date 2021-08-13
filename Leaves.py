@@ -1,34 +1,29 @@
 import os
 import UI
+import db
 
 from datetime import date, timedelta, datetime
 
 async def RequestLeave(ctx, client, leavetype, startdate, enddate, leavesChannel):
     current_time = datetime.now().hour
     if ValidateDates(startdate, enddate):
-        if CheckAvailableBalance(startdate, enddate, leavetype):
+        if CheckAvailableBalance(ctx.author, startdate, enddate, leavetype):
             if current_time >= 12:
                 await UI.WarnRequester(ctx, client, startdate, enddate, leavesChannel)
             else:
                 await UI.CompleteRequest(ctx, startdate, enddate, leavesChannel, leavetype)
 
         else:
-            await ctx.send(content = UI.GetCaption(2) + str(int(os.getenv("Abdo_Annual_Leaves"))))
+            await ctx.send(content = UI.GetCaption(2) + str(db.GetLeaveBalance(ctx.author.id, leavetype)))
 
     else:
         await ctx.send(content = UI.GetCaption(3))
 
 # helper functions
-def CheckAvailableBalance(startdate: str, enddate: str, leavetype):
+def CheckAvailableBalance(user, startdate: str, enddate: str, leavetype):
     requestedDays = GetRequestedDays(startdate, enddate)
 
-    returnValues = {
-        1: int(os.getenv("Abdo_Annual_Leaves")) - requestedDays,
-        2: int(os.getenv("Abdo_Emergency_Leaves")) - requestedDays,
-        3: int(os.getenv("Abdo_Sick_Leaves")) - requestedDays
-    }
-
-    return returnValues[leavetype] >= 0
+    return (db.GetLeaveBalance(user.id, leavetype) - requestedDays) >= 0
 
 def GetRequestedDays(startdate: str, enddate: str):
     sDate = datetime.strptime(startdate, '%m/%d/%Y')

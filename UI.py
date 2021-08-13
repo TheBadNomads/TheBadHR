@@ -1,5 +1,6 @@
 import discord
 import os
+import db
 
 from datetime import date, timedelta, datetime
 from discord_slash.utils.manage_commands import create_option, create_choice
@@ -150,7 +151,7 @@ async def HandleLeaveReactions(client, payload):
     message = await channel.fetch_message(payload.message_id)
     embed = message.embeds[0]
 
-    if CheckCorrectChannel(payload.channel_id) and CheckCorrectMessage(embed) and CheckLeaveStatus(embed) and CheckBotUser(payload.member):
+    if CheckCorrectChannel(payload.channel_id) and CheckCorrectMessage(payload.message_id) and CheckLeaveStatus(payload.message_id) and CheckBotUser(payload.member):
         status = HandleEmoji(payload.emoji)
         if status != "":
             await ChangeLeaveStatus(message, embed, status)
@@ -177,6 +178,10 @@ async def CompleteRequest(ctx, startdate, enddate, leavesChannel, leaveType):
     await message.add_reaction("✅")
     await message.add_reaction("❌")
 
+    user = db.GetUserByID(ctx.author.id)
+
+    db.InsertLeave(user[0], leaveType, message.id, "pending")
+
 async def ChangeLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
 
@@ -188,18 +193,16 @@ async def ChangeLeaveStatus(message, embed, newStatus):
 
     await message.edit(embed=embed)
 
+    db.UpdateLeaveStatus(message.id, newStatus)
+
 def CheckCorrectChannel(channel_id):
     return channel_id == int(os.getenv("TestChannel_id"))
 
-def CheckCorrectMessage(embed):
-    leave_embed_title = "Leave Request"
+def CheckCorrectMessage(message_id):
+    return db.GetLeaveByID(message_id) != None
 
-    return leave_embed_title.lower() in embed.title.lower()
-
-def CheckLeaveStatus(embed):
-    leave_status = next((f for f in embed.fields if f.name.lower() == "status"), None).value
-
-    return leave_status.lower() == "pending"
+def CheckLeaveStatus(message_id):
+    return db.GetLeaveStatus(message_id) == "pending"
 
 def CheckBotUser(member):
     return not member.bot

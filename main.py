@@ -39,7 +39,7 @@ async def InsertUser(ctx, firstname, lastname, discorduser, annualbalance, emerg
 
 @slash.slash(name = "CheckBalance", description = "Checks the available leave balance", options = UI.CreateBalanceOptions(), guild_ids = guild_ids)
 async def CheckBalance(ctx, leavetype):
-    result = db.GetLeaveBalanceID(ctx.author.id, leavetype)
+    result = db.GetLeaveBalance(ctx.author.id, leavetype)
 
     await ctx.author.send(content = str(result))
     await ctx.send(content = "Request was sent")
