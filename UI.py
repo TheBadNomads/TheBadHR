@@ -1,6 +1,7 @@
 import discord
 import os
 import db
+import db_objects
 
 from datetime import date, timedelta, datetime
 from discord_slash.utils.manage_commands import create_option, create_choice
@@ -152,7 +153,7 @@ async def HandleLeaveReactions(client, payload):
     embed = message.embeds[0]
 
     if CheckBotUser(payload.member) and CheckCorrectChannel(payload.channel_id) and CheckCorrectMessage(payload.message_id) and CheckLeaveStatus(payload.message_id):
-        status = HandleEmoji(payload.emoji)
+        status = HandleEmoji(payload)
         if status != "":
             await ChangeLeaveStatus(message, embed, status)
             await payload.member.send(content = "Your request was " + status)
@@ -178,8 +179,8 @@ async def CompleteRequest(ctx, startdate, enddate, leavesChannel, leaveType, req
     await message.add_reaction("✅")
     await message.add_reaction("❌")
 
-    user = db.GetUserByID(ctx.author.id)
-    db.InsertLeave(user[0], leaveType, message.id, "pending", startdate, enddate, requested_days)
+    user = db_objects.user(db.GetUserByID(ctx.author.id))
+    db.InsertLeave(user.id, leaveType, message.id, "pending", startdate, enddate, requested_days)
 
 async def ChangeLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
@@ -191,9 +192,7 @@ async def ChangeLeaveStatus(message, embed, newStatus):
     embed = discord.Embed.from_dict(embed_dict)
 
     await message.edit(embed=embed)
-    leave = db.GetLeaveByID(message.id)
-
-    db.UpdateLeaveBalance(leave[1], leave[2], leave[7] * -1)
+    
     db.UpdateLeaveStatus(message.id, newStatus)
 
 def CheckCorrectChannel(channel_id):
@@ -208,10 +207,13 @@ def CheckLeaveStatus(message_id):
 def CheckBotUser(member):
     return not member.bot
 
-def HandleEmoji(emoji):
-    emoji_str = str(emoji)
+def HandleEmoji(payload):
+    emoji_str = str(payload.emoji)
 
     if emoji_str == '✅':
+        leave = db_objects.leave(db.GetLeaveByID(payload.message_id))
+        db.UpdateLeaveBalance(leave.user_id, leave.leave_type, leave.requested_days * -1)
+
         return "Approved"
 
     elif emoji_str == '❌':
