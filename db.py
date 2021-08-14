@@ -1,3 +1,4 @@
+from datetime import datetime
 import pyodbc 
 import os
 
@@ -31,7 +32,7 @@ def GetLeaveBalance(id, leaveType):
 def GetLeaveByID(request_id):
     cursor.execute(f'SELECT * FROM [Leaves] WHERE request_id = {request_id}')
     row = cursor.fetchone()
-    leave = str(row)
+    leave = row
 
     return leave
 
@@ -43,7 +44,7 @@ def GetLeaveStatus(request_id):
     return leave_status
 
 def InsertUser(first_name:str, last_name:str, discord_id:int, annualBalance:float, emergencyBalance:float, sickBalance:float):
-    error= False
+    error = False
     try:
         cursor.execute(
             "INSERT INTO [User] (first_name, last_name, discord_id, annualBalance, emergencyBalance, sickBalance) VALUES (?, ?, ?, ?, ?, ?)",
@@ -51,52 +52,31 @@ def InsertUser(first_name:str, last_name:str, discord_id:int, annualBalance:floa
         )
         
     except:
-        error= True
+        error = True
 
     if not error:
         conn.commit()
-        return "Success"
 
     else:
         conn.rollback()
-        return "Failed"
+    
+    return error
 
-def InsertLeave(user_id:int, leave_type:int, request_id:int, leave_status:str):
-    error= False
+def InsertLeave(user_id:int, leave_type:int, request_id:int, leave_status:str, start_date:str, end_date: str, requested_days:float):
+    error = False
     try:
         cursor.execute(
-            "INSERT INTO [Leaves] (user_id, leave_type, request_id, leave_status) VALUES (?, ?, ?, ?)",
-            (user_id, leave_type, request_id, leave_status)
+            "INSERT INTO [Leaves] (user_id, leave_type, request_id, leave_status, start_date, end_date, requested_days) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (user_id, leave_type, request_id, leave_status, datetime.strptime(start_date, '%m/%d/%Y'), datetime.strptime(end_date, '%m/%d/%Y'), requested_days)
         )
         
-    except:
-        error= True
+    except Exception as e:
+        print(e)
+        error = True
 
     if not error:
         conn.commit()
-        return "Success"
 
-    else:
-        conn.rollback()
-        return "Failed"
-
-def ApplyLeave(user_id:int, leaveType:str, daysAmount:float):
-    error= False
-    try:
-        cursor.execute(f'SELECT {leaveType} FROM [User] WHERE discord_id = {user_id}')
-        row= cursor.fetchone()
-        daysLeft= int(row[0])
-
-        cursor.execute("UPDATE [User]"
-            f"SET {leaveType} = {daysLeft-daysAmount}"
-            f"WHERE discord_id = {user_id};"
-        )
-        
-    except:
-        error= True
-
-    if not error:
-        conn.commit()
     else:
         conn.rollback()
 
@@ -117,17 +97,23 @@ def UpdateLeaveStatus(request_id, leave_status):
 
     return error
 
-# def UpdateLeaveBalance(user_id, leave_status):
-#     error= False
-#     try:
-#         cursor.execute("UPDATE [User] SET leave_status = ? WHERE request_id = ?", leave_status, request_id)
+def UpdateLeaveBalance(user_id, leave_type, requested_days):
+    error = False
+    leaveTypes = {
+        1: "annualBalance",
+        2: "emergencyBalance",
+        3: "sickBalance"
+    }
+
+    try:
+        cursor.execute(f"UPDATE [User] SET {leaveTypes[leave_type]} = {leaveTypes[leave_type]} + ? WHERE id = ?", requested_days, user_id)
         
-#     except:
-#         error= True
+    except:
+        error = True
 
-#     if not error:
-#         conn.commit()
-#     else:
-#         conn.rollback()
+    if not error:
+        conn.commit()
+    else:
+        conn.rollback()
 
-#     return error
+    return error

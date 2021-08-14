@@ -8,10 +8,10 @@ async def RequestLeave(ctx, client, leavetype, startdate, enddate, leavesChannel
     current_time = datetime.now().hour
     if ValidateDates(startdate, enddate):
         if CheckAvailableBalance(ctx.author, startdate, enddate, leavetype):
-            if current_time >= 12:
-                await UI.WarnRequester(ctx, client, startdate, enddate, leavesChannel)
+            if current_time > 12:
+                await UI.WarnRequester(ctx, client, startdate, enddate, leavesChannel, GetRequestedDays(startdate, enddate))
             else:
-                await UI.CompleteRequest(ctx, startdate, enddate, leavesChannel, leavetype)
+                await UI.CompleteRequest(ctx, startdate, enddate, leavesChannel, leavetype, GetRequestedDays(startdate, enddate))
 
         else:
             await ctx.send(content = UI.GetCaption(2) + str(db.GetLeaveBalance(ctx.author.id, leavetype)))

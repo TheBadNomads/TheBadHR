@@ -151,13 +151,13 @@ async def HandleLeaveReactions(client, payload):
     message = await channel.fetch_message(payload.message_id)
     embed = message.embeds[0]
 
-    if CheckCorrectChannel(payload.channel_id) and CheckCorrectMessage(payload.message_id) and CheckLeaveStatus(payload.message_id) and CheckBotUser(payload.member):
+    if CheckBotUser(payload.member) and CheckCorrectChannel(payload.channel_id) and CheckCorrectMessage(payload.message_id) and CheckLeaveStatus(payload.message_id):
         status = HandleEmoji(payload.emoji)
         if status != "":
             await ChangeLeaveStatus(message, embed, status)
             await payload.member.send(content = "Your request was " + status)
 
-async def WarnRequester(ctx, client, startdate, enddate, leavesChannel):
+async def WarnRequester(ctx, client, startdate, enddate, leavesChannel, requested_days):
     await ctx.send(content = GetCaption(7))
     message = await ctx.author.send(embed = CreateWarningEmbed())
     await message.add_reaction("✅")
@@ -169,9 +169,9 @@ async def WarnRequester(ctx, client, startdate, enddate, leavesChannel):
     reaction = await client.wait_for('raw_reaction_add', check=check)
 
     if str(reaction.emoji) == "✅":
-        await CompleteRequest(ctx, startdate, enddate, leavesChannel, 2)
+        await CompleteRequest(ctx, startdate, enddate, leavesChannel, 2, requested_days)
 
-async def CompleteRequest(ctx, startdate, enddate, leavesChannel, leaveType):
+async def CompleteRequest(ctx, startdate, enddate, leavesChannel, leaveType, requested_days):
     await ctx.send(content = GetCaption(1))
     embed = CreateLeaveEmbed(ctx, startdate, enddate, leaveType)
     message = await leavesChannel.send(embed = embed)
@@ -179,8 +179,7 @@ async def CompleteRequest(ctx, startdate, enddate, leavesChannel, leaveType):
     await message.add_reaction("❌")
 
     user = db.GetUserByID(ctx.author.id)
-
-    db.InsertLeave(user[0], leaveType, message.id, "pending")
+    db.InsertLeave(user[0], leaveType, message.id, "pending", startdate, enddate, requested_days)
 
 async def ChangeLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
@@ -192,7 +191,9 @@ async def ChangeLeaveStatus(message, embed, newStatus):
     embed = discord.Embed.from_dict(embed_dict)
 
     await message.edit(embed=embed)
+    leave = db.GetLeaveByID(message.id)
 
+    db.UpdateLeaveBalance(leave[1], leave[2], leave[7] * -1)
     db.UpdateLeaveStatus(message.id, newStatus)
 
 def CheckCorrectChannel(channel_id):
