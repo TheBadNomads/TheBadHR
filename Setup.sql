@@ -18,6 +18,13 @@ CREATE TABLE leaves (
     [remark] varchar(255)
 );
 
+CREATE TABLE leavesBalance (
+    id int NOT NULL IDENTITY(1,1) PRIMARY KEY,
+    [member_id] bigint NOT NULL FOREIGN KEY REFERENCES members(id),
+    [leave_type] int NOT NULL FOREIGN KEY REFERENCES leaveTypes(id),
+    [balance] float NOT NULL
+);
+
 CREATE TABLE positions (
     id int NOT NULL IDENTITY(1,1) PRIMARY KEY,
     [name] varchar(255) NOT NULL
