@@ -1,13 +1,15 @@
 import discord
 import os
-import Leaves
 import UI
 import db
+import member_module as mm
+import leave_module as lm
 
 from dotenv import load_dotenv
+from datetime import datetime
 from discord.ext import commands
 from discord_slash import SlashCommand
-from discord_components import DiscordComponents, Button, Select, SelectOption, message
+from discord_components import DiscordComponents
 
 load_dotenv()
 db.load_db()
@@ -27,20 +29,18 @@ async def on_raw_reaction_add(payload):
     await UI.HandleLeaveReactions(client, payload)
 
 @slash.slash(name = "RequestLeave", description = "Request an annual leave", options = UI.CreateDateOptions(), guild_ids = guild_ids)
-async def RequestLeave(ctx, leavetype, startdate, enddate):
+async def RequestLeave(ctx, leavetype, startdate, enddate, reason):
     leavesChannel = await client.fetch_channel(int(os.getenv("TestChannel_id")))
-    await Leaves.RequestLeave(ctx, client, leavetype, startdate, enddate, leavesChannel)
+    await lm.RequestLeave(ctx, client, leavetype, startdate, enddate, leavesChannel, reason)
 
 @slash.slash(name = "InsertUser", description = "Insert new user into the database", options = UI.CreateUserOptions(), guild_ids = guild_ids)
-async def InsertUser(ctx, firstname, lastname, discorduser, annualbalance, emergencybalance, sickbalance):
-    result = db.InsertUser(firstname, lastname, discorduser.id, annualbalance, emergencybalance, sickbalance)
-
-    await ctx.send(content = result)
+async def InsertUser(ctx, discorduser, name, email, startdate, leavedate, position):
+    result = mm.InsertUser(discorduser.id, name, email, datetime.strptime(startdate, '%m/%d/%Y'), datetime.strptime(leavedate, '%m/%d/%Y'), position)
+    await ctx.send(content = "Success" if result else "Failed")
 
 @slash.slash(name = "CheckBalance", description = "Checks the available leave balance", options = UI.CreateBalanceOptions(), guild_ids = guild_ids)
 async def CheckBalance(ctx, leavetype):
-    result = db.GetLeaveBalance(ctx.author.id, leavetype)
-
+    result = lm.GetLeaveBalance(ctx.author.id, leavetype)
     await ctx.author.send(content = str(result))
     await ctx.send(content = "Request was sent")
    
