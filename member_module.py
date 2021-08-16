@@ -43,4 +43,4 @@ def InsertMember(id:int, name:str, email:str, start_date:datetime, leave_date:da
     else:
         db.conn.rollback()
     
-    return error
+    return not error

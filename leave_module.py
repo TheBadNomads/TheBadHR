@@ -66,7 +66,7 @@ def InsertLeave(member_id:int, request_id:int, leave_type:int, leave_status:str,
     else:
         db.conn.rollback()
 
-    return error
+    return not error
 
 def InsertLeaveBalance(member_id:int):
     error = False
@@ -85,7 +85,7 @@ def InsertLeaveBalance(member_id:int):
     else:
         db.conn.rollback()
 
-    return error
+    return not error
 
 # PUT
 def UpdateLeaveStatus(request_id, leave_status):
@@ -101,7 +101,7 @@ def UpdateLeaveStatus(request_id, leave_status):
     else:
         db.conn.rollback()
 
-    return error
+    return not error
 
 def UpdateLeaveBalance(member_id, leave_type, requested_days):
     error = False
@@ -116,7 +116,7 @@ def UpdateLeaveBalance(member_id, leave_type, requested_days):
     else:
         db.conn.rollback()
 
-    return error
+    return not error
 
 # HELPER FUNCTIONS
 def CheckAvailableBalance(member, startdate: str, enddate: str, leavetype):
