@@ -1,7 +1,9 @@
+from aiohttp.client import request
 import discord
 import os
 import db
-import db_objects
+import member_module as mm
+import leave_module as lm
 
 from datetime import date, timedelta, datetime
 from discord_slash.utils.manage_commands import create_option, create_choice
@@ -38,7 +40,7 @@ def CreateLeaveEmbed(ctx, startdate, enddate, leaveType):
 def CreateWarningEmbed():
     embed = discord.Embed(
         title = "Warning !!!!!", 
-        description = GetCaption(8), 
+        description = db.GetCaption(8), 
         colour = 0xFF0000
     )
 
@@ -47,11 +49,17 @@ def CreateWarningEmbed():
 #Choises
 def CreateLeaveTypeChoices():
     leaveTypeChoices = []
-    leaveTypeChoices.append(create_choice(name = "Annual", value = 1))
-    leaveTypeChoices.append(create_choice(name = "Emergency", value = 2))
-    leaveTypeChoices.append(create_choice(name = "Sick", value = 3))
+    for type in lm.GetLeaveTypes():
+        leaveTypeChoices.append(create_choice(name = type[1], value = type[0]))
 
     return leaveTypeChoices
+
+def CreatePositionChoices():
+    positionChoices = []
+    for type in mm.GetPositions():
+        positionChoices.append(create_choice(name = type[1], value = type[0]))
+
+    return positionChoices
 
 def CreateDateChoices():
     firstDate = date.today() + timedelta(1)
@@ -82,29 +90,23 @@ def CreateDateOptions():
         ),
         create_option(
             name = "enddate",
-            description = "Leave empty for 1 day leave",
+            description = "ending date of your leave",
             option_type = 3,
             required = True,
             choices = CreateDateChoices()
+        ),
+        create_option(
+            name = "reason",
+            description = "reason for the leave (optional)",
+            option_type = 3,
+            required = False
         )
     ]
 
     return requestLeave_options
 
-def CreateUserOptions():
-    user_options = [
-        create_option(
-            name = "firstname",
-            description = "first name",
-            option_type = 3,
-            required = True
-        ),
-        create_option(
-            name = "lastname",
-            description = "last name",
-            option_type = 3,
-            required = True
-        ),
+def CreateMemberOptions():
+    member_options = [
         create_option(
             name = "discorduser",
             description = "discord user",
@@ -112,26 +114,39 @@ def CreateUserOptions():
             required = True
         ),
         create_option(
-            name = "annualbalance",
-            description = "Annual Balance",
-            option_type = 10,
+            name = "name",
+            description = "name",
+            option_type = 3,
             required = True
         ),
         create_option(
-            name = "emergencybalance",
-            description = "Emergency Balance",
-            option_type = 10,
+            name = "email",
+            description = "email",
+            option_type = 3,
             required = True
         ),
         create_option(
-            name = "sickbalance",
-            description = "Sick Balance",
-            option_type = 10,
+            name = "startdate",
+            description = "working start date format: m/d/y",
+            option_type = 3,
             required = True
-        )
+        ),
+        create_option(
+            name = "leavedate",
+            description = "working leave date format: m/d/y",
+            option_type = 3,
+            required = True
+        ),
+        create_option(
+            name = "position",
+            description = "member position",
+            option_type = 4,
+            required = True,
+            choices = CreatePositionChoices()
+        ),
     ]
 
-    return user_options
+    return member_options
 
 def CreateBalanceOptions():
     balance_options = [
@@ -158,8 +173,8 @@ async def HandleLeaveReactions(client, payload):
             await ChangeLeaveStatus(message, embed, status)
             await payload.member.send(content = "Your request was " + status)
 
-async def WarnRequester(ctx, client, startdate, enddate, leavesChannel, requested_days):
-    await ctx.send(content = GetCaption(7))
+async def WarnRequester(ctx, client, startdate, enddate, leavesChannel, reason):
+    await ctx.send(content = db.GetCaption(7))
     message = await ctx.author.send(embed = CreateWarningEmbed())
     await message.add_reaction("✅")
     await message.add_reaction("❌")
@@ -170,17 +185,20 @@ async def WarnRequester(ctx, client, startdate, enddate, leavesChannel, requeste
     reaction = await client.wait_for('raw_reaction_add', check=check)
 
     if str(reaction.emoji) == "✅":
-        await CompleteRequest(ctx, startdate, enddate, leavesChannel, 2, requested_days)
+        await CompleteRequest(ctx, startdate, enddate, leavesChannel, 2, reason)
 
-async def CompleteRequest(ctx, startdate, enddate, leavesChannel, leaveType, requested_days):
-    await ctx.send(content = GetCaption(1))
+async def CompleteRequest(ctx, startdate, enddate, leavesChannel, leaveType, reason):
+    await ctx.send(content = db.GetCaption(1))
     embed = CreateLeaveEmbed(ctx, startdate, enddate, leaveType)
     message = await leavesChannel.send(embed = embed)
     await message.add_reaction("✅")
     await message.add_reaction("❌")
 
-    user = db_objects.user(db.GetUserByID(ctx.author.id))
-    db.InsertLeave(user.id, leaveType, message.id, "pending", startdate, enddate, requested_days)
+    member = mm.GetMemeberByID(ctx.author.id)
+    requested_days = lm.GetRequestedDays(startdate, enddate)
+
+    for day in requested_days:
+        lm.InsertLeave(member.id, message.id, leaveType, "pending", day, reason, "")
 
 async def ChangeLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
@@ -190,19 +208,18 @@ async def ChangeLeaveStatus(message, embed, newStatus):
             field["value"] = newStatus
 
     embed = discord.Embed.from_dict(embed_dict)
-
     await message.edit(embed=embed)
     
-    db.UpdateLeaveStatus(message.id, newStatus)
+    lm.UpdateLeaveStatus(message.id, newStatus)
 
 def CheckCorrectChannel(channel_id):
     return channel_id == int(os.getenv("TestChannel_id"))
 
 def CheckCorrectMessage(message_id):
-    return db.GetLeaveByID(message_id) != None
+    return len(lm.GetLeaveByRequestID(message_id)) != 0
 
 def CheckLeaveStatus(message_id):
-    return db.GetLeaveStatus(message_id) == "pending"
+    return lm.GetLeaveStatus(message_id) == "pending"
 
 def CheckBotUser(member):
     return not member.bot
@@ -211,8 +228,8 @@ def HandleEmoji(payload):
     emoji_str = str(payload.emoji)
 
     if emoji_str == '✅':
-        leave = db_objects.leave(db.GetLeaveByID(payload.message_id))
-        db.UpdateLeaveBalance(leave.user_id, leave.leave_type, leave.requested_days * -1)
+        leaves = lm.GetLeaveByRequestID(payload.message_id)
+        lm.UpdateLeaveBalance(leaves[0].member_id, leaves[0].leave_type, len(leaves) * -1)
 
         return "Approved"
 
@@ -220,22 +237,3 @@ def HandleEmoji(payload):
         return "Rejected"
 
     return ""
-
-# to be changed to get captions from DB 
-def GetCaption(captionCode):
-    switcher = {
-        1: "Your leave request has been sent",
-        2: "You dont have enough leaves to request, your current balance is ",
-        3: "Please select valid dates",
-        4: "Your Request has failed, try again later",
-        5: "Your annual leave request was approved",
-        6: "Your annual leave request was rejected",
-        7: "Your request is being processed",
-        8: "It is past core hours your leave request with be considered as an emergency leave",
-        9: "Your emergency leave request was approved",
-        10: "Your emergency leave request was rejected",
-        11: "Your sick leave request was approved",
-        12: "Your sick leave request was rejected",
-    }
-
-    return switcher.get(captionCode, lambda: "Invalid caption code")

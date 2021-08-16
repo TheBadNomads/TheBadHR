@@ -33,9 +33,9 @@ async def RequestLeave(ctx, leavetype, startdate, enddate, reason):
     leavesChannel = await client.fetch_channel(int(os.getenv("TestChannel_id")))
     await lm.RequestLeave(ctx, client, leavetype, startdate, enddate, leavesChannel, reason)
 
-@slash.slash(name = "InsertUser", description = "Insert new user into the database", options = UI.CreateUserOptions(), guild_ids = guild_ids)
-async def InsertUser(ctx, discorduser, name, email, startdate, leavedate, position):
-    result = mm.InsertUser(discorduser.id, name, email, datetime.strptime(startdate, '%m/%d/%Y'), datetime.strptime(leavedate, '%m/%d/%Y'), position)
+@slash.slash(name = "InsertMember", description = "Insert new member into the database", options = UI.CreateMemberOptions(), guild_ids = guild_ids)
+async def InsertMember(ctx, discorduser, name, email, startdate, leavedate, position):
+    result = mm.InsertMember(discorduser.id, name, email, datetime.strptime(startdate, '%m/%d/%Y'), datetime.strptime(leavedate, '%m/%d/%Y'), position)
     await ctx.send(content = "Success" if result else "Failed")
 
 @slash.slash(name = "CheckBalance", description = "Checks the available leave balance", options = UI.CreateBalanceOptions(), guild_ids = guild_ids)
