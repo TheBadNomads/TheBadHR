@@ -1,4 +1,6 @@
 import db
+import leave_module as lm
+
 from datetime import datetime
 
 class member:
@@ -37,6 +39,7 @@ def InsertMember(id:int, name:str, email:str, start_date:datetime, leave_date:da
 
     if not error:
         db.conn.commit()
+        lm.InsertLeaveBalance(id)
     else:
         db.conn.rollback()
     

@@ -68,6 +68,25 @@ def InsertLeave(member_id:int, request_id:int, leave_type:int, leave_status:str,
 
     return error
 
+def InsertLeaveBalance(member_id:int):
+    error = False
+    for type in GetLeaveTypes():
+        try:
+            db.cursor.execute(
+                "INSERT INTO [leavesBalance] (member_id, leave_type, balance) VALUES (?, ?, ?)",
+                (member_id, type[0], CalculateLeaveTypeBalance(type[0]))
+            )
+        except Exception as e:
+            print(e)
+            error = True
+
+    if not error:
+        db.conn.commit()
+    else:
+        db.conn.rollback()
+
+    return error
+
 # PUT
 def UpdateLeaveStatus(request_id, leave_status):
     error= False
@@ -123,6 +142,10 @@ def ValidateDates(startdate: str, enddate: str):
     eDate = datetime.strptime(enddate, '%m/%d/%Y')
 
     return eDate >= sDate
+
+# to be changed
+def CalculateLeaveTypeBalance(leave_type):
+    return 21
 
 
 # COMMANDS
