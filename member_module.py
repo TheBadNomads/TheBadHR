@@ -17,8 +17,14 @@ def GetMemeberByID(id):
     
     return member(row)
 
+def GetPositions():
+    db.cursor.execute('SELECT * FROM [positions]')
+    rows = db.cursor.fetchall()
+
+    return rows
+
 # POST
-def InsertUser(id:int, name:str, email:str, start_date:datetime, leave_date:datetime, position:int):
+def InsertMember(id:int, name:str, email:str, start_date:datetime, leave_date:datetime, position:int):
     error = False
     try:
         db.cursor.execute(

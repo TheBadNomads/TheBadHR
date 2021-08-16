@@ -1,7 +1,7 @@
 import db
 import UI
 
-from datetime import date, timedelta, datetime
+from datetime import timedelta, datetime
 
 class leave:
     def __init__(self, attrs):
@@ -23,9 +23,12 @@ def GetLeaveByID(id):
 
 def GetLeaveByRequestID(request_id):
     db.cursor.execute(f'SELECT * FROM [leaves] WHERE request_id = {request_id}')
-    row = db.cursor.fetchone()
+    rows = db.cursor.fetchall()
+    leaves = []
+    for row in rows:
+        leaves.append(leave(row))
 
-    return leave(row)
+    return leaves
 
 def GetLeaveStatus(request_id):
     db.cursor.execute(f'SELECT leave_status FROM [leaves] WHERE request_id = {request_id}')
@@ -39,6 +42,12 @@ def GetLeaveBalance(member_id, leave_type):
     row = db.cursor.fetchone()
 
     return float(row[0])
+
+def GetLeaveTypes():
+    db.cursor.execute('SELECT * FROM [leaveTypes]')
+    rows = db.cursor.fetchall()
+
+    return rows
 
 # POST
 def InsertLeave(member_id:int, request_id:int, leave_type:int, leave_status:str, date:datetime, reason:str, remark:str):
@@ -91,10 +100,10 @@ def UpdateLeaveBalance(member_id, leave_type, requested_days):
     return error
 
 # HELPER FUNCTIONS
-def CheckAvailableBalance(user, startdate: str, enddate: str, leavetype):
-    requestedDays = GetRequestedDays(startdate, enddate)
+def CheckAvailableBalance(member, startdate: str, enddate: str, leavetype):
+    requested_days_count = len(GetRequestedDays(startdate, enddate))
 
-    return (db.GetLeaveBalance(user.id, leavetype) - requestedDays) >= 0
+    return (GetLeaveBalance(member.id, leavetype) - requested_days_count) >= 0
 
 def GetRequestedDays(startdate: str, enddate: str):
     sDate = datetime.strptime(startdate, '%m/%d/%Y')
@@ -107,7 +116,7 @@ def GetRequestedDays(startdate: str, enddate: str):
         if day.weekday() != 4 and day.weekday() != 5:
             total_days.append(day) 
 
-    return len(total_days)
+    return total_days
 
 def ValidateDates(startdate: str, enddate: str):
     sDate = datetime.strptime(startdate, '%m/%d/%Y')
@@ -117,17 +126,17 @@ def ValidateDates(startdate: str, enddate: str):
 
 
 # COMMANDS
-async def RequestLeave(ctx, client, leavetype, startdate, enddate, leavesChannel):
+async def RequestLeave(ctx, client, leavetype, startdate, enddate, leavesChannel, reason):
     current_time = datetime.now().hour
     if ValidateDates(startdate, enddate):
         if CheckAvailableBalance(ctx.author, startdate, enddate, leavetype):
             if current_time > 12:
-                await UI.WarnRequester(ctx, client, startdate, enddate, leavesChannel, GetRequestedDays(startdate, enddate))
+                await UI.WarnRequester(ctx, client, startdate, enddate, leavesChannel, reason)
             else:
-                await UI.CompleteRequest(ctx, startdate, enddate, leavesChannel, leavetype, GetRequestedDays(startdate, enddate))
+                await UI.CompleteRequest(ctx, startdate, enddate, leavesChannel, leavetype, reason)
 
         else:
-            await ctx.send(content = UI.GetCaption(2) + str(db.GetLeaveBalance(ctx.author.id, leavetype)))
+            await ctx.send(content = UI.GetCaption(2) + str(GetLeaveBalance(ctx.author.id, leavetype)))
 
     else:
         await ctx.send(content = UI.GetCaption(3))
