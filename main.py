@@ -29,7 +29,7 @@ async def on_raw_reaction_add(payload):
     await UI.HandleLeaveReactions(client, payload)
 
 @slash.slash(name = "RequestLeave", description = "Request an annual leave", options = UI.CreateDateOptions(), guild_ids = guild_ids)
-async def RequestLeave(ctx, leavetype, startdate, enddate, reason):
+async def RequestLeave(ctx, leavetype, startdate, enddate, reason = ""):
     leavesChannel = await client.fetch_channel(int(os.getenv("TestChannel_id")))
     await lm.RequestLeave(ctx, client, leavetype, startdate, enddate, leavesChannel, reason)
 
