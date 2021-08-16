@@ -1,3 +1,13 @@
+CREATE TABLE positions (
+    id int NOT NULL IDENTITY(1,1) PRIMARY KEY,
+    [name] varchar(255) NOT NULL
+);
+
+CREATE TABLE leaveTypes (
+    id int NOT NULL IDENTITY(1,1) PRIMARY KEY,
+    [name] varchar(255) NOT NULL
+);
+
 CREATE TABLE members (
     id bigint NOT NULL PRIMARY KEY,
     [name] varchar(255) NOT NULL,
@@ -25,20 +35,10 @@ CREATE TABLE leavesBalance (
     [balance] float NOT NULL
 );
 
-CREATE TABLE positions (
-    id int NOT NULL IDENTITY(1,1) PRIMARY KEY,
-    [name] varchar(255) NOT NULL
-);
+INSERT INTO leaveTypes (name) VALUES ('Annual');
+INSERT INTO leaveTypes VALUES ('Emergency');
+INSERT INTO leaveTypes VALUES ('Sick');
 
-CREATE TABLE leaveTypes (
-    id int NOT NULL IDENTITY(1,1) PRIMARY KEY,
-    [name] varchar(255) NOT NULL
-);
-
-INSERT INTO leaveTypes VALUES ("Annual");
-INSERT INTO leaveTypes VALUES ("Emergency");
-INSERT INTO leaveTypes VALUES ("Sick");
-
-INSERT INTO positions VALUES ("Developer");
-INSERT INTO positions VALUES ("CEO");
-INSERT INTO positions VALUES ("Intern");
+INSERT INTO positions VALUES ('Developer');
+INSERT INTO positions VALUES ('CEO');
+INSERT INTO positions VALUES ('Intern');
