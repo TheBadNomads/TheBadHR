@@ -34,3 +34,11 @@ CREATE TABLE leaveTypes (
     id int NOT NULL IDENTITY(1,1) PRIMARY KEY,
     [name] varchar(255) NOT NULL
 );
+
+INSERT INTO leaveTypes VALUES ("Annual");
+INSERT INTO leaveTypes VALUES ("Emergency");
+INSERT INTO leaveTypes VALUES ("Sick");
+
+INSERT INTO positions VALUES ("Developer");
+INSERT INTO positions VALUES ("CEO");
+INSERT INTO positions VALUES ("Intern");
