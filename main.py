@@ -45,15 +45,17 @@ async def CheckBalance(ctx, leavetype):
     await ctx.send(content = "Request was sent")
 
 @slash.slash(name = "CheckBalanceForMemeber", description = "Checks the available leave balance for a certain member", options = UI.CreateBalanceForMemeberOptions(), guild_ids = guild_ids)
-@commands.has_role("Admin")
 async def CheckBalanceForMemeber(ctx, discorduser, leavetype):
-    try:
+    admin_role = discord.utils.find(lambda r: r.name == 'Admin', ctx.guild.roles)
+    if admin_role in ctx.author.roles:
         result = lm.GetLeaveBalance(discorduser.id, leavetype)
         await ctx.author.send(content = str(result))
         await ctx.send(content = "Request was sent")
-    except Exception as e:
-        print(e)
+    else:
         await ctx.send(content = "This command can only be used by an Admin")
-   
+
+        
+
+
 
 client.run(os.getenv("Bot_token"))
