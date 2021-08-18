@@ -27,7 +27,7 @@ def GetPositions():
 
 # POST
 def InsertMember(id:int, name:str, email:str, start_date:datetime, leave_date:datetime, position:int):
-    error = False
+    success = True
     try:
         db.cursor.execute(
             "INSERT INTO [members] (id, name, email, start_date, leave_date, position) VALUES (?, ?, ?, ?, ?, ?)",
@@ -35,12 +35,13 @@ def InsertMember(id:int, name:str, email:str, start_date:datetime, leave_date:da
         )    
     except Exception as e:
         print(e)
-        error = True
+        success = False
 
-    if not error:
+    leaves_success = lm.InsertLeaveBalance(id)
+
+    if success and leaves_success:
         db.conn.commit()
-        lm.InsertLeaveBalance(id)
     else:
         db.conn.rollback()
     
-    return not error
+    return success

@@ -51,7 +51,7 @@ def GetLeaveTypes():
 
 # POST
 def InsertLeave(member_id:int, request_id:int, leave_type:int, leave_status:str, date:datetime, reason:str, remark:str):
-    error = False
+    success = True
     try:
         db.cursor.execute(
             "INSERT INTO [leaves] (member_id, request_id, leave_type, leave_status, date, reason, remark) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -59,17 +59,17 @@ def InsertLeave(member_id:int, request_id:int, leave_type:int, leave_status:str,
         )
     except Exception as e:
         print(e)
-        error = True
+        success = False
 
-    if not error:
+    if success:
         db.conn.commit()
     else:
         db.conn.rollback()
 
-    return not error
+    return success
 
 def InsertLeaveBalance(member_id:int):
-    error = False
+    success = True
     for type in GetLeaveTypes():
         try:
             db.cursor.execute(
@@ -78,45 +78,45 @@ def InsertLeaveBalance(member_id:int):
             )
         except Exception as e:
             print(e)
-            error = True
+            success = False
 
-    if not error:
+    if success:
         db.conn.commit()
     else:
         db.conn.rollback()
 
-    return not error
+    return success
 
 # PUT
 def UpdateLeaveStatus(request_id, leave_status):
-    error= False
+    success = True
     try:
         db.cursor.execute("UPDATE [leaves] SET leave_status = ? WHERE request_id = ?", leave_status, request_id)
     except Exception as e:
         print(e)
-        error = True
+        success = False
 
-    if not error:
+    if success:
         db.conn.commit()
     else:
         db.conn.rollback()
 
-    return not error
+    return success
 
 def UpdateLeaveBalance(member_id, leave_type, requested_days):
-    error = False
+    success = True
     try:
         db.cursor.execute("UPDATE [leavesBalance] SET balance = balance + ? WHERE member_id = ? AND leave_type = ?", requested_days, member_id, leave_type) 
     except Exception as e:
         print(e)
-        error = True
+        success = False
 
-    if not error:
+    if success:
         db.conn.commit()
     else:
         db.conn.rollback()
 
-    return not error
+    return success
 
 # HELPER FUNCTIONS
 def CheckAvailableBalance(member, startdate: str, enddate: str, leavetype):
