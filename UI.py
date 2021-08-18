@@ -161,6 +161,25 @@ def CreateBalanceOptions():
 
     return balance_options
 
+def CreateBalanceForMemeberOptions():
+    balance_options = [
+        create_option(
+            name = "discorduser",
+            description = "discord user",
+            option_type = 6,
+            required = True
+        ),
+        create_option(
+            name = "leavetype",
+            description = "leave type",
+            option_type = 4,
+            required = True,
+            choices = CreateLeaveTypeChoices()
+        )
+    ]
+
+    return balance_options
+
 #Helper Functions
 async def HandleLeaveReactions(client, payload):
     channel = await client.fetch_channel(payload.channel_id)
