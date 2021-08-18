@@ -146,17 +146,20 @@ def ValidateDates(startdate: str, enddate: str):
 def CalculateLeaveTypeBalance(leave_type, start_date):
     # can be changed later to be retrived from DB
     leave_types = {
-        1: 21,
+        1: CalcAnnual(start_date),
         2: 5,
         3: 365
     }
 
+    return leave_types[leave_type]
+
+def CalcAnnual(start_date):
     start_month = int(start_date.strftime("%m"))
     leaves_months_count = (12 - start_month) + 1
-    leave_balance_per_month = leave_types[leave_type]/12
+    leave_balance_per_month = 21/12
 
     return leaves_months_count * leave_balance_per_month
-
+    
 # COMMANDS
 async def RequestLeave(ctx, client, leavetype, startdate, enddate, leavesChannel, reason):
     current_time = datetime.now().hour
