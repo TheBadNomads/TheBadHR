@@ -68,13 +68,13 @@ def InsertLeave(member_id:int, request_id:int, leave_type:int, leave_status:str,
 
     return success
 
-def InsertLeaveBalance(member_id:int):
+def InsertLeaveBalance(member_id:int, start_date:datetime):
     success = True
     for type in GetLeaveTypes():
         try:
             db.cursor.execute(
                 "INSERT INTO [leavesBalance] (member_id, leave_type, balance) VALUES (?, ?, ?)",
-                (member_id, type[0], CalculateLeaveTypeBalance(type[0]))
+                (member_id, type[0], CalculateLeaveTypeBalance(type[0], start_date))
             )
         except Exception as e:
             print(e)
@@ -144,8 +144,19 @@ def ValidateDates(startdate: str, enddate: str):
     return eDate >= sDate
 
 # to be changed
-def CalculateLeaveTypeBalance(leave_type):
-    return 21
+def CalculateLeaveTypeBalance(leave_type, start_date):
+    # can be changed later to be retrived from DB
+    leave_types = {
+        1: 21,
+        2: 5,
+        3: (365*12)
+    }
+
+    start_month = int(start_date.strftime("%m"))
+    leaves_months_count = (12 - start_month) + 1
+    leave_per_month = leave_types[leave_type]/12
+
+    return leaves_months_count * leave_per_month
 
 
 # COMMANDS

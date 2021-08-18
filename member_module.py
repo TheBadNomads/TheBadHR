@@ -37,7 +37,7 @@ def InsertMember(id:int, name:str, email:str, start_date:datetime, leave_date:da
         print(e)
         success = False
 
-    leaves_success = lm.InsertLeaveBalance(id)
+    leaves_success = lm.InsertLeaveBalance(id, start_date)
 
     if success and leaves_success:
         db.conn.commit()
