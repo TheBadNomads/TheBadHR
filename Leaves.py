@@ -1,8 +1,8 @@
 import Utilities
-import Channels
 import os
 import UI
 
+from Channels import Channels
 from datetime import date, timedelta, datetime
 
 async def RequestLeave(ctx, client, leavetype, startdate, enddate):
@@ -37,7 +37,7 @@ async def WarnRequester(ctx, client, startdate, enddate):
 async def CompleteRequest(ctx, client, startdate, enddate, leaveType):
     await ctx.send(content = UI.GetCaption(1))
     embed = UI.CreateLeaveEmbed(ctx, startdate, enddate, leaveType)
-    channel = await Channels.LeaveChannels.GetLeaveApprovalsChannel(client)
+    channel = await Channels.GetLeaveApprovalsChannel(client)
     message = await channel.send(embed = embed)
     await message.add_reaction(os.getenv("Approve_Emoji"))
     await message.add_reaction(os.getenv("Reject_Emoji"))
