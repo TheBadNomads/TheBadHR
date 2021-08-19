@@ -10,7 +10,6 @@ from discord_slash import SlashCommand
 from discord_components import DiscordComponents, Button, Select, SelectOption, message
 
 load_dotenv()
-db.load_db()
 
 client = commands.Bot(command_prefix = "!", intents = discord.Intents.default())
 slash = SlashCommand(client, sync_commands = True)
