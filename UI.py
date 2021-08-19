@@ -105,9 +105,9 @@ def ParseEmoji(emoji):
         os.getenv("Approve_Emoji"): "Approved",
         os.getenv("Reject_Emoji"): "Rejected"
     }
-    reaction_emojis_dict = defaultdict("", **reaction_emojis)
+    reaction_emojis = defaultdict("", **reaction_emojis)
 
-    return reaction_emojis_dict[emoji_str]
+    return reaction_emojis[emoji_str]
 
 # to be changed to get captions from DB 
 def GetCaption(captionCode):
