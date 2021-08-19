@@ -24,12 +24,11 @@ async def on_ready():
 
 @client.event
 async def on_raw_reaction_add(payload):
-    await UI.HandleLeaveReactions(client, payload)
+    await Leaves.HandleLeaveReactions(client, payload)
 
 @slash.slash(name = "RequestLeave", description = "Request an annual leave", options = UI.CreateDateOptions(), guild_ids = guild_ids)
 async def RequestLeave(ctx, leavetype, startdate, enddate):
-    leavesChannel = await client.fetch_channel(int(os.getenv("TestChannel_id")))
-    await Leaves.RequestLeave(ctx, client, leavetype, startdate, enddate, leavesChannel)
+    await Leaves.RequestLeave(ctx, client, leavetype, startdate, enddate)
    
 
 client.run(os.getenv("Bot_token"))

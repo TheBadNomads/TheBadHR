@@ -1,10 +1,10 @@
 import discord
 import os
 
+from collections import defaultdict
 from datetime import date, timedelta, datetime
 from discord_slash.utils.manage_commands import create_option, create_choice
 
-#Embeds
 def CreateLeaveEmbed(ctx, startdate, enddate, leaveType):
     leaveTypes = {
         1: "Annual",
@@ -42,7 +42,6 @@ def CreateWarningEmbed():
 
     return embed
 
-#Choises
 def CreateLeaveTypeChoices():
     leaveTypeChoices = []
     leaveTypeChoices.append(create_choice(name = "Annual", value = 1))
@@ -89,40 +88,7 @@ def CreateDateOptions():
 
     return requestLeave_options
 
-#Helper Functions
-async def HandleLeaveReactions(client, payload):
-    channel = await client.fetch_channel(payload.channel_id)
-    message = await channel.fetch_message(payload.message_id)
-    embed = message.embeds[0]
-
-    if CheckCorrectChannel(payload.channel_id) and CheckCorrectMessage(embed) and CheckLeaveStatus(embed) and CheckBotUser(payload.member):
-        status = HandleEmoji(payload.emoji)
-        if status != "":
-            await ChangeLeaveStatus(message, embed, status)
-            await payload.member.send(content = "Your request was " + status)
-
-async def WarnRequester(ctx, client, startdate, enddate, leavesChannel):
-    await ctx.send(content = GetCaption(7))
-    message = await ctx.author.send(embed = CreateWarningEmbed())
-    await message.add_reaction("✅")
-    await message.add_reaction("❌")
-
-    def check(reaction):
-        return (reaction.message_id == message.id) and (reaction.user_id == ctx.author.id) and (str(reaction.emoji) in ["✅", "❌"])
-    
-    reaction = await client.wait_for('raw_reaction_add', check=check)
-
-    if str(reaction.emoji) == "✅":
-        await CompleteRequest(ctx, startdate, enddate, leavesChannel, 2)
-
-async def CompleteRequest(ctx, startdate, enddate, leavesChannel, leaveType):
-    await ctx.send(content = GetCaption(1))
-    embed = CreateLeaveEmbed(ctx, startdate, enddate, leaveType)
-    message = await leavesChannel.send(embed = embed)
-    await message.add_reaction("✅")
-    await message.add_reaction("❌")
-
-async def ChangeLeaveStatus(message, embed, newStatus):
+async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
 
     for field in embed_dict["fields"]:
@@ -133,32 +99,15 @@ async def ChangeLeaveStatus(message, embed, newStatus):
 
     await message.edit(embed=embed)
 
-def CheckCorrectChannel(channel_id):
-    return channel_id == int(os.getenv("TestChannel_id"))
-
-def CheckCorrectMessage(embed):
-    leave_embed_title = "Leave Request"
-
-    return leave_embed_title.lower() in embed.title.lower()
-
-def CheckLeaveStatus(embed):
-    leave_status = next((f for f in embed.fields if f.name.lower() == "status"), None).value
-
-    return leave_status.lower() == "pending"
-
-def CheckBotUser(member):
-    return not member.bot
-
-def HandleEmoji(emoji):
+def ParseEmoji(emoji):
     emoji_str = str(emoji)
+    reaction_emojis = {
+        os.getenv("Approve_Emoji"): "Approved",
+        os.getenv("Reject_Emoji"): "Rejected"
+    }
+    reaction_emojis = defaultdict("", **reaction_emojis)
 
-    if emoji_str == '✅':
-        return "Approved"
-
-    elif emoji_str == '❌':
-        return "Rejected"
-
-    return ""
+    return reaction_emojis[emoji_str]
 
 # to be changed to get captions from DB 
 def GetCaption(captionCode):
