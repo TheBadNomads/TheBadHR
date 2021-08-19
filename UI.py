@@ -5,7 +5,6 @@ from collections import defaultdict
 from datetime import date, timedelta, datetime
 from discord_slash.utils.manage_commands import create_option, create_choice
 
-#Embeds
 def CreateLeaveEmbed(ctx, startdate, enddate, leaveType):
     leaveTypes = {
         1: "Annual",
@@ -43,7 +42,6 @@ def CreateWarningEmbed():
 
     return embed
 
-#Choises
 def CreateLeaveTypeChoices():
     leaveTypeChoices = []
     leaveTypeChoices.append(create_choice(name = "Annual", value = 1))
@@ -90,7 +88,6 @@ def CreateDateOptions():
 
     return requestLeave_options
 
-#Helper Functions
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
 
@@ -102,14 +99,15 @@ async def UpdateEmbedLeaveStatus(message, embed, newStatus):
 
     await message.edit(embed=embed)
 
-def HandleEmoji(emoji):
+def ParseEmoji(emoji):
     emoji_str = str(emoji)
+    reaction_emojis = {
+        os.getenv("Approve_Emoji"): "Approved",
+        os.getenv("Reject_Emoji"): "Rejected"
+    }
+    reaction_emojis_dict = defaultdict("", **reaction_emojis)
 
-    reaction_emoji = defaultdict("")
-    reaction_emoji[os.getenv("Approve_Emoji")] = "Approved"
-    reaction_emoji[os.getenv("Reject_Emoji")] = "Rejected"
-
-    return reaction_emoji[emoji_str]
+    return reaction_emojis_dict[emoji_str]
 
 # to be changed to get captions from DB 
 def GetCaption(captionCode):

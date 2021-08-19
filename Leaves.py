@@ -1,17 +1,18 @@
 import Utilities
+import Channels
 import os
 import UI
 
 from datetime import date, timedelta, datetime
 
-async def RequestLeave(ctx, client, leavetype, startdate, enddate, leavesChannel):
+async def RequestLeave(ctx, client, leavetype, startdate, enddate):
     current_time = datetime.now().hour
     if ValidateDates(startdate, enddate):
         if CheckAvailableBalance(startdate, enddate, leavetype):
             if current_time >= 12:
-                await WarnRequester(ctx, client, startdate, enddate, leavesChannel)
+                await WarnRequester(ctx, client, startdate, enddate)
             else:
-                await CompleteRequest(ctx, startdate, enddate, leavesChannel, leavetype)
+                await CompleteRequest(ctx, client, startdate, enddate, leavetype)
 
         else:
             await ctx.send(content = UI.GetCaption(2) + str(int(os.getenv("Abdo_Annual_Leaves"))))
@@ -19,7 +20,7 @@ async def RequestLeave(ctx, client, leavetype, startdate, enddate, leavesChannel
     else:
         await ctx.send(content = UI.GetCaption(3))
 
-async def WarnRequester(ctx, client, startdate, enddate, leavesChannel):
+async def WarnRequester(ctx, client, startdate, enddate):
     await ctx.send(content = UI.GetCaption(7))
     message = await ctx.author.send(embed = UI.CreateWarningEmbed())
     await message.add_reaction(os.getenv("Approve_Emoji"))
@@ -31,12 +32,13 @@ async def WarnRequester(ctx, client, startdate, enddate, leavesChannel):
     reaction = await client.wait_for('raw_reaction_add', check = check, timeout = 120.0)
 
     if str(reaction.emoji) == os.getenv("Approve_Emoji"):
-        await CompleteRequest(ctx, startdate, enddate, leavesChannel, 2)
+        await CompleteRequest(ctx, client, startdate, enddate, 2)
 
-async def CompleteRequest(ctx, startdate, enddate, leavesChannel, leaveType):
+async def CompleteRequest(ctx, client, startdate, enddate, leaveType):
     await ctx.send(content = UI.GetCaption(1))
     embed = UI.CreateLeaveEmbed(ctx, startdate, enddate, leaveType)
-    message = await leavesChannel.send(embed = embed)
+    channel = await Channels.LeaveChannels.GetLeaveRequestsChannel(client)
+    message = await channel.send(embed = embed)
     await message.add_reaction(os.getenv("Approve_Emoji"))
     await message.add_reaction(os.getenv("Reject_Emoji"))
 
@@ -46,12 +48,11 @@ async def HandleLeaveReactions(client, payload):
     embed = message.embeds[0]
 
     if Utilities.isNotBot(payload.member) and isLeaveRequest(embed) and isPending(embed):
-        status = UI.HandleEmoji(payload.emoji)
+        status = UI.ParseEmoji(payload.emoji)
         if status != "":
             await UI.UpdateEmbedLeaveStatus(message, embed, status)
             await payload.member.send(content = "Your request was " + status)
 
-# helper functions
 def isLeaveRequest(embed):
     leave_embed_title = "Leave Request"
 
