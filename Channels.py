@@ -2,11 +2,11 @@ import os
 
 class LeaveChannels:
 
-    LeaveRequestsChannel = None
+    LeaveApprovalsChannel = None
 
     @staticmethod
-    async def GetLeaveRequestsChannel(client):
-        if(LeaveChannels.LeaveRequestsChannel == None):
-            LeaveChannels.LeaveRequestsChannel = await client.fetch_channel(int(os.getenv("TestChannel_id")))
+    async def GetLeaveApprovalsChannel(client):
+        if(LeaveChannels.LeaveApprovalsChannel == None):
+            LeaveChannels.LeaveApprovalsChannel = await client.fetch_channel(int(os.getenv("TestChannel_id")))
 
-        return LeaveChannels.LeaveRequestsChannel
+        return LeaveChannels.LeaveApprovalsChannel
