@@ -4,6 +4,7 @@ import os
 from collections import defaultdict
 from datetime import date, timedelta, datetime
 from discord_slash.utils.manage_commands import create_option, create_choice
+from Member import member_interface as mi
 
 def CreateLeaveEmbed(ctx, startdate, enddate, leaveType):
     leaveTypes = {
@@ -61,6 +62,13 @@ def CreateDateChoices():
     
     return dateChoices
 
+def CreatePositionChoices():
+    positionChoices = []
+    for position in mi.GetPositions():
+        positionChoices.append(create_choice(name = position.name, value = position.id))
+
+    return positionChoices
+
 def CreateDateOptions():
     requestLeave_options = [
         create_option(
@@ -87,6 +95,49 @@ def CreateDateOptions():
     ]
 
     return requestLeave_options
+
+def CreateMemberOptions():
+    member_options = [
+        create_option(
+            name = "discorduser",
+            description = "discord user",
+            option_type = 6,
+            required = True
+        ),
+        create_option(
+            name = "name",
+            description = "name",
+            option_type = 3,
+            required = True
+        ),
+        create_option(
+            name = "email",
+            description = "email",
+            option_type = 3,
+            required = True
+        ),
+        create_option(
+            name = "startdate",
+            description = "working start date format: m/d/y",
+            option_type = 3,
+            required = True
+        ),
+        create_option(
+            name = "leavedate",
+            description = "working leave date format: m/d/y",
+            option_type = 3,
+            required = True
+        ),
+        create_option(
+            name = "position",
+            description = "member position",
+            option_type = 4,
+            required = True,
+            choices = CreatePositionChoices()
+        ),
+    ]
+
+    return member_options
 
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
