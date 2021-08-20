@@ -1,14 +1,17 @@
+import leave_utils as lu
 import Utilities
 import os
 import UI
 
 from Channels import Channels
-from datetime import date, timedelta, datetime
+from datetime import datetime
+from leave_db import leave
+from leave_type_db import LeaveType
 
 async def RequestLeave(ctx, client, leavetype, startdate, enddate):
     current_time = datetime.now().hour
-    if ValidateDates(startdate, enddate):
-        if CheckAvailableBalance(startdate, enddate, leavetype):
+    if lu.ValidateDates(startdate, enddate):
+        if lu.CheckAvailableBalance(startdate, enddate, leavetype):
             if current_time >= 12:
                 await WarnRequester(ctx, client, startdate, enddate)
             else:
@@ -47,48 +50,14 @@ async def HandleLeaveReactions(client, payload):
     message = await channel.fetch_message(payload.message_id)
     embed = message.embeds[0]
 
-    if Utilities.isNotBot(payload.member) and isLeaveRequest(embed) and isPending(embed):
+    if Utilities.isNotBot(payload.member) and lu.isLeaveRequest(embed) and lu.isPending(embed):
         status = UI.ParseEmoji(payload.emoji)
         if status != "":
             await UI.UpdateEmbedLeaveStatus(message, embed, status)
             await payload.member.send(content = "Your request was " + status)
 
-def isLeaveRequest(embed):
-    leave_embed_title = "Leave Request"
+def GetLeaveTypes():
+    return LeaveType.GetLeaveTypes()
 
-    return leave_embed_title.lower() in embed.title.lower()
-
-def CheckAvailableBalance(startdate: str, enddate: str, leavetype):
-    requestedDays = GetRequestedDays(startdate, enddate)
-
-    returnValues = {
-        1: int(os.getenv("Abdo_Annual_Leaves")) - requestedDays,
-        2: int(os.getenv("Abdo_Emergency_Leaves")) - requestedDays,
-        3: int(os.getenv("Abdo_Sick_Leaves")) - requestedDays
-    }
-
-    return returnValues[leavetype] >= 0
-
-def GetRequestedDays(startdate: str, enddate: str):
-    sDate = datetime.strptime(startdate, '%m/%d/%Y')
-    eDate = datetime.strptime(enddate, '%m/%d/%Y')
-
-    total_days = []
-
-    for i in range((eDate - sDate).days + 1):
-        day = sDate + timedelta(days=i)
-        if day.weekday() != 4 and day.weekday() != 5:
-            total_days.append(day) 
-
-    return len(total_days)
-
-def ValidateDates(startdate: str, enddate: str):
-    sDate = datetime.strptime(startdate, '%m/%d/%Y')
-    eDate = datetime.strptime(enddate, '%m/%d/%Y')
-
-    return eDate >= sDate
-
-def isPending(embed):
-    leave_status = next((f for f in embed.fields if f.name.lower() == "status"), None).value
-
-    return leave_status.lower() == "pending"
+def GetLeaveBalance(member_id, leave_type):
+    return leave.GetLeaveBalance(member_id, leave_type)
