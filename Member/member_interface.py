@@ -1,4 +1,5 @@
 from member_db import member
+from position_db import position
 from datetime import datetime
 
 def InsertMember(id, name, email, start_date, leave_date, position):
@@ -9,3 +10,6 @@ def GetMemberByID(id):
 
 def GetMembers():
     return member.GetMemebers()
+
+def GetPositions():
+    return position.GetPositions()
