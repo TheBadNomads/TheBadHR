@@ -2,9 +2,11 @@ import discord
 import os
 
 from collections import defaultdict
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 from discord_slash.utils.manage_commands import create_option, create_choice
+from db import db
 from Member import member_interface as mi
+from Leave import leave_interface as li
 
 def CreateLeaveEmbed(ctx, startdate, enddate, leaveType):
     leaveTypes = {
@@ -37,7 +39,7 @@ def CreateLeaveEmbed(ctx, startdate, enddate, leaveType):
 def CreateWarningEmbed():
     embed = discord.Embed(
         title = "Warning !!!!!", 
-        description = GetCaption(8), 
+        description = db.GetCaption(8), 
         colour = 0xFF0000
     )
 
@@ -45,11 +47,17 @@ def CreateWarningEmbed():
 
 def CreateLeaveTypeChoices():
     leaveTypeChoices = []
-    leaveTypeChoices.append(create_choice(name = "Annual", value = 1))
-    leaveTypeChoices.append(create_choice(name = "Emergency", value = 2))
-    leaveTypeChoices.append(create_choice(name = "Sick", value = 3))
+    for leaveType in li.GetLeaveTypes():
+        leaveTypeChoices.append(create_choice(name = leaveType.name, value = leaveType.id))
 
     return leaveTypeChoices
+
+def CreatePositionChoices():
+    positionChoices = []
+    for position in mi.GetPositions():
+        positionChoices.append(create_choice(name = position.name, value = position.id))
+
+    return positionChoices
 
 def CreateDateChoices():
     firstDate = date.today() + timedelta(1)
@@ -61,13 +69,6 @@ def CreateDateChoices():
         dateChoices.append(create_choice(name = weekDay +": "+ tmpDate.strftime('%m/%d/%Y'), value = tmpDate.strftime('%m/%d/%Y')))
     
     return dateChoices
-
-def CreatePositionChoices():
-    positionChoices = []
-    for position in mi.GetPositions():
-        positionChoices.append(create_choice(name = position.name, value = position.id))
-
-    return positionChoices
 
 def CreateDateOptions():
     requestLeave_options = [
@@ -91,6 +92,12 @@ def CreateDateOptions():
             option_type = 3,
             required = True,
             choices = CreateDateChoices()
+        ),
+        create_option(
+            name = "reason",
+            description = "reason for the leave (optional)",
+            option_type = 3,
+            required = False
         )
     ]
 
@@ -139,6 +146,19 @@ def CreateMemberOptions():
 
     return member_options
 
+def CreateBalanceOptions():
+    balance_options = [
+        create_option(
+            name = "leavetype",
+            description = "leave type",
+            option_type = 4,
+            required = True,
+            choices = CreateLeaveTypeChoices()
+        )
+    ]
+
+    return balance_options
+
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
 
@@ -159,22 +179,3 @@ def ParseEmoji(emoji):
     reaction_emojis = defaultdict("", **reaction_emojis)
 
     return reaction_emojis[emoji_str]
-
-# to be changed to get captions from DB 
-def GetCaption(captionCode):
-    switcher = {
-        1: "Your leave request has been sent",
-        2: "You dont have enough leaves to request, your current balance is ",
-        3: "Please select valid dates",
-        4: "Your Request has failed, try again later",
-        5: "Your annual leave request was approved",
-        6: "Your annual leave request was rejected",
-        7: "Your request is being processed",
-        8: "It is past core hours your leave request with be considered as an emergency leave",
-        9: "Your emergency leave request was approved",
-        10: "Your emergency leave request was rejected",
-        11: "Your sick leave request was approved",
-        12: "Your sick leave request was rejected",
-    }
-
-    return switcher.get(captionCode, lambda: "Invalid caption code")
