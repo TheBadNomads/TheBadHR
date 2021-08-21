@@ -1,9 +1,9 @@
 import pyodbc 
 import os
 
-load_dotenv()
-
 from dotenv import load_dotenv
+
+load_dotenv()
 
 class db:
 
@@ -13,14 +13,14 @@ class db:
     @staticmethod
     def GetDBConnection():
         if(db.conn == None):
-            conn = pyodbc.connect(os.getenv("Connection_String"))
+            db.conn = pyodbc.connect(os.getenv("Connection_String"))
 
-        return conn
+        return db.conn
 
     @staticmethod
     def GetDBCursor():
         if(db.cursor == None):
-            cursor = db.GetDBConnection().cursor()
+            db.cursor = db.GetDBConnection().cursor()
 
-        return cursor
+        return db.cursor
 

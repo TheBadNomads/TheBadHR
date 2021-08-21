@@ -1,5 +1,8 @@
-from member_db import member
-from position_db import position
+import sys
+sys.path.append(".")
+
+from .member_db import member
+from .position_db import position
 from datetime import datetime
 
 def InsertMember(id, name, email, start_date, leave_date, position):
