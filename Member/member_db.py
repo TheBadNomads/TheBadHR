@@ -1,5 +1,6 @@
 from db import db
 from datetime import datetime
+from Leave import leave_interface as li
 
 class member:
     def __init__(self, attrs):
@@ -33,7 +34,7 @@ class member:
                 (id, name, email, start_date, leave_date, position)
             )    
             db.GetDBConnection().commit()
-            # TODO: Insert Leave balance on success
+            li.InsertLeaveBalance(id, start_date)
 
         except Exception as e:
             db.GetDBConnection().rollback()

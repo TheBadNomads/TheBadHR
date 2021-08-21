@@ -69,3 +69,6 @@ def GetLeaveTypes():
 
 def GetLeaveBalance(member_id, leave_type):
     return leave.GetLeaveBalance(member_id, leave_type)
+
+def InsertLeaveBalance(member_id:int, start_date:datetime):
+    return leave.InsertLeaveBalance(member_id, start_date)

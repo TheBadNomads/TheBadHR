@@ -30,7 +30,8 @@ def CalculateLeaveTypeBalance(leave_type, start_date):
     leave_types = {
         1: CalculateAnnual(start_date),
         2: 5,
-        3: 365
+        3: 365,
+        4: 365
     }
 
     return leave_types[leave_type]
