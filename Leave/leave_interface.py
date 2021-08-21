@@ -56,7 +56,7 @@ async def CompleteRequest(ctx, client, startdate, enddate, leaveType, reason):
         leave.InsertLeave(member.id, message.id, leaveType, "pending", day, reason, "")
 
 async def HandleLeaveReactions(client, payload):
-    channel = await client.fetch_channel(payload.channel_id)
+    channel = client.get_channel(payload.channel_id)
     message = await channel.fetch_message(payload.message_id)
     embed = message.embeds[0]
 
