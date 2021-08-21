@@ -14,9 +14,9 @@ async def RequestLeave(ctx, client, leavetype, startdate, enddate, reason):
     if lu.ValidateDates(startdate, enddate):
         if lu.CheckAvailableBalance(startdate, enddate, leavetype):
             if current_time >= 12:
-                await WarnRequester(ctx, client, startdate, enddate)
+                await WarnRequester(ctx, client, startdate, enddate, reason)
             else:
-                await CompleteRequest(ctx, client, startdate, enddate, leavetype)
+                await CompleteRequest(ctx, client, startdate, enddate, leavetype, reason)
 
         else:
             await ctx.send(content = UI.GetCaption(2) + str(int(os.getenv("Abdo_Annual_Leaves"))))
