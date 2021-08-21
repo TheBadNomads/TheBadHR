@@ -49,7 +49,7 @@ async def CompleteRequest(ctx, client, startdate, enddate, leaveType, reason):
     await message.add_reaction(os.getenv("Approve_Emoji"))
     await message.add_reaction(os.getenv("Reject_Emoji"))
 
-    member = mi.GetMemeberByID(ctx.author.id)
+    member = mi.GetMemberByID(ctx.author.id)
     requested_days = GetRequestedDays(startdate, enddate)
 
     for day in requested_days:
