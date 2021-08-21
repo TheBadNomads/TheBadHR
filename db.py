@@ -2,6 +2,9 @@ import pyodbc
 import os
 
 from dotenv import load_dotenv
+from collections import defaultdict
+
+load_dotenv()
 
 load_dotenv()
 
