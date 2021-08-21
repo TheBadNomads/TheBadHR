@@ -1,8 +1,9 @@
-import leave_utils as lu
+import sys
+sys.path.append(".")
 
 from db import db
 from datetime import datetime
-from leave_type_db import LeaveType
+from .leave_type_db import LeaveType
 
 class leave:
     def __init__(self, attrs):
@@ -65,7 +66,7 @@ class leave:
                 try:
                     db.GetDBCursor().execute(
                         "INSERT INTO [leavesBalance] (member_id, leave_type, balance) VALUES (?, ?, ?)",
-                        (member_id, leaveType.id, lu.CalculateLeaveTypeBalance(leaveType.id, start_date))
+                        (member_id, leaveType.id, CalculateLeaveTypeBalance(leaveType.id, start_date))
                     )
                 except Exception as e:
                     print(e)
@@ -103,3 +104,21 @@ class leave:
             success = False
 
         return success
+
+def CalculateLeaveTypeBalance(leave_type, start_date):
+    # can be changed later to be retrived from DB
+    leave_types = {
+        1: CalculateAnnual(start_date),
+        2: 5,
+        3: 365,
+        4: 365
+    }
+
+    return leave_types[leave_type]
+
+def CalculateAnnual(start_date):
+    start_month = int(start_date.strftime("%m"))
+    leaves_months_count = (12 - start_month) + 1
+    leave_balance_per_month = 21/12
+
+    return leaves_months_count * leave_balance_per_month

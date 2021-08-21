@@ -1,18 +1,20 @@
-import leave_utils as lu
 import Utilities
 import os
 import UI
+import sys
+sys.path.append(".")
 
 from Channels import Channels
 from datetime import datetime
-from leave_db import leave
-from leave_type_db import LeaveType
+from .leave_db import leave
+from .leave_type_db import LeaveType
+from .leave_utils import *
 from Member import member_interface as mi
 
 async def RequestLeave(ctx, client, leavetype, startdate, enddate, reason):
     current_time = datetime.now().hour
-    if lu.ValidateDates(startdate, enddate):
-        if lu.CheckAvailableBalance(startdate, enddate, leavetype):
+    if ValidateDates(startdate, enddate):
+        if CheckAvailableBalance(startdate, enddate, leavetype):
             if current_time >= 12:
                 await WarnRequester(ctx, client, startdate, enddate, reason)
             else:
@@ -47,7 +49,7 @@ async def CompleteRequest(ctx, client, startdate, enddate, leaveType, reason):
     await message.add_reaction(os.getenv("Reject_Emoji"))
 
     member = mi.GetMemeberByID(ctx.author.id)
-    requested_days = lu.GetRequestedDays(startdate, enddate)
+    requested_days = GetRequestedDays(startdate, enddate)
 
     for day in requested_days:
         leave.InsertLeave(member.id, message.id, leaveType, "pending", day, reason, "")
@@ -57,7 +59,7 @@ async def HandleLeaveReactions(client, payload):
     message = await channel.fetch_message(payload.message_id)
     embed = message.embeds[0]
 
-    if Utilities.isNotBot(payload.member) and lu.isLeaveRequest(payload.message_id) and lu.isPending(payload.message_id):
+    if Utilities.isNotBot(payload.member) and isLeaveRequest(payload.message_id) and isPending(payload.message_id):
         status = UI.ParseEmoji(payload.emoji)
         if status != "":
             leave.UpdateLeaveStatus(payload.message_id, status)

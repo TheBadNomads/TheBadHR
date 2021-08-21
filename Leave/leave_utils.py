@@ -1,7 +1,9 @@
 import os
+import sys
+sys.path.append(".")
 
 from datetime import timedelta, datetime
-from leave_db import leave
+from .leave_db import leave
 
 def CheckAvailableBalance(member, startdate: str, enddate: str, leavetype):
     requested_days_count = len(GetRequestedDays(startdate, enddate))
@@ -24,24 +26,6 @@ def ValidateDates(startdate: str, enddate: str):
     eDate = datetime.strptime(enddate, '%m/%d/%Y')
 
     return eDate >= sDate
-
-def CalculateLeaveTypeBalance(leave_type, start_date):
-    # can be changed later to be retrived from DB
-    leave_types = {
-        1: CalculateAnnual(start_date),
-        2: 5,
-        3: 365,
-        4: 365
-    }
-
-    return leave_types[leave_type]
-
-def CalculateAnnual(start_date):
-    start_month = int(start_date.strftime("%m"))
-    leaves_months_count = (12 - start_month) + 1
-    leave_balance_per_month = 21/12
-
-    return leaves_months_count * leave_balance_per_month
 
 def isLeaveRequest(message_id):
     return len(leave.GetLeaveByRequestID(message_id)) != 0
