@@ -6,8 +6,6 @@ from collections import defaultdict
 
 load_dotenv()
 
-load_dotenv()
-
 class db:
 
     conn = None
