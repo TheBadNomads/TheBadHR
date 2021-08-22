@@ -2,6 +2,7 @@ import discord
 import os
 import Leaves
 import UI
+import db
 
 from dotenv import load_dotenv
 from discord.ext import commands
