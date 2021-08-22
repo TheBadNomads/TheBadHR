@@ -1,8 +1,3 @@
-CREATE TABLE positions (
-    id int NOT NULL IDENTITY(1,1) PRIMARY KEY,
-    [name] varchar(255) NOT NULL
-);
-
 CREATE TABLE leaveTypes (
     id int NOT NULL IDENTITY(1,1) PRIMARY KEY,
     [name] varchar(255) NOT NULL
@@ -13,8 +8,7 @@ CREATE TABLE members (
     [name] varchar(255) NOT NULL,
     [email] varchar(255) NOT NULL,
     [start_date] datetime,
-    [leave_date] datetime,
-    [position] int NOT NULL FOREIGN KEY REFERENCES positions(id)
+    [leave_date] datetime
 );
 
 CREATE TABLE leaves (
@@ -39,8 +33,3 @@ INSERT INTO leaveTypes (name) VALUES ('Annual');
 INSERT INTO leaveTypes VALUES ('Emergency');
 INSERT INTO leaveTypes VALUES ('Sick');
 INSERT INTO leaveTypes VALUES ('Unpaid');
-
-INSERT INTO positions VALUES ('CEO');
-INSERT INTO positions VALUES ('CTO');
-INSERT INTO positions VALUES ('Developer');
-INSERT INTO positions VALUES ('Intern');
