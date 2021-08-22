@@ -2,6 +2,10 @@ CREATE TABLE leaveTypes (
     [name] varchar(255) NOT NULL PRIMARY KEY
 );
 
+CREATE TABLE leaveStatus (
+    [name] varchar(255) NOT NULL PRIMARY KEY
+);
+
 CREATE TABLE members (
     id bigint NOT NULL PRIMARY KEY,
     [name] varchar(255) NOT NULL,
@@ -15,7 +19,7 @@ CREATE TABLE leaves (
     [member_id] bigint NOT NULL FOREIGN KEY REFERENCES members(id),
     [request_id] bigint NOT NULL,
     [leave_type] varchar(255) NOT NULL FOREIGN KEY REFERENCES leaveTypes(name),
-    [leave_status] varchar(50) NOT NULL,
+    [leave_status] varchar(255) NOT NULL FOREIGN KEY REFERENCES leaveStatus(name),
     [date] datetime NOT NULL,
     [reason] varchar(255),
     [remark] varchar(255)
