@@ -13,14 +13,14 @@ class db:
     @staticmethod
     async def GetDBConnection():
         if(db.conn == None):
-            conn = pyodbc.connect(os.getenv("Connection_String"))
+            db.conn = pyodbc.connect(os.getenv("Connection_String"))
 
-        return conn
+        return db.conn
 
     @staticmethod
     async def GetDBCursor():
         if(db.cursor == None):
-            cursor = db.GetDBConnection().cursor()
+            db.cursor = db.GetDBConnection().cursor()
 
-        return cursor
+        return db.cursor
 
