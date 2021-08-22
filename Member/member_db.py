@@ -8,7 +8,6 @@ class member:
         self.email = attrs[2]
         self.start_date = attrs[3]
         self.leave_date = attrs[4]
-        self.position = attrs[5]
 
     def GetMemeberByID(id):
         db.GetDBCursor().execute(f'SELECT * FROM [members] WHERE id = {id}')
@@ -25,12 +24,12 @@ class member:
         
         return members
     
-    def InsertMember(id:int, name:str, email:str, start_date:datetime, leave_date:datetime, position:int):
+    def InsertMember(id:int, name:str, email:str, start_date:datetime, leave_date:datetime):
         success = True
         try:
             db.GetDBCursor().execute(
-                "INSERT INTO [members] (id, name, email, start_date, leave_date, position) VALUES (?, ?, ?, ?, ?, ?)",
-                (id, name, email, start_date, leave_date, position)
+                "INSERT INTO [members] (id, name, email, start_date, leave_date) VALUES (?, ?, ?, ?, ?)",
+                (id, name, email, start_date, leave_date)
             )    
             db.GetDBConnection().commit()
             # TODO: Insert Leave balance on success

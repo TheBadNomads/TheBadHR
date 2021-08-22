@@ -62,13 +62,6 @@ def CreateDateChoices():
     
     return dateChoices
 
-def CreatePositionChoices():
-    positionChoices = []
-    for position in mi.GetPositions():
-        positionChoices.append(create_choice(name = position.name, value = position.id))
-
-    return positionChoices
-
 def CreateDateOptions():
     requestLeave_options = [
         create_option(
@@ -127,14 +120,7 @@ def CreateMemberOptions():
             description = "working leave date format: m/d/y",
             option_type = 3,
             required = True
-        ),
-        create_option(
-            name = "position",
-            description = "member position",
-            option_type = 4,
-            required = True,
-            choices = CreatePositionChoices()
-        ),
+        )
     ]
 
     return member_options
