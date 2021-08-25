@@ -5,7 +5,6 @@ from collections import defaultdict
 from datetime import date, timedelta, datetime
 from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option, create_choice
-from Member import member_interface as mi
 
 def CreateLeaveEmbed(ctx, startdate, enddate, leaveType):
     leaveTypes = {
