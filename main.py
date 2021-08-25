@@ -33,7 +33,7 @@ async def RequestLeave(ctx, leavetype, startdate, enddate):
 @slash.slash(name = "InsertMember", description = "Insert new member into the database", options = UI.CreateMemberOptions(), guild_ids = guild_ids)
 async def InsertMember(ctx, discorduser, name, email, startdate, leavedate):
     result = mi.InsertMember(discorduser.id, name, email, startdate, leavedate)
-    await ctx.send(content = "Success" if result else "Failed")
+    await ctx.send(content = result)
    
 
 client.run(os.getenv("Bot_token"))
