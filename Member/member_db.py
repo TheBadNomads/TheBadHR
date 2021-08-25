@@ -1,17 +1,21 @@
+import json
+
 from db import db
 from datetime import datetime
 
 def GetMemberByID(id):
-        db.GetDBCursor().execute(f'SELECT * FROM [members] WHERE id = {id}')
-        row = db.GetDBCursor().fetchone()
-        
-        return row
+    db.GetDBCursor().execute(f'SELECT * FROM [members] WHERE id = {id}')
+    row = db.GetDBCursor().fetchone()
+    member = MemberJsonToDic(row)
+
+    return member
     
 def GetMembers():
     db.GetDBCursor().execute(f'SELECT * FROM [members]')
     rows = db.GetDBCursor().fetchall()
-    
-    return rows
+    members = map(MemberJsonToDic, rows)
+
+    return members
 
 def InsertMember(id:int, name:str, email:str, start_date:datetime):
     try:
@@ -28,3 +32,6 @@ def InsertMember(id:int, name:str, email:str, start_date:datetime):
         db.GetDBConnection().rollback()
 
         return "failed"
+
+def MemberJsonToDic(json_string):
+    return json.loads(json_string)
