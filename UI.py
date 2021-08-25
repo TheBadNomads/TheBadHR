@@ -115,12 +115,6 @@ def CreateMemberOptions():
             description = "working start date format: m/d/y",
             option_type = SlashCommandOptionType.STRING,
             required = True
-        ),
-        create_option(
-            name = "leavedate",
-            description = "working leave date format: m/d/y",
-            option_type = SlashCommandOptionType.STRING,
-            required = True
         )
     ]
 
