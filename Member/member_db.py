@@ -8,13 +8,13 @@ class member:
         self.email = attrs[2]
         self.start_date = attrs[3]
 
-    def GetMemeberByID(id):
+    def GetMemberByID(id):
         db.GetDBCursor().execute(f'SELECT * FROM [members] WHERE id = {id}')
         row = db.GetDBCursor().fetchone()
         
         return member(row)
     
-    def GetMemebers():
+    def GetMembers():
         db.GetDBCursor().execute(f'SELECT * FROM [members]')
         rows = db.GetDBCursor().fetchall()
         members = []
