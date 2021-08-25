@@ -25,7 +25,6 @@ class member:
         return members
     
     def InsertMember(id:int, name:str, email:str, start_date:datetime, leave_date:datetime):
-        success = True
         try:
             db.GetDBCursor().execute(
                 "INSERT INTO [members] (id, name, email, start_date, leave_date) VALUES (?, ?, ?, ?, ?)",
@@ -33,9 +32,10 @@ class member:
             )    
             db.GetDBConnection().commit()
             # TODO: Insert Leave balance on success
+            
+            return "Success"
 
         except Exception as e:
             db.GetDBConnection().rollback()
-            success = False
-        
-        return success
+
+            return "failed"
