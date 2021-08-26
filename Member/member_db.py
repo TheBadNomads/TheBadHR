@@ -1,4 +1,4 @@
-import json
+import member_utils as utils
 
 from db import db
 from datetime import datetime
@@ -6,14 +6,14 @@ from datetime import datetime
 def GetMemberByID(id):
     db.GetDBCursor().execute(f'SELECT * FROM [members] WHERE id = {id}')
     row = db.GetDBCursor().fetchone()
-    member = MemberJsonToDic(row)
+    member = utils.MemberJsonToDic(row)
 
     return member
     
 def GetMembers():
     db.GetDBCursor().execute(f'SELECT * FROM [members]')
     rows = db.GetDBCursor().fetchall()
-    members = map(MemberJsonToDic, rows)
+    members = map(utils.MemberJsonToDic, rows)
 
     return members
 
@@ -32,6 +32,3 @@ def InsertMember(id:int, name:str, email:str, start_date:datetime):
         db.GetDBConnection().rollback()
 
         return "failed"
-
-def MemberJsonToDic(json_string):
-    return json.loads(json_string)
