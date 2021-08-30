@@ -1,4 +1,4 @@
-import member_utils as utils
+import Utilities as utils
 
 from db import db
 from datetime import datetime
@@ -6,14 +6,14 @@ from datetime import datetime
 def GetMemberByID(id):
     db.GetDBCursor().execute(f'SELECT * FROM [members] WHERE id = {id}')
     row = db.GetDBCursor().fetchone()
-    member = utils.MemberJsonToDic(row)
+    member = utils.ConvertJsonToDic(row)
 
     return member
     
 def GetMembers():
     db.GetDBCursor().execute(f'SELECT * FROM [members]')
     rows = db.GetDBCursor().fetchall()
-    members = map(utils.MemberJsonToDic, rows)
+    members = map(utils.ConvertJsonToDic, rows)
 
     return members
 
