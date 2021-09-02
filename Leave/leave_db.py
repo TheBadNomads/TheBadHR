@@ -28,6 +28,13 @@ def GetLeaveBalance(member_id, leave_type):
 
     return float(leaves_balance["balance"])
 
+def GetLeaveTypes():
+    db.GetDBCursor().execute('SELECT * FROM [leaveTypes]')
+    rows = db.GetDBCursor().fetchall()
+    leaves_types = map(utils.ConvertJsonToDic, rows)
+
+    return leaves_types
+
 def InsertLeave(member_id:int, request_id:int, leave_type:int, date:datetime, reason:str, remark:str, leave_status:str):
     try:
         db.GetDBCursor().execute(
@@ -47,7 +54,7 @@ def InsertLeaveBalance(member_id:int, start_date:datetime):
             try:
                 db.GetDBCursor().execute(
                     "INSERT INTO [leavesBalance] (member_id, leave_type, balance) VALUES (?, ?, ?)",
-                    (member_id, leaveType["id"], utils.CalculateLeaveTypeBalance(leaveType["id"], start_date))
+                    (member_id, leaveType["name"], utils.CalculateLeaveTypeBalance(leaveType["name"], start_date))
                 )
             except Exception as e:
                 print(e)
