@@ -2,6 +2,7 @@ import Utilities as utils
 
 from db import db
 from datetime import datetime
+from Leave import leave_db
 
 def GetMemberByID(id):
     db.GetDBCursor().execute(f'SELECT * FROM [members] WHERE id = {id}')
@@ -22,11 +23,9 @@ def InsertMember(id:int, name:str, email:str, start_date:datetime):
             (id, name, email, datetime.strptime(start_date, '%d/%m/%Y'))
         )    
         db.GetDBConnection().commit()
-        # TODO: Insert Leave balance on success
-
+        leave_db.InsertLeaveBalance(id, start_date)
         return "Success"
 
     except Exception as e:
         db.GetDBConnection().rollback()
-
         return "failed"
