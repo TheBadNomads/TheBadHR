@@ -22,8 +22,8 @@ def InsertMember(id:int, name:str, email:str, start_date:datetime):
             "INSERT INTO [members] (id, name, email, start_date) VALUES (?, ?, ?, ?)",
             (id, name, email, datetime.strptime(start_date, '%d/%m/%Y'))
         )    
-        db.GetDBConnection().commit()
         leave_db.InsertLeaveBalance(id, start_date)
+        db.GetDBConnection().commit()
         return "Success"
 
     except Exception as e:
