@@ -17,8 +17,7 @@ def GetLeavesByRequestID(request_id):
 
 def GetLeaveStatus(request_id):
     db.GetDBCursor().execute(f'SELECT leave_status FROM [leaves] WHERE request_id = {request_id}')
-    row = db.GetDBCursor().fetchone()
-    leave = utils.ConvertJsonToDic(row)
+    leave = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchone()]
 
     return leave["leave_status"]
 
