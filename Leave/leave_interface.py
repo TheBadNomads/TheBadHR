@@ -1,8 +1,6 @@
 import Utilities as utils
 import os
 import UI
-import sys
-sys.path.append(".")
 
 from Channels import Channels
 from datetime import datetime
@@ -64,12 +62,3 @@ async def HandleLeaveReactions(client, payload):
             leave_db.UpdateLeaveStatus(payload.message_id, status)
             await UI.UpdateEmbedLeaveStatus(message, embed, status)
             await payload.member.send(content = "Your request was " + status)
-
-def GetLeaveTypes():
-    return leave_db.GetLeaveTypes()
-
-def GetLeaveBalance(member_id, leave_type):
-    return leave_db.GetLeaveBalance(member_id, leave_type)
-
-def InsertLeaveBalance(member_id:int, start_date:datetime):
-    return leave_db.InsertLeaveBalance(member_id, start_date)

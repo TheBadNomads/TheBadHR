@@ -67,6 +67,7 @@ def InsertLeaveBalance(member_id:int, start_date:datetime):
         db.GetDBConnection().rollback()
         return "Failed"
 
+
 def UpdateLeaveStatus(request_id, leave_status):
     try:
         db.GetDBCursor().execute("UPDATE [leaves] SET leave_status = ? WHERE request_id = ?", leave_status, request_id)
