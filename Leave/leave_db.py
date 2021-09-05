@@ -5,15 +5,13 @@ from datetime import datetime
 
 def GetLeaveByID(id):
     db.GetDBCursor().execute(f'SELECT * FROM [leaves] WHERE id = {id}')
-    row = db.GetDBCursor().fetchone()
-    leave = utils.ConvertJsonToDic(row)
+    leave = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchone()]
 
     return leave
 
 def GetLeaveByRequestID(request_id):
     db.GetDBCursor().execute(f'SELECT * FROM [leaves] WHERE request_id = {request_id}')
-    rows = db.GetDBCursor().fetchall()
-    leaves = map(utils.ConvertJsonToDic, rows)
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
 
     return leaves
 
