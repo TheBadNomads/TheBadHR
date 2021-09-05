@@ -57,7 +57,7 @@ def InsertLeaveBalance(member_id:int, start_date:datetime):
                     (member_id, name, balance)
                 )
             except Exception as e:
-                print(e)
+                db.GetDBConnection().rollback()
                 return "Failed"
 
         db.GetDBConnection().commit()
