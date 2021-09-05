@@ -5,15 +5,13 @@ from datetime import datetime
 
 def GetMemberByID(id):
     db.GetDBCursor().execute(f'SELECT * FROM [members] WHERE id = {id}')
-    row = db.GetDBCursor().fetchone()
-    member = utils.ConvertJsonToDic(row)
+    member = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchone()]
 
     return member
     
 def GetMembers():
     db.GetDBCursor().execute(f'SELECT * FROM [members]')
-    rows = db.GetDBCursor().fetchall()
-    members = map(utils.ConvertJsonToDic, rows)
+    members = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
 
     return members
 
