@@ -5,7 +5,7 @@ from datetime import datetime
 
 def GetMemberByID(id):
     db.GetDBCursor().execute(f'SELECT * FROM [members] WHERE id = {id}')
-    member = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchone()]
+    member = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
 
     return member
     
