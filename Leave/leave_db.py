@@ -23,7 +23,7 @@ def GetLeaveStatus(request_id):
 
 def GetLeaveBalance(member_id, leave_type):
     db.GetDBCursor().execute(f'SELECT balance FROM [leavesBalance] WHERE member_id = {member_id} AND leave_type = {leave_type}')
-    leaves_balance = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchone()]
+    leaves_balance = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
 
     return float(leaves_balance["balance"])
 
