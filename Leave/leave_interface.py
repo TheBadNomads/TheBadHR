@@ -8,17 +8,17 @@ from db import db
 from Leave import leave_db
 from Member import member_db
 
-async def RequestLeave(ctx, client, leavetype, startdate, enddate, reason):
+async def RequestLeave(ctx, member, client, leavetype, startdate, enddate, reason):
     current_time = datetime.now().hour
     if utils.ValidateDates(startdate, enddate):
-        if utils.CheckAvailableBalance(ctx.author, startdate, enddate, leavetype):
+        if utils.CheckAvailableBalance(member, startdate, enddate, leavetype):
             if current_time >= 12:
                 await WarnRequester(ctx, client, startdate, enddate, reason)
             else:
                 await CompleteRequest(ctx, client, startdate, enddate, leavetype, reason)
 
         else:
-            await ctx.send(content = db.GetCaption(2) + leave_db.GetLeaveBalance(ctx.author.id, leavetype))
+            await ctx.send(content = db.GetCaption(2) + leave_db.GetLeaveBalance(member.id, leavetype))
 
     else:
         await ctx.send(content = db.GetCaption(3))
