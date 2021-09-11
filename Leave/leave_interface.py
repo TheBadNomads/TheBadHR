@@ -11,7 +11,7 @@ from Member import member_db
 async def RequestLeave(ctx, client, leavetype, startdate, enddate, reason):
     current_time = datetime.now().hour
     if utils.ValidateDates(startdate, enddate):
-        if utils.CheckAvailableBalance(startdate, enddate, leavetype):
+        if utils.CheckAvailableBalance(ctx.author, startdate, enddate, leavetype):
             if current_time >= 12:
                 await WarnRequester(ctx, client, startdate, enddate, reason)
             else:
@@ -49,7 +49,7 @@ async def CompleteRequest(ctx, client, startdate, enddate, leaveType, reason):
     requested_days = utils.GetRequestedDays(startdate, enddate)
 
     for day in requested_days:
-        leave_db.InsertLeave(member.id, message.id, leaveType, "pending", day, reason, "")
+        leave_db.InsertLeave(member["id"], message.id, leaveType, "pending", day, reason, "")
 
 async def HandleLeaveReactions(client, payload):
     channel = client.get_channel(payload.channel_id)
