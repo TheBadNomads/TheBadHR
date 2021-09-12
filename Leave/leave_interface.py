@@ -20,13 +20,16 @@ async def RequestLeave(ctx, member, client, leavetype, startdate, enddate, reaso
 
 async def ProccessRequest(ctx, member, client, startdate, enddate, leavetype, reason):
     current_hour = datetime.now().hour
+    today = datetime.today().strftime('%d/%m/%Y')
+    start_date = startdate.strftime('%d/%m/%Y')
     role = discord.utils.find(lambda r: r.name == 'Admin', ctx.guild.roles)
 
-    # if role in ctx.author.roles:
-    #     CompleteRequest_DB(member, 0, startdate, enddate, leavetype, "Approved", reason)
-    #     return
+    if role in ctx.author.roles:
+        CompleteRequest_DB(member, 0, startdate, enddate, leavetype, "Approved", reason)
+        await ctx.send(content = "Success")
+        return
     
-    if current_hour > 12:
+    if current_hour > 12 or (today == start_date):
         if leavetype.lower() == "annual" or leavetype.lower() == "sick":
             await CompleteRequest(ctx, member, client, startdate, enddate, "Emergency", reason)
             return
