@@ -23,7 +23,7 @@ async def ProccessRequest(ctx, member, client, startdate, enddate, leavetype, re
     role = discord.utils.find(lambda r: r.name == 'Admin', ctx.message.guild.roles)
 
     if role in ctx.author.roles:
-        CompleteRequest_DB(member, ctx.message, startdate, enddate, leavetype, reason)
+        CompleteRequest_DB(member, ctx.message, startdate, enddate, leavetype, "Approved", reason)
         return
     
     if current_hour > 12:
@@ -40,14 +40,14 @@ async def CompleteRequest(ctx, member, client, startdate, enddate, leaveType, re
     message = await channel.send(embed = embed)
     await message.add_reaction(os.getenv("Approve_Emoji"))
     await message.add_reaction(os.getenv("Reject_Emoji"))
-    CompleteRequest_DB(member, message, startdate, enddate ,leaveType, reason)
+    CompleteRequest_DB(member, message, startdate, enddate, leaveType, "Pending", reason)
 
-def CompleteRequest_DB(member, message, startdate, enddate ,leaveType, reason):
+def CompleteRequest_DB(member, message, startdate, enddate, leaveType, leaveStatus, reason):
     requested_days = utils.GetRequestedDays(startdate, enddate)
 
     for day in requested_days:
-        leave_db.InsertLeave(member.id, message.id, leaveType, "pending", day, reason, "")
-        
+        leave_db.InsertLeave(member.id, message.id, leaveType, leaveStatus, day, reason, "")
+
 async def HandleLeaveReactions(client, payload):
     await HandleNormalRequest(client, payload)
 
