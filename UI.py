@@ -58,7 +58,7 @@ def CreateDateChoices():
     for i in range(25):
         tmpDate = firstDate + timedelta(i)
         weekDay = tmpDate.strftime("%A")
-        dateChoices.append(create_choice(name = weekDay +": "+ tmpDate.strftime('%m/%d/%Y'), value = tmpDate.strftime('%m/%d/%Y')))
+        dateChoices.append(create_choice(name = weekDay +": "+ tmpDate.strftime('%d/%m/%Y'), value = tmpDate.strftime('%d/%m/%Y')))
     
     return dateChoices
 
@@ -111,7 +111,7 @@ def CreateMemberOptions():
         ),
         create_option(
             name = "startdate",
-            description = "working start date format: m/d/y",
+            description = "working start date format: DD/MM/YYYY",
             option_type = SlashCommandOptionType.STRING,
             required = True
         )

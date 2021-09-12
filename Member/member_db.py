@@ -19,7 +19,7 @@ def InsertMember(id:int, name:str, email:str, start_date:datetime):
     try:
         db.GetDBCursor().execute(
             "INSERT INTO [members] (id, name, email, start_date) VALUES (?, ?, ?, ?)",
-            (id, name, email, datetime.strptime(start_date, '%m/%d/%Y'))
+            (id, name, email, datetime.strptime(start_date, '%d/%m/%Y'))
         )    
         db.GetDBConnection().commit()
         # TODO: Insert Leave balance on success
