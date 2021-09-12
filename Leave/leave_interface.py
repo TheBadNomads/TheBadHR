@@ -20,11 +20,11 @@ async def RequestLeave(ctx, member, client, leavetype, startdate, enddate, reaso
 
 async def ProccessRequest(ctx, member, client, startdate, enddate, leavetype, reason):
     current_hour = datetime.now().hour
-    role = discord.utils.find(lambda r: r.name == 'Admin', ctx.message.guild.roles)
+    role = discord.utils.find(lambda r: r.name == 'Admin', ctx.guild.roles)
 
-    if role in ctx.author.roles:
-        CompleteRequest_DB(member, ctx.message, startdate, enddate, leavetype, "Approved", reason)
-        return
+    # if role in ctx.author.roles:
+    #     CompleteRequest_DB(member, 0, startdate, enddate, leavetype, "Approved", reason)
+    #     return
     
     if current_hour > 12:
         if leavetype.lower() == "annual" or leavetype.lower() == "sick":
@@ -40,13 +40,13 @@ async def CompleteRequest(ctx, member, client, startdate, enddate, leaveType, re
     message = await channel.send(embed = embed)
     await message.add_reaction(os.getenv("Approve_Emoji"))
     await message.add_reaction(os.getenv("Reject_Emoji"))
-    CompleteRequest_DB(member, message, startdate, enddate, leaveType, "Pending", reason)
+    CompleteRequest_DB(member, message.id, startdate, enddate, leaveType, "Pending", reason)
 
-def CompleteRequest_DB(member, message, startdate, enddate, leaveType, leaveStatus, reason):
+def CompleteRequest_DB(member, message_id, startdate, enddate, leaveType, leaveStatus, reason):
     requested_days = utils.GetRequestedDays(startdate, enddate)
 
     for day in requested_days:
-        leave_db.InsertLeave(member.id, message.id, leaveType, leaveStatus, day, reason, "")
+        leave_db.InsertLeave(member.id, message_id, leaveType, leaveStatus, day, reason, "")
 
 async def HandleLeaveReactions(client, payload):
     await HandleNormalRequest(client, payload)
