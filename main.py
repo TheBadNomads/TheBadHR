@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from discord.ext import commands
 from discord_slash import SlashCommand
 from discord_components import DiscordComponents, Button, Select, SelectOption, message
+from Member import member_db 
 
 load_dotenv()
 
@@ -28,6 +29,11 @@ async def on_raw_reaction_add(payload):
 @slash.slash(name = "RequestLeave", description = "Request an annual leave", options = UI.CreateDateOptions(), guild_ids = guild_ids)
 async def RequestLeave(ctx, leavetype, startdate, enddate):
     await Leaves.RequestLeave(ctx, client, leavetype, startdate, enddate)
+
+@slash.slash(name = "InsertMember", description = "Insert new member into the database", options = UI.CreateMemberOptions(), guild_ids = guild_ids)
+async def InsertMember(ctx, discorduser, name, email, startdate):
+    result = member_db.InsertMember(discorduser.id, name, email, startdate)
+    await ctx.send(content = result)
    
 
 client.run(os.getenv("Bot_token"))

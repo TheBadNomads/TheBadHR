@@ -3,6 +3,7 @@ import os
 
 from collections import defaultdict
 from datetime import date, timedelta, datetime
+from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option, create_choice
 
 def CreateLeaveEmbed(ctx, startdate, enddate, leaveType):
@@ -57,7 +58,7 @@ def CreateDateChoices():
     for i in range(25):
         tmpDate = firstDate + timedelta(i)
         weekDay = tmpDate.strftime("%A")
-        dateChoices.append(create_choice(name = weekDay +": "+ tmpDate.strftime('%m/%d/%Y'), value = tmpDate.strftime('%m/%d/%Y')))
+        dateChoices.append(create_choice(name = weekDay +": "+ tmpDate.strftime('%d/%m/%Y'), value = tmpDate.strftime('%d/%m/%Y')))
     
     return dateChoices
 
@@ -66,27 +67,57 @@ def CreateDateOptions():
         create_option(
             name = "leavetype",
             description = "leave type",
-            option_type = 4,
+            option_type = SlashCommandOptionType.INTEGER,
             required = True,
             choices = CreateLeaveTypeChoices()
         ),
         create_option(
             name = "startdate",
             description = "starting date of your leave",
-            option_type = 3,
+            option_type = SlashCommandOptionType.STRING,
             required = True,
             choices = CreateDateChoices()
         ),
         create_option(
             name = "enddate",
             description = "Leave empty for 1 day leave",
-            option_type = 3,
+            option_type = SlashCommandOptionType.STRING,
             required = True,
             choices = CreateDateChoices()
         )
     ]
 
     return requestLeave_options
+
+def CreateMemberOptions():
+    member_options = [
+        create_option(
+            name = "discorduser",
+            description = "discord user",
+            option_type = SlashCommandOptionType.USER,
+            required = True
+        ),
+        create_option(
+            name = "name",
+            description = "name",
+            option_type = SlashCommandOptionType.STRING,
+            required = True
+        ),
+        create_option(
+            name = "email",
+            description = "email",
+            option_type = SlashCommandOptionType.STRING,
+            required = True
+        ),
+        create_option(
+            name = "startdate",
+            description = "working start date format: DD/MM/YYYY",
+            option_type = SlashCommandOptionType.STRING,
+            required = True
+        )
+    ]
+
+    return member_options
 
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
