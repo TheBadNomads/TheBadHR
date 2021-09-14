@@ -15,11 +15,11 @@ def GetLeaveByRequestID(request_id):
 
     return leaves
 
-def InsertLeave(member_id:int, request_id:int, leave_type:int, leave_status:str, date:datetime, reason:str, remark:str):
+def InsertLeave(member_id:int, request_id:int, leave_type:int, date:datetime, reason:str, remark:str, leave_status:str):
     try:
         db.GetDBCursor().execute(
-            "INSERT INTO [leaves] (member_id, request_id, leave_type, leave_status, date, reason, remark) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            (member_id, request_id, leave_type, leave_status, date, reason, remark)
+            "INSERT INTO [leaves] (member_id, request_id, leave_type, date, reason, remark, leave_status) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (member_id, request_id, leave_type, date, reason, remark, leave_status)
         )
         db.GetDBConnection().commit()
         return "Success"
