@@ -9,7 +9,7 @@ def GetLeaveByID(id):
 
     return leave
 
-def GetLeaveByRequestID(request_id):
+def GetLeavesByRequestID(request_id):
     db.GetDBCursor().execute(f'SELECT * FROM [leaves] WHERE request_id = {request_id}')
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
 
