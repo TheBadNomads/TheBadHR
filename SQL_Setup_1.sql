@@ -19,10 +19,10 @@ CREATE TABLE leaves (
     [member_id] bigint NOT NULL FOREIGN KEY REFERENCES members(id),
     [request_id] bigint NOT NULL,
     [leave_type] varchar(255) NOT NULL FOREIGN KEY REFERENCES leaveTypes(name),
-    [leave_status] varchar(255) NOT NULL FOREIGN KEY REFERENCES leaveStatus(name),
     [date] datetime NOT NULL,
     [reason] varchar(255),
-    [remark] varchar(255)
+    [remark] varchar(255),
+    [leave_status] varchar(255) NOT NULL FOREIGN KEY REFERENCES leaveStatus(name)
 );
 
 CREATE TABLE leavesBalance (
@@ -36,3 +36,7 @@ INSERT INTO leaveTypes (name) VALUES ('Annual');
 INSERT INTO leaveTypes (name) VALUES ('Emergency');
 INSERT INTO leaveTypes (name) VALUES ('Sick');
 INSERT INTO leaveTypes (name) VALUES ('Unpaid');
+
+INSERT INTO leaveStatus (name) VALUES ('Pending');
+INSERT INTO leaveStatus (name) VALUES ('Approved');
+INSERT INTO leaveStatus (name) VALUES ('Rejected');
