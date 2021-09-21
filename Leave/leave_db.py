@@ -53,7 +53,7 @@ def InsertLeaveBalance(member_id:int, start_date:datetime):
             try:
                 db.GetDBCursor().execute(
                     "INSERT INTO [leavesBalance] (member_id, leave_type, balance) VALUES (?, ?, ?)",
-                    (member_id, leaveType["name"], utils.CalculateLeaveTypeBalance(leaveType["name"], start_date))
+                    (member_id, leaveType["name"], utils.CalculateInitialLeaveBalance(leaveType["name"], start_date))
                 )
             except Exception as e:
                 print(e)

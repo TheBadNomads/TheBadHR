@@ -3,7 +3,7 @@ from datetime import datetime
 def isNotBot(member):
     return not member.bot
 
-def CalculateLeaveTypeBalance(leave_type, start_date):
+def CalculateInitialLeaveBalance(leave_type, start_date):
     # can be changed later to be retrived from DB
     leave_types = {
         "Annual": CalculateProratedAnnualLeaves(start_date),
