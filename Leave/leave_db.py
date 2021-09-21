@@ -22,7 +22,7 @@ def GetLeaveStatus(request_id):
     return leave["leave_status"]
 
 def GetLeaveBalance(member_id, leave_type):
-    db.GetDBCursor().execute(f'SELECT balance FROM [leavesBalance] WHERE member_id = {member_id} AND leave_type = {leave_type}')
+    db.GetDBCursor().execute(f"SELECT balance FROM [leavesBalance] WHERE member_id = {member_id} AND leave_type = '{leave_type}'")
     leaves_balance = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
 
     return float(leaves_balance["balance"])
@@ -30,7 +30,7 @@ def GetLeaveBalance(member_id, leave_type):
 def GetLeaveTypes():
     db.GetDBCursor().execute('SELECT * FROM [leaveTypes]')
     rows = db.GetDBCursor().fetchall()
-    leaves_types = map(utils.ConvertJsonToDic, rows)
+    leaves_types = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
 
     return leaves_types
 
