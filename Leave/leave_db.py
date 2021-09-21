@@ -1,0 +1,29 @@
+import Utilities as utils
+
+from db import db
+from datetime import datetime
+
+def GetLeaveByID(id):
+    db.GetDBCursor().execute(f'SELECT * FROM [leaves] WHERE id = {id}')
+    leave = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
+
+    return leave
+
+def GetLeavesByRequestID(request_id):
+    db.GetDBCursor().execute(f'SELECT * FROM [leaves] WHERE request_id = {request_id}')
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
+
+    return leaves
+
+def InsertLeave(member_id:int, request_id:int, leave_type:int, date:datetime, reason:str, remark:str, leave_status:str):
+    try:
+        db.GetDBCursor().execute(
+            "INSERT INTO [leaves] (member_id, request_id, leave_type, date, reason, remark, leave_status) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (member_id, request_id, leave_type, date, reason, remark, leave_status)
+        )
+        db.GetDBConnection().commit()
+        return "Success"
+
+    except Exception as e:
+        db.GetDBConnection().rollback()
+        return "Failed"
