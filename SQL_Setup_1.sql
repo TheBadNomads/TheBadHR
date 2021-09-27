@@ -49,8 +49,8 @@ INSERT INTO leaveStatus (name) VALUES ('Approved');
 INSERT INTO leaveStatus (name) VALUES ('Rejected');
 
 INSERT INTO Captions (caption_title, caption_message_en) VALUES ('LeaveRequestConfirmation', 'Your leave request has been sent');
-INSERT INTO Captions (caption_title, caption_message_en) VALUES ('NotEnoughBalance', 'You dont have enough leaves to request');
 INSERT INTO Captions (caption_title, caption_message_en) VALUES ('LeaveRequestApproved', 'Your leave request was approved');
 INSERT INTO Captions (caption_title, caption_message_en) VALUES ('LeaveRequestRejected', 'Your leave request was rejected');
 INSERT INTO Captions (caption_title, caption_message_en) VALUES ('ValidDatesError', 'Please select valid dates');
 INSERT INTO Captions (caption_title, caption_message_en) VALUES ('LeaveRequestFailedError', 'Your Request has failed, try again later');
+INSERT INTO Captions (caption_title, caption_message_en) VALUES ('NotEnoughBalanceError', 'You dont have enough leaves to request');
