@@ -1,5 +1,6 @@
-CREATE TABLE leaveTypes (
-    [name] varchar(255) NOT NULL PRIMARY KEY
+CREATE TABLE leaveTypesWithBalance (
+    [name] varchar(255) NOT NULL PRIMARY KEY,
+    [starting_balance] float NOT NULL
 );
 
 CREATE TABLE leaveStatus (
@@ -32,10 +33,10 @@ CREATE TABLE leavesBalance (
     [balance] float NOT NULL
 );
 
-INSERT INTO leaveTypes (name) VALUES ('Annual');
-INSERT INTO leaveTypes (name) VALUES ('Emergency');
-INSERT INTO leaveTypes (name) VALUES ('Sick');
-INSERT INTO leaveTypes (name) VALUES ('Unpaid');
+INSERT INTO leaveTypesWithBalance (name, starting_balance) VALUES ('Annual', 21);
+INSERT INTO leaveTypesWithBalance (name, starting_balance) VALUES ('Emergency', 5);
+INSERT INTO leaveTypesWithBalance (name, starting_balance) VALUES ('Sick', 365);
+INSERT INTO leaveTypesWithBalance (name, starting_balance) VALUES ('Unpaid', 365);
 
 INSERT INTO leaveStatus (name) VALUES ('Pending');
 INSERT INTO leaveStatus (name) VALUES ('Approved');
