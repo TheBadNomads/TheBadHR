@@ -19,7 +19,7 @@ CREATE TABLE leaves (
     id int NOT NULL IDENTITY(1,1) PRIMARY KEY,
     [member_id] bigint NOT NULL FOREIGN KEY REFERENCES members(id),
     [request_id] bigint NOT NULL,
-    [leave_type] varchar(255) NOT NULL FOREIGN KEY REFERENCES leaveTypes(name),
+    [leave_type] varchar(255) NOT NULL FOREIGN KEY REFERENCES leaveTypesWithBalance(name),
     [date] datetime NOT NULL,
     [reason] varchar(255),
     [remark] varchar(255),
@@ -29,7 +29,7 @@ CREATE TABLE leaves (
 CREATE TABLE leavesBalance (
     id int NOT NULL IDENTITY(1,1) PRIMARY KEY,
     [member_id] bigint NOT NULL FOREIGN KEY REFERENCES members(id),
-    [leave_type] varchar(255) NOT NULL FOREIGN KEY REFERENCES leaveTypes(name),
+    [leave_type] varchar(255) NOT NULL FOREIGN KEY REFERENCES leaveTypesWithBalance(name),
     [balance] float NOT NULL
 );
 
