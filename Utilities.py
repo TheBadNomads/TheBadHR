@@ -33,13 +33,13 @@ def CheckAvailableBalance(member, startdate: str, enddate: str, leavetype):
 def GetRequestedDays(startdate: str, enddate: str):
     sDate = datetime.strptime(startdate, '%m/%d/%Y')
     eDate = datetime.strptime(enddate, '%m/%d/%Y')
-    total_days = []
+    requested_days = []
     for i in range((eDate - sDate).days + 1):
         day = sDate + timedelta(days=i)
         if day.weekday() != 4 and day.weekday() != 5:
-            total_days.append(day) 
+            requested_days.append(day) 
 
-    return total_days
+    return requested_days
 
 def ValidateDates(startdate: str, enddate: str):
     sDate = datetime.strptime(startdate, '%m/%d/%Y')
