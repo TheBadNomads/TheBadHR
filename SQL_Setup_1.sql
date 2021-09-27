@@ -33,6 +33,12 @@ CREATE TABLE leavesBalance (
     [balance] float NOT NULL
 );
 
+CREATE TABLE Captions (
+    id int NOT NULL IDENTITY(1,1) PRIMARY KEY,
+    [caption_title] varchar(255) NOT NULL UNIQUE,
+    [caption_message_en] varchar(255) NOT NULL,
+);
+
 INSERT INTO leaveTypesWithBalance (name, starting_balance) VALUES ('Annual', 21);
 INSERT INTO leaveTypesWithBalance (name, starting_balance) VALUES ('Emergency', 5);
 INSERT INTO leaveTypesWithBalance (name, starting_balance) VALUES ('Sick', 365);
@@ -41,3 +47,10 @@ INSERT INTO leaveTypesWithBalance (name, starting_balance) VALUES ('Unpaid', 365
 INSERT INTO leaveStatus (name) VALUES ('Pending');
 INSERT INTO leaveStatus (name) VALUES ('Approved');
 INSERT INTO leaveStatus (name) VALUES ('Rejected');
+
+INSERT INTO Captions (caption_title, caption_message_en) VALUES ('LeaveRequestConfirmation', 'Your leave request has been sent');
+INSERT INTO Captions (caption_title, caption_message_en) VALUES ('NotEnoughBalance', 'You dont have enough leaves to request');
+INSERT INTO Captions (caption_title, caption_message_en) VALUES ('LeaveRequestApproved', 'Your leave request was approved');
+INSERT INTO Captions (caption_title, caption_message_en) VALUES ('LeaveRequestRejected', 'Your leave request was rejected');
+INSERT INTO Captions (caption_title, caption_message_en) VALUES ('ValidDatesError', 'Please select valid dates');
+INSERT INTO Captions (caption_title, caption_message_en) VALUES ('LeaveRequestFailedError', 'Your Request has failed, try again later');
