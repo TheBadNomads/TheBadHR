@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def isNotBot(member):
     return not member.bot
@@ -24,3 +24,33 @@ def CalculateProratedAnnualLeaves(start_date, starting_balance):
     leave_balance_per_month = starting_balance/12
 
     return leaves_months_count * leave_balance_per_month
+
+def CheckAvailableBalance(member, startdate: str, enddate: str, leavetype):
+    requested_days_count = len(GetRequestedDays(startdate, enddate))
+    from Leave import leave_db as leave
+    return (leave.GetLeaveBalance(member.id, leavetype) - requested_days_count) >= 0
+
+def GetRequestedDays(startdate: str, enddate: str):
+    sDate = datetime.strptime(startdate, '%m/%d/%Y')
+    eDate = datetime.strptime(enddate, '%m/%d/%Y')
+    total_days = []
+    for i in range((eDate - sDate).days + 1):
+        day = sDate + timedelta(days=i)
+        if day.weekday() != 4 and day.weekday() != 5:
+            total_days.append(day) 
+
+    return total_days
+
+def ValidateDates(startdate: str, enddate: str):
+    sDate = datetime.strptime(startdate, '%m/%d/%Y')
+    eDate = datetime.strptime(enddate, '%m/%d/%Y')
+
+    return eDate >= sDate
+
+def isLeaveRequest(message_id):
+    from Leave import leave_db as leave
+    return len(leave.GetLeaveByRequestID(message_id)) != 0
+
+def isPending(message_id):
+    from Leave import leave_db as leave
+    return leave.GetLeaveStatus(message_id).lower() == "pending"
