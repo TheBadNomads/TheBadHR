@@ -16,7 +16,7 @@ def CreateLeaveEmbed(ctx, startdate, enddate, leaveType):
     }
 
     embed = discord.Embed(
-        title = leaveType + " Leave Request", 
+        title = f'{leaveType} Leave Request', 
         description = f'{ctx.author.mention} is requesting '+ leaveType.lower() +' leave', 
         colour = 0x4682B4
     )
