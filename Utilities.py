@@ -45,11 +45,3 @@ def ValidateDates(startdate: str, enddate: str):
     eDate = datetime.strptime(enddate, '%m/%d/%Y')
 
     return eDate >= sDate
-
-def isLeaveRequest(message_id):
-    from Leave import leave_db as leave
-    return len(leave.GetLeavesByRequestID(message_id)) != 0
-
-def isPending(message_id):
-    from Leave import leave_db as leave
-    return leave.GetLeaveStatus(message_id).lower() == "pending"
