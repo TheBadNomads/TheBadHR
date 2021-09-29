@@ -16,17 +16,19 @@ def CalculateProrataForLeave(leave_type, start_date, starting_balance):
         return CalculateProratedAnnualLeaves(start_date, starting_balance)
 
     else:
+        
         return starting_balance
 
 def CalculateProratedAnnualLeaves(start_date, starting_balance):
     start_month = int(datetime.strftime(start_date,"%m"))
     leaves_months_count = (12 - start_month) + 1
-    leave_balance_per_month = starting_balance/12
+    leave_balance_per_month = starting_balance / 12
 
     return leaves_months_count * leave_balance_per_month
 
 def HasEnoughBalance(startdate: str, enddate: str, current_balance):
     requested_days_count = len(GetRequestedDays(startdate, enddate))
+
     return current_balance >= requested_days_count
 
 def GetRequestedDays(startdate: str, enddate: str):
@@ -40,7 +42,7 @@ def GetRequestedDays(startdate: str, enddate: str):
 
     return requested_days
 
-def ValidateDates(startdate: str, enddate: str):
+def IsDateOrderValid(startdate: str, enddate: str):
     sDate = datetime.strptime(startdate, '%m/%d/%Y')
     eDate = datetime.strptime(enddate, '%m/%d/%Y')
 
