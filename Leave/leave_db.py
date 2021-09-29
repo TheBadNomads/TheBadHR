@@ -90,5 +90,5 @@ def UpdateLeaveBalance(member_id, leave_type, requested_days):
 def IsLeaveRequest(message_id):
     return len(GetLeavesByRequestID(message_id)) != 0
 
-def IsPending(message_id):
+def IsLeaveRequestPending(message_id):
     return GetLeaveStatus(message_id).lower() == "pending"
