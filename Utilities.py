@@ -25,7 +25,7 @@ def CalculateProratedAnnualLeaves(start_date, starting_balance):
 
     return leaves_months_count * leave_balance_per_month
 
-def HasEnoughBalance(member, startdate: str, enddate: str, current_balance):
+def HasEnoughBalance(startdate: str, enddate: str, current_balance):
     requested_days_count = len(GetRequestedDays(startdate, enddate))
     return (current_balance - requested_days_count) >= 0
 
