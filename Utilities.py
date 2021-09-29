@@ -25,7 +25,7 @@ def CalculateProratedAnnualLeaves(start_date, starting_balance):
 
     return leaves_months_count * leave_balance_per_month
 
-def CheckAvailableBalance(member, startdate: str, enddate: str, leavetype):
+def HasEnoughBalance(member, startdate: str, enddate: str, leavetype):
     requested_days_count = len(GetRequestedDays(startdate, enddate))
     from Leave import leave_db as leave
     return (leave.GetLeaveBalance(member.id, leavetype) - requested_days_count) >= 0
