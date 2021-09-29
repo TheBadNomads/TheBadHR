@@ -10,7 +10,7 @@ from Leave import leave_db
 
 async def RequestLeave(ctx, member, client, leavetype, startdate, enddate, reason):
     if utils.ValidateDates(startdate, enddate):
-        if utils.HasEnoughBalance(member, startdate, enddate, leave_db.GetLeaveBalance(member.id, leavetype)):
+        if utils.HasEnoughBalance(startdate, enddate, leave_db.GetLeaveBalance(member.id, leavetype)):
             await ProccessRequest(ctx, member, client, startdate, enddate, leavetype, reason)
         else:
             await ctx.send(content = db.GetCaption(2) + leave_db.GetLeaveBalance(member.id, leavetype))
