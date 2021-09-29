@@ -27,15 +27,15 @@ def CalculateProratedAnnualLeaves(start_date, starting_balance):
 
 def HasEnoughBalance(startdate: str, enddate: str, current_balance):
     requested_days_count = len(GetRequestedDays(startdate, enddate))
-    return (current_balance - requested_days_count) >= 0
+    return current_balance >= requested_days_count
 
 def GetRequestedDays(startdate: str, enddate: str):
     sDate = datetime.strptime(startdate, '%m/%d/%Y')
     eDate = datetime.strptime(enddate, '%m/%d/%Y')
     requested_days = []
     for i in range((eDate - sDate).days + 1):
-        day = sDate + timedelta(days=i)
-        if day.weekday() != 4 and day.weekday() != 5:
+        day = sDate + timedelta(days = i)
+        if (day.weekday() not in [4, 5]):
             requested_days.append(day) 
 
     return requested_days
