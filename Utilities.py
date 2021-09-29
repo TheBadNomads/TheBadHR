@@ -49,7 +49,7 @@ def ValidateDates(startdate: str, enddate: str):
 
 def isLeaveRequest(message_id):
     from Leave import leave_db as leave
-    return len(leave.GetLeaveByRequestID(message_id)) != 0
+    return len(leave.GetLeavesByRequestID(message_id)) != 0
 
 def isPending(message_id):
     from Leave import leave_db as leave
