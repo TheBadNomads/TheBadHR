@@ -87,8 +87,8 @@ def UpdateLeaveBalance(member_id, leave_type, requested_days):
         db.GetDBConnection().rollback()
         return "Failed"
 
-def isLeaveRequest(message_id):
+def IsLeaveRequest(message_id):
     return len(GetLeavesByRequestID(message_id)) != 0
 
-def isPending(message_id):
+def IsPending(message_id):
     return GetLeaveStatus(message_id).lower() == "pending"
