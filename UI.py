@@ -1,9 +1,9 @@
 import discord
 import os
+import datetime
 
 from db import db
 from collections import defaultdict
-from datetime import date, timedelta, datetime
 from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option, create_choice
 from Leave import leave_db
@@ -26,7 +26,7 @@ def CreateLeaveEmbed(ctx, startdate, enddate, leaveType):
     embed.add_field(name = "End Date", value = enddate, inline = True)
     embed.add_field(name = '\u200B', value = '\u200B', inline = False)
     embed.add_field(name = "Status", value = "Pending", inline = False)
-    embed.set_footer(text = date.today())
+    embed.set_footer(text = datetime.date.today())
 
     return embed
     
@@ -40,14 +40,14 @@ def CreateLeaveTypeChoices():
 def CreateDateChoices():
     current_hour = datetime.datetime.now().time()
     end_of_core = datetime.time(13)
-    firstDate = date.today()
+    firstDate = datetime.date.today()
     dateChoices = []
    
     if current_hour >= end_of_core:
-        firstDate = date.today() + timedelta(1)
+        firstDate = datetime.date.today() + datetime.timedelta(1)
 
     for i in range(25):
-        tmpDate = firstDate + timedelta(i)
+        tmpDate = firstDate + datetime.timedelta(i)
         weekDay = tmpDate.strftime("%A")
         dateChoices.append(create_choice(name = weekDay +": "+ tmpDate.strftime('%d/%m/%Y'), value = tmpDate.strftime('%d/%m/%Y')))
     
