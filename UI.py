@@ -38,11 +38,12 @@ def CreateLeaveTypeChoices():
     return leaveTypeChoices
 
 def CreateDateChoices():
-    current_hour = datetime.now().hour
+    current_hour = datetime.datetime.now().time()
+    end_of_core = datetime.time(13)
     firstDate = date.today()
     dateChoices = []
-    
-    if current_hour > 12:
+   
+    if current_hour >= end_of_core:
         firstDate = date.today() + timedelta(1)
 
     for i in range(25):
