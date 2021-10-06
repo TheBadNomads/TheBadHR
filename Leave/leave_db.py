@@ -28,7 +28,7 @@ def GetLeaveBalance(member_id, leave_type):
     return float(leaves_balance["balance"])
 
 def GetLeaveTypesWithBalance():
-    db.GetDBCursor().execute('SELECT * FROM [leaveTypes]')
+    db.GetDBCursor().execute('SELECT * FROM [leaveTypesWithBalance]')
     leaves_types = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
 
     return leaves_types
