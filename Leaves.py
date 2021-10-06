@@ -2,6 +2,7 @@ import Utilities
 import os
 import UI
 
+from db import db
 from Channels import Channels
 from datetime import date, timedelta, datetime
 
@@ -15,13 +16,13 @@ async def RequestLeave(ctx, client, leavetype, startdate, enddate):
                 await CompleteRequest(ctx, client, startdate, enddate, leavetype)
 
         else:
-            await ctx.send(content = UI.GetCaption(2) + str(int(os.getenv("Abdo_Annual_Leaves"))))
+            await ctx.send(content = db.GetCaption(2) + str(int(os.getenv("Abdo_Annual_Leaves"))))
 
     else:
-        await ctx.send(content = UI.GetCaption(3))
+        await ctx.send(content = db.GetCaption(3))
 
 async def WarnRequester(ctx, client, startdate, enddate):
-    await ctx.send(content = UI.GetCaption(7))
+    await ctx.send(content = db.GetCaption(7))
     message = await ctx.author.send(embed = UI.CreateWarningEmbed())
     await message.add_reaction(os.getenv("Approve_Emoji"))
     await message.add_reaction(os.getenv("Reject_Emoji"))
@@ -35,7 +36,7 @@ async def WarnRequester(ctx, client, startdate, enddate):
         await CompleteRequest(ctx, client, startdate, enddate, 2)
 
 async def CompleteRequest(ctx, client, startdate, enddate, leaveType):
-    await ctx.send(content = UI.GetCaption(1))
+    await ctx.send(content = db.GetCaption(1))
     embed = UI.CreateLeaveEmbed(ctx, startdate, enddate, leaveType)
     channel = await Channels.GetLeaveApprovalsChannel(client)
     message = await channel.send(embed = embed)
