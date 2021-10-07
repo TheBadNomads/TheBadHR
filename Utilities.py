@@ -16,7 +16,6 @@ def CalculateProrataForLeave(leave_type, start_date, starting_balance):
         return CalculateProratedAnnualLeaves(start_date, starting_balance)
 
     else:
-        
         return starting_balance
 
 def CalculateProratedAnnualLeaves(start_date, starting_balance):
@@ -41,5 +40,5 @@ def GetRequestedDays(startdate, enddate):
     return requested_days
 
 def IsDateOrderValid(startdate, enddate):
-
     return enddate >= startdate
+    
