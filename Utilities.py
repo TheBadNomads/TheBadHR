@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def isNotBot(member):
     return not member.bot
@@ -19,8 +19,26 @@ def CalculateProrataForLeave(leave_type, start_date, starting_balance):
         return starting_balance
 
 def CalculateProratedAnnualLeaves(start_date, starting_balance):
-    start_month = int(datetime.strftime(start_date,"%m"))
+    start_month = start_date.month
     leaves_months_count = (12 - start_month) + 1
-    leave_balance_per_month = starting_balance/12
+    leave_balance_per_month = starting_balance / 12
 
     return leaves_months_count * leave_balance_per_month
+
+def HasEnoughBalance(startdate, enddate, current_balance):
+    requested_days_count = len(GetRequestedDays(startdate, enddate))
+
+    return current_balance >= requested_days_count
+
+def GetRequestedDays(startdate, enddate):
+    requested_days = []
+    for i in range((enddate - startdate).days + 1):
+        day = startdate + timedelta(days = i)
+        if (day.weekday() not in [4, 5]):
+            requested_days.append(day) 
+
+    return requested_days
+
+def IsDateOrderValid(startdate, enddate):
+    return enddate >= startdate
+    
