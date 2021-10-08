@@ -30,11 +30,21 @@ async def ProccessRequest(ctx, member, client, startdate, enddate, leavetype, re
         return
     
     if current_hour >= end_of_core or (startdate == datetime.datetime.today()):
-        if leavetype.lower() == "annual" or leavetype.lower() == "sick":
-            await CompleteRequest(ctx, member, client, startdate, enddate, "Emergency", reason)
-            return
+        await CompleteSpecialRequest()
 
     await CompleteRequest(ctx, member, client, startdate, enddate, leavetype, reason)
+
+async def CompleteSpecialRequest(ctx, member, client, startdate, enddate, leavetype, reason):
+    requested_days = utils.GetRequestedDays(startdate, enddate)
+    if leave_db.GetLeaveBalance(member.id, "Emergency") > 0:
+        await CompleteRequest(ctx, member, client, requested_days[0], requested_days[0], "Emergency", reason)
+
+    else:
+        await CompleteRequest(ctx, member, client, requested_days[0], requested_days[0], "Unpaid", reason)    
+    
+    if len(requested_days) > 1:
+        await CompleteRequest(ctx, member, client, requested_days[1], enddate, leavetype, reason)
+    
 
 async def CompleteRequest(ctx, member, client, startdate, enddate, leaveType, reason):
     await ctx.send(content = db.GetCaption(1))
