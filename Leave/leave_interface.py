@@ -25,12 +25,14 @@ async def ProccessRequest(ctx, member, client, startdate, enddate, leavetype, re
     role = discord.utils.find(lambda r: r.name == 'Admin', ctx.guild.roles)
 
     if role in ctx.author.roles:
-        CompleteRequest_DB(member, 0, startdate, enddate, leavetype, "Approved", reason)
-        await ctx.send(content = "Success")
+        message = await ctx.send(content = "Success")
+        CompleteRequest_DB(member, message.id, startdate, enddate, leavetype, "Approved", reason)
+        UpdateLeaveBalance(message.id)
         return
     
     if current_hour >= end_of_core or (startdate == datetime.datetime.today()):
-        await CompleteSpecialRequest()
+        await CompleteSpecialRequest(ctx, member, client, startdate, enddate, leavetype, reason)
+        return
 
     await CompleteRequest(ctx, member, client, startdate, enddate, leavetype, reason)
 
@@ -49,7 +51,7 @@ async def CompleteSpecialRequest(ctx, member, client, startdate, enddate, leavet
 async def CompleteRequest(ctx, member, client, startdate, enddate, leaveType, reason):
     await ctx.send(content = db.GetCaption(1))
     embed = UI.CreateLeaveEmbed(ctx, startdate, enddate, leaveType)
-    channel = await Channels.GetLeaveApprovalsChannel(client)
+    channel = Channels.GetLeaveApprovalsChannel(client)
     message = await channel.send(embed = embed)
     await message.add_reaction(os.getenv("Approve_Emoji"))
     await message.add_reaction(os.getenv("Reject_Emoji"))
@@ -72,21 +74,22 @@ async def HandleNormalRequest(client, payload):
     if utils.isNotBot(payload.member) and leave_db.IsLeaveRequest(payload.message_id) and leave_db.IsLeaveRequestPending(payload.message_id):
         status = UI.ParseEmoji(payload.emoji)
         if status != None:
-            await UpdateLeaveStatus(payload, status, message, embed)
+            await UpdateLeaveStatus(client, payload, status, message, embed)
             if status == "Approved":
-                UpdateLeaveBalance(payload)
+                UpdateLeaveBalance(payload.message_id)
 
-async def UpdateLeaveStatus(payload, status, message, embed):
+async def UpdateLeaveStatus(client, payload, status, message, embed):
     try:
         leave_db.UpdateLeaveStatus(payload.message_id, status)
         await UI.UpdateEmbedLeaveStatus(message, embed, status)
-        await payload.member.send(content = "Your request was " + status)
+        member = await client.fetch_user(leave_db.GetLeavesByRequestID(payload.message_id)[0]["member_id"])
+        await member.send(content = "Your request was " + status)
 
     except Exception as e:
         print(e)
 
-def UpdateLeaveBalance(payload):
-    leaves = leave_db.GetLeavesByRequestID(payload.message_id)
+def UpdateLeaveBalance(message_id):
+    leaves = leave_db.GetLeavesByRequestID(message_id)
     leave = leaves[0]
-    leave_db.UpdateLeaveBalance(payload.member.id, leave["leave_type"], -len(leaves))
+    leave_db.UpdateLeaveBalance(leave["member_id"], leave["leave_type"], -len(leaves))
                 
