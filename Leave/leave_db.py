@@ -50,11 +50,11 @@ def InsertLeaveBalance(member_id:int, start_date:datetime):
     try:
         leave_types_with_balance = utils.CalculateInitialLeavesBalance(GetLeaveTypesWithBalance(), start_date)
 
-        for name, balance in leave_types_with_balance:
+        for leave in leave_types_with_balance:
             try:
                 db.GetDBCursor().execute(
                     "INSERT INTO [leavesBalance] (member_id, leave_type, balance) VALUES (?, ?, ?)",
-                    (member_id, name, balance)
+                    (member_id, leave, leave_types_with_balance[leave])
                 )
             except Exception as e:
                 db.GetDBConnection().rollback()
