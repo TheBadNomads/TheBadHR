@@ -12,7 +12,8 @@ def CreateLeaveEmbed(ctx, startdate, enddate, leaveType):
     leaveImages = {
         "Annual"   : os.getenv("Annual_Leave_Link"),
         "Emergency": os.getenv("Emergency_Leave_Link"),
-        "Sick"     : os.getenv("Sick_Leave_Link")
+        "Sick"     : os.getenv("Sick_Leave_Link"),
+        "Unpaid"   : os.getenv("Unpaid_Leave_Link")
     }
 
     embed = discord.Embed(
@@ -22,8 +23,8 @@ def CreateLeaveEmbed(ctx, startdate, enddate, leaveType):
     )
 
     embed.set_thumbnail(url = leaveImages[leaveType])
-    embed.add_field(name = "Start Date", value = startdate, inline = True)
-    embed.add_field(name = "End Date", value = enddate, inline = True)
+    embed.add_field(name = "Start Date", value = startdate.date(), inline = True)
+    embed.add_field(name = "End Date", value = enddate.date(), inline = True)
     embed.add_field(name = '\u200B', value = '\u200B', inline = False)
     embed.add_field(name = "Status", value = "Pending", inline = False)
     embed.set_footer(text = datetime.date.today())
