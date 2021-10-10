@@ -29,7 +29,7 @@ async def ProccessRequest(ctx, member, client, startdate, enddate, leavetype, re
     current_hour = datetime.datetime.now().time()
     end_of_core = datetime.time(13)
     today = datetime.datetime.today().date()
-    role = discord.utils.find(lambda r: r.name == 'Admin', ctx.guild.roles)
+    role = discord.utils.find(lambda r: r.name == os.getenv("Admin_Role"), ctx.guild.roles)
 
     if role in ctx.author.roles:
         message = await ctx.send(content = "Success")
