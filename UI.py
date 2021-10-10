@@ -17,13 +17,15 @@ def CreateLeavesBalancesEmbed(ctx):
             colour = 0x4682B4
         )
 
-        for leave_type in leaves_types_with_balance:
-            embed.add_field(name = leave_type, value = leaves_types_with_balance[leave_type], inline = False)
-        
+        for entry in leaves_types_with_balance:
+            embed.add_field(name = entry["leave_type"], value = entry["balance"], inline = False)
+
+        embed.add_field(name = '\u200B', value = '\u200B', inline = False)
         embed.set_footer(text = datetime.date.today())
         return embed
 
     except Exception as e:
+        print(e)
         return None
 
 def CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason):
