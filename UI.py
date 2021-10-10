@@ -9,6 +9,23 @@ from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option, create_choice
 from Leave import leave_db
 
+def CreateLeavesBalancesEmbed(ctx):
+    try:
+        leaves_types_with_balance = leave_db.GetLeavesBalancesForMember(ctx.author.id)
+        embed = discord.Embed(
+            title = f'Your balances are:',
+            colour = 0x4682B4
+        )
+
+        for leave_type in leaves_types_with_balance:
+            embed.add_field(name = leave_type, value = leaves_types_with_balance[leave_type], inline = False)
+        
+        embed.set_footer(text = datetime.date.today())
+        return embed
+
+    except Exception as e:
+        return None
+
 def CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason):
     leaveImages = {
         "Annual"   : os.getenv("Annual_Leave_Link"),
