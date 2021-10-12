@@ -58,7 +58,19 @@ def CreateDateChoices():
     
     return dateChoices
 
-def CreateDateOptions():
+def CreateLateLeaveApplicationOptions():
+    member_option = [
+        create_option(
+            name = "discorduser",
+            description = "discord user",
+            option_type = SlashCommandOptionType.USER,
+            required = True
+        )
+    ]
+    leave_request_options = CreateLeaveRequestOptions()
+    return member_option + leave_request_options
+
+def CreateLeaveRequestOptions():
     requestLeave_options = [
         create_option(
             name = "leavetype",
@@ -91,7 +103,7 @@ def CreateDateOptions():
 
     return requestLeave_options
 
-def CreateMemberOptions():
+def CreateInsertMemberOptions():
     member_options = [
         create_option(
             name = "discorduser",
