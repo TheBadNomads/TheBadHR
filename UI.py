@@ -13,12 +13,23 @@ def CreateLeavesBalancesEmbed(ctx):
     try:
         leaves_types_with_balance = leave_db.GetLeavesBalancesForMember(ctx.author.id)
         embed = discord.Embed(
-            title = f'Your balances are:',
+            title = f'Leaves Balances',
+            description = f'Your balances are:',
             colour = 0x4682B4
         )
+        embed.set_thumbnail(url = os.getenv("Leave_Balance_Link"))
+        embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+        counter = 0
 
         for entry in leaves_types_with_balance:
-            embed.add_field(name = entry["leave_type"], value = entry["balance"], inline = False)
+            if(counter + 2) % 3 != 0:
+                embed.add_field(name = entry["leave_type"], value = entry["balance"], inline = True)
+            else:
+                embed.add_field(name = '\u200B', value = '\u200B', inline = True)
+                embed.add_field(name = entry["leave_type"], value = entry["balance"], inline = True)
+                counter += 1
+            
+            counter += 1
 
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
         embed.set_footer(text = datetime.date.today())
