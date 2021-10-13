@@ -47,7 +47,7 @@ async def LateRequestLeave(ctx, discorduser, leavetype, startdate, enddate, reas
     role = discord.utils.find(lambda r: r.name == os.getenv("Admin_Role"), ctx.guild.roles)
 
     if role in ctx.author.roles:
-        await leave_interface.RequestLeave(ctx, discorduser, client, leavetype, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), reason)
+        await leave_interface.ApplyLateLeave(ctx, discorduser, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), leavetype, reason)
     else:
         await ctx.send(content = "This command is for Admin roles only")   
 
