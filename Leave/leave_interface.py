@@ -27,14 +27,7 @@ async def ProccessRequest(ctx, member, client, startdate, enddate, leavetype, re
     current_hour = datetime.datetime.now().time()
     end_of_core = datetime.time(13)
     today = datetime.datetime.today().date()
-    role = discord.utils.find(lambda r: r.name == os.getenv("Admin_Role"), ctx.guild.roles)
-
-    if role in ctx.author.roles:
-        message = await ctx.send(content = "Success")
-        CompleteRequest_DB(member, message.id, startdate, enddate, leavetype, "Approved", reason)
-        UpdateLeaveBalance(message.id)
-        return
-
+    
     if (startdate.date() == today) or ((current_hour >= end_of_core) and (startdate.date() == today + datetime.timedelta(1))):
         await CompleteSpecialRequest(ctx, member, client, startdate, enddate, leavetype, reason)
         return
@@ -43,7 +36,7 @@ async def ProccessRequest(ctx, member, client, startdate, enddate, leavetype, re
 
 async def CompleteSpecialRequest(ctx, member, client, startdate, enddate, leavetype, reason):
     requested_days = utils.GetRequestedDays(startdate, enddate)
-    
+
     if leave_db.GetLeaveBalance(member.id, "Emergency") > 0:
         await CompleteRequest(ctx, member, client, requested_days[0], requested_days[0], "Emergency", reason)
     else:
