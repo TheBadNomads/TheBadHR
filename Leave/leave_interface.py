@@ -71,9 +71,6 @@ def CompleteRequest_DB(member, message_id, startdate, enddate, leaveType, leaveS
         leave_db.InsertLeave(member.id, message_id, leaveType, day, reason, "", leaveStatus)
 
 async def HandleLeaveReactions(client, payload):
-    await HandleNormalRequest(client, payload)
-
-async def HandleNormalRequest(client, payload):
     channel = client.get_channel(payload.channel_id)
     message = await channel.fetch_message(payload.message_id)
     embed = message.embeds[0]
@@ -84,7 +81,7 @@ async def HandleNormalRequest(client, payload):
             await UpdateLeaveStatus(client, payload, status, message, embed)
             if status == "Approved":
                 UpdateLeaveBalance(payload.message_id)
-
+                
 async def UpdateLeaveStatus(client, payload, status, message, embed):
     try:
         leave_db.UpdateLeaveStatus(payload.message_id, status)
