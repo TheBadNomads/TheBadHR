@@ -6,37 +6,31 @@ from datetime import datetime
 def GetLeaveByID(id):
     db.GetDBCursor().execute(f'SELECT * FROM [leaves] WHERE id = {id}')
     leave = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
-
     return leave
 
 def GetLeavesDatesByMemberID(member_id):
     db.GetDBCursor().execute(f"SELECT date FROM [leaves] WHERE member_id = {member_id}")
     leaves_dates = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
-
     return leaves_dates
 
 def GetLeavesByRequestID(request_id):
     db.GetDBCursor().execute(f'SELECT * FROM [leaves] WHERE request_id = {request_id}')
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
-
     return leaves
 
 def GetLeaveStatus(request_id):
     db.GetDBCursor().execute(f'SELECT leave_status FROM [leaves] WHERE request_id = {request_id}')
     leave = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
-
     return leave["leave_status"]
 
 def GetLeaveBalance(member_id, leave_type):
     db.GetDBCursor().execute(f"SELECT balance FROM [leavesBalance] WHERE member_id = {member_id} AND leave_type = '{leave_type}'")
     leaves_balance = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
-
     return float(leaves_balance["balance"])
 
 def GetLeaveTypesWithBalance():
     db.GetDBCursor().execute('SELECT * FROM [leaveTypesWithBalance]')
     leaves_types = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
-
     return leaves_types
 
 def InsertLeave(member_id:int, request_id:int, leave_type:int, date:datetime, reason:str, remark:str, leave_status:str):
