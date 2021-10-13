@@ -51,9 +51,9 @@ async def InsertMember(ctx, discorduser, name, email, startdate):
 async def ShowLeavesBalance(ctx):
     embed = UI.CreateLeavesBalancesEmbed(ctx)
     if embed == None:
-        await ctx.send(content = "you request failed, try again later")
+        await ctx.send(content = "your request failed, try again later")
     else:
-        await ctx.send(content = "you request succeeded")
+        await ctx.send(content = "your request succeeded")
         await ctx.author.send(embed = embed)
 
 client.run(os.getenv("Bot_token"))
