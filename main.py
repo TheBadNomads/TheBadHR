@@ -47,13 +47,13 @@ async def InsertMember(ctx, discorduser, name, email, startdate):
     await ctx.author.send(content = message_content)
     await ctx.send(content = "Done", delete_after = 0.1)
    
-@slash.slash(name = "CheckBalance", description = "Returns your leaves balances", guild_ids = guild_ids)
-async def CheckBalance(ctx):
+@slash.slash(name = "ShowLeavesBalance", description = "Returns your leaves balances", guild_ids = guild_ids)
+async def ShowLeavesBalance(ctx):
     embed = UI.CreateLeavesBalancesEmbed(ctx)
     if embed == None:
         await ctx.send(content = "you request failed, try again later")
     else:
         await ctx.send(content = "you request succeeded")
         await ctx.author.send(embed = embed)
-        
+
 client.run(os.getenv("Bot_token"))
