@@ -37,7 +37,7 @@ async def ProccessRequest(ctx, member, client, startdate, enddate, leavetype, re
         UpdateLeaveBalance(message.id)
         return
 
-    if (startdate.date() == today) or (current_hour >= end_of_core and startdate.date() == today + datetime.timedelta(1)):
+    if (startdate.date() == today) or ((current_hour >= end_of_core) and (startdate.date() == today + datetime.timedelta(1))):
         await CompleteSpecialRequest(ctx, member, client, startdate, enddate, leavetype, reason)
         return
 
