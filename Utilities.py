@@ -1,3 +1,6 @@
+import discord
+import os
+
 from datetime import datetime, timedelta
 
 def isNotBot(member):
@@ -41,4 +44,8 @@ def GetRequestedDays(startdate, enddate):
 
 def IsDateOrderValid(startdate, enddate):
     return enddate >= startdate
+
+def IsAdmin(member):
+    role = discord.utils.find(lambda r: r.name == os.getenv("Admin_Role"), member.guild.roles)
+    return role in member.roles
     
