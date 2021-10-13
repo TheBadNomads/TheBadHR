@@ -18,10 +18,8 @@ async def RequestLeave(ctx, member, client, leavetype, startdate, enddate, reaso
     if utils.IsDateOrderValid(startdate, enddate):
         if utils.HasEnoughBalance(startdate, enddate, leave_db.GetLeaveBalance(member.id, leavetype)):
             await ProccessRequest(ctx, member, client, startdate, enddate, leavetype, reason)
-
         else:
             await ctx.send(content = db.GetCaption(2) + leave_db.GetLeaveBalance(member.id, leavetype))
-
     else:
         await ctx.send(content = db.GetCaption(3))
 
@@ -45,9 +43,9 @@ async def ProccessRequest(ctx, member, client, startdate, enddate, leavetype, re
 
 async def CompleteSpecialRequest(ctx, member, client, startdate, enddate, leavetype, reason):
     requested_days = utils.GetRequestedDays(startdate, enddate)
+    
     if leave_db.GetLeaveBalance(member.id, "Emergency") > 0:
         await CompleteRequest(ctx, member, client, requested_days[0], requested_days[0], "Emergency", reason)
-
     else:
         await CompleteRequest(ctx, member, client, requested_days[0], requested_days[0], "Unpaid", reason)
     
@@ -81,7 +79,7 @@ async def HandleLeaveReactions(client, payload):
             await UpdateLeaveStatus(client, payload, status, message, embed)
             if status == "Approved":
                 UpdateLeaveBalance(payload.message_id)
-                
+
 async def UpdateLeaveStatus(client, payload, status, message, embed):
     try:
         leave_db.UpdateLeaveStatus(payload.message_id, status)
