@@ -10,6 +10,7 @@ from discord_slash import SlashCommand
 from discord_components import DiscordComponents, Button, Select, SelectOption, message
 from Member import member_db 
 from Leave import leave_interface
+from Leave import leave_db
 
 load_dotenv()
 
@@ -35,6 +36,15 @@ async def RequestLeave(ctx, leavetype, startdate, enddate, reason = ""):
 async def InsertMember(ctx, discorduser, name, email, startdate):
     result = member_db.InsertMember(discorduser.id, name, email, datetime.strptime(startdate, '%d/%m/%Y'))
     await ctx.send(content = result)
+
+@slash.slash(name = "IsMemberOnLeave", description = "Insert new member into the database", options = UI.CreateIsMemberOnLeaveOptions(), guild_ids = guild_ids)
+async def IsMemberOnLeave(ctx, discorduser, date):
+    result = leave_db.GetLeaveByMemberIDAndDate(discorduser.id, datetime.strptime(date,'%d/%m/%Y'))
+    await ctx.send(content = "Request granted")
+    if result == None:
+        await ctx.author.send(content = "The member you asked for is not on leave at the selected date")
+    else:
+        await ctx.author.send(content = "The member you asked for is on leave at the selected date")
    
 
 client.run(os.getenv("Bot_token"))

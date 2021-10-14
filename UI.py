@@ -117,6 +117,25 @@ def CreateMemberOptions():
 
     return member_options
 
+def CreateIsMemberOnLeaveOptions():
+    member_options = [
+        create_option(
+            name = "discorduser",
+            description = "discord user",
+            option_type = SlashCommandOptionType.USER,
+            required = True
+        ),
+        create_option(
+            name = "date",
+            description = "date of the leave",
+            option_type = SlashCommandOptionType.STRING,
+            required = True,
+            choices = CreateDateChoices()
+        )
+    ]
+
+    return member_options
+
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
 

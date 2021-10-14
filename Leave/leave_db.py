@@ -13,6 +13,13 @@ def GetLeavesDatesByMemberID(member_id):
     leaves_dates = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves_dates
 
+def GetLeaveByMemberIDAndDate(member_id, date):
+    db.GetDBCursor().execute(f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND date = '{date}'")
+    rows = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
+    if len(rows) > 0:
+        return rows[0]
+    return None
+
 def GetLeavesByRequestID(request_id):
     db.GetDBCursor().execute(f'SELECT * FROM [leaves] WHERE request_id = {request_id}')
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
