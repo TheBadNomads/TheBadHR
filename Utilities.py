@@ -46,6 +46,6 @@ def IsDateOrderValid(startdate, enddate):
     return enddate >= startdate
 
 def IsAdmin(member):
-    role = discord.utils.find(lambda r: r.name == os.getenv("Admin_Role"), member.guild.roles)
+    role = discord.utils.get(member.guild.roles, id = int(os.getenv("Admin_Role_id")))
     return role in member.roles
     
