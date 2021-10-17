@@ -46,7 +46,7 @@ def InsertLeave(member_id:int, request_id:int, leave_type:int, date:datetime, re
         db.GetDBConnection().rollback()
         return "Failed"
 
-def InsertLeaveBalance(member_id:int, start_date:datetime):
+def InsertInitialLeaveBalance(member_id:int, start_date:datetime):
     try:
         leave_types_with_balance = utils.CalculateInitialLeavesBalance(GetLeaveTypesWithBalance(), start_date)
 
