@@ -1,6 +1,9 @@
 from datetime import datetime
 import discord
 import os
+import Utilities
+
+from discord import utils
 import UI
 import db
 
@@ -33,8 +36,11 @@ async def RequestLeave(ctx, leavetype, startdate, enddate, reason = ""):
 
 @slash.slash(name = "InsertMember", description = "Insert new member into the database", options = UI.CreateMemberOptions(), guild_ids = guild_ids)
 async def InsertMember(ctx, discorduser, name, email, startdate):
-    result = member_db.InsertMember(discorduser.id, name, email, datetime.strptime(startdate, '%d/%m/%Y'))
-    await ctx.send(content = result)
+    if Utilities.IsAdmin(ctx.author):
+        result = member_db.InsertMember(discorduser.id, name, email, datetime.strptime(startdate, '%d/%m/%Y'))
+        await ctx.send(content = result)
+    else:
+        await ctx.send(content = "This command is for Admins only")
    
 
 client.run(os.getenv("Bot_token"))
