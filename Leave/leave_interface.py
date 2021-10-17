@@ -87,14 +87,14 @@ def UpdateLeaveBalance(message_id):
     leave = leaves[0]
     leave_db.UpdateLeaveBalance(leave["member_id"], leave["leave_type"], -len(leaves))
 
-def GetPerviouslyRequestedDays(member_id, start_date, end_date):
-    reqested_days = utils.GetRequestedDays(start_date, end_date)
+def GetpreviouslyRequestedDays(member_id, start_date, end_date):
+    requested_days = utils.GetRequestedDays(start_date, end_date)
     already_applied_days = [d['date'] for d in leave_db.GetLeavesDatesByMemberID(member_id)]
-    perviously_requested_days = []
+    previously_requested_days = []
 
-    for day in reqested_days:
+    for day in requested_days:
         if day in already_applied_days:
-            perviously_requested_days.append(day.strftime('%d/%m/%Y'))
+            previously_requested_days.append(day.strftime('%d/%m/%Y'))
     
-    return perviously_requested_days
+    return previously_requested_days
                 
