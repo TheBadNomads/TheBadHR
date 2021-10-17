@@ -8,10 +8,10 @@ from db import db
 from Leave import leave_db
 
 async def RequestLeave(ctx, member, client, leavetype, startdate, enddate, reason):
-    perviously_requested_days = GetPreviouslyRequestedDays(member.id, startdate, enddate)
+    previously_requested_days = GetPreviouslyIntersectedRequestedDays(member.id, startdate, enddate)
 
-    if len(perviously_requested_days) > 0:
-        await ctx.send(content = f"Leave request already exists for {perviously_requested_days}")
+    if len(previously_requested_days) > 0:
+        await ctx.send(content = f"Leave request already exists for {previously_requested_days}")
         return
     
     if utils.IsDateOrderValid(startdate, enddate):
@@ -87,14 +87,10 @@ def UpdateLeaveBalance(message_id):
     leave = leaves[0]
     leave_db.UpdateLeaveBalance(leave["member_id"], leave["leave_type"], -len(leaves))
 
-def GetPreviouslyRequestedDays(member_id, start_date, end_date):
+def GetPreviouslyIntersectedRequestedDays(member_id, start_date, end_date):
     requested_days = utils.GetRequestedDays(start_date, end_date)
-    already_applied_days = [d['date'] for d in leave_db.GetLeavesDatesByMemberID(member_id)]
-    previously_requested_days = []
-
-    for day in requested_days:
-        if day in already_applied_days:
-            previously_requested_days.append(day.strftime('%d/%m/%Y'))
+    already_applied_days = [d['date'] for d in leave_db.GetLeavesMemberID(member_id)]
+    previously_requested_days = set(requested_days).intersection(already_applied_days)
     
-    return previously_requested_days
+    return [day.strftime('%d/%m/%Y') for day in previously_requested_days]
                 

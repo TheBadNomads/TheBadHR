@@ -8,10 +8,10 @@ def GetLeaveByID(id):
     leave = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
     return leave
 
-def GetLeavesDatesByMemberID(member_id):
-    db.GetDBCursor().execute(f"SELECT date FROM [leaves] WHERE member_id = {member_id}")
-    leaves_dates = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
-    return leaves_dates
+def GetLeavesMemberID(member_id):
+    db.GetDBCursor().execute(f"SELECT * FROM [leaves] WHERE member_id = {member_id}")
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
+    return leaves
 
 def GetLeavesByRequestID(request_id):
     db.GetDBCursor().execute(f'SELECT * FROM [leaves] WHERE request_id = {request_id}')
