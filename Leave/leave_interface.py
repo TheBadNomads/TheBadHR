@@ -8,7 +8,7 @@ from db import db
 from Leave import leave_db
 
 async def RequestLeave(ctx, member, client, leavetype, startdate, enddate, reason):
-    perviously_requested_days = GetPerviouslyRequestedDays(member.id, startdate, enddate)
+    perviously_requested_days = GetPreviouslyRequestedDays(member.id, startdate, enddate)
 
     if len(perviously_requested_days) > 0:
         await ctx.send(content = f"Leave request already exists for {perviously_requested_days}")
@@ -87,7 +87,7 @@ def UpdateLeaveBalance(message_id):
     leave = leaves[0]
     leave_db.UpdateLeaveBalance(leave["member_id"], leave["leave_type"], -len(leaves))
 
-def GetpreviouslyRequestedDays(member_id, start_date, end_date):
+def GetPreviouslyRequestedDays(member_id, start_date, end_date):
     requested_days = utils.GetRequestedDays(start_date, end_date)
     already_applied_days = [d['date'] for d in leave_db.GetLeavesDatesByMemberID(member_id)]
     previously_requested_days = []
