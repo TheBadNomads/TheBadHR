@@ -23,14 +23,10 @@ async def RequestLeave(ctx, member, client, leavetype, startdate, enddate, reaso
         await ctx.send(content = db.GetCaption(3))
 
 async def ProccessRequest(ctx, member, client, startdate, enddate, leavetype, reason):
-    current_hour = datetime.datetime.now().time()
-    end_of_core = datetime.time(13)
-    today = datetime.datetime.today().date()
-    
-    if (startdate.date() == today) or ((current_hour >= end_of_core) and (startdate.date() == today + datetime.timedelta(1))):
+    if IsLeaveRequestedAfterCore(startdate):
         await CompleteSpecialRequest(ctx, member, client, startdate, enddate, leavetype, reason)
         return
-
+        
     await CompleteRequest(ctx, member, client, startdate, enddate, leavetype, reason)
 
 async def CompleteSpecialRequest(ctx, member, client, startdate, enddate, leavetype, reason):
@@ -76,7 +72,7 @@ async def UpdateLeaveStatus(client, payload, status, message, embed):
     try:
         leave_db.UpdateLeaveStatus(payload.message_id, status)
         await UI.UpdateEmbedLeaveStatus(message, embed, status)
-        member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
+        member = client.get_user(utils.GetMemberIDFromEmbed(embed))
         await member.send(content = "Your request was " + status)
 
     except Exception as e:
@@ -93,4 +89,17 @@ def GetPreviouslyIntersectedRequestedDays(member_id, start_date, end_date):
     previously_requested_days = set(requested_days).intersection(already_applied_days)
     
     return [day.strftime('%d/%m/%Y') for day in previously_requested_days]
+
+def IsLeaveRequestedAfterCore(startdate):
+    current_hour = datetime.datetime.now().time()
+    end_of_core = datetime.time(13)
+    today = datetime.datetime.today().date()
+
+    if (startdate.date() == today):
+        return True
+    
+    if ((current_hour >= end_of_core) and (startdate.date() == today + datetime.timedelta(1))):
+        return True
+
+    return  False 
                 
