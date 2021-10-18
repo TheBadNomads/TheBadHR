@@ -90,7 +90,6 @@ def GetPreviouslyIntersectedRequestedDays(member_id, start_date, end_date):
     requested_days = utils.GetRequestedDays(start_date, end_date)
     already_applied_days = [d['date'] for d in leave_db.GetLeavesMemberID(member_id)]
     previously_requested_days = set(requested_days).intersection(already_applied_days)
-    
     return [day.strftime('%d/%m/%Y') for day in previously_requested_days]
 
 def IsLeaveRequestedAfterCore(startdate):
