@@ -76,7 +76,7 @@ async def UpdateLeaveStatus(client, payload, status, message, embed):
     try:
         leave_db.UpdateLeaveStatus(payload.message_id, status)
         await UI.UpdateEmbedLeaveStatus(message, embed, status)
-        member = await client.fetch_user(leave_db.GetLeavesByRequestID(payload.message_id)[0]["member_id"])
+        member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
         await member.send(content = "Your request was " + status)
 
     except Exception as e:
