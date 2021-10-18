@@ -10,17 +10,19 @@ from Leave import leave_db
 async def RequestLeave(ctx, member, client, leavetype, startdate, enddate, reason):
     previously_requested_days = GetPreviouslyIntersectedRequestedDays(member.id, startdate, enddate)
 
+    if not (utils.IsDateOrderValid(startdate, enddate)):
+        await ctx.send(content = db.GetCaption(3))
+        return 
+
     if len(previously_requested_days) > 0:
         await ctx.send(content = f"Leave request already exists for {previously_requested_days}")
         return
+        
+    if not (utils.HasEnoughBalance(startdate, enddate, leave_db.GetLeaveBalance(member.id, leavetype))):
+        await ctx.send(content = db.GetCaption(2) + leave_db.GetLeaveBalance(member.id, leavetype))
+        return
     
-    if utils.IsDateOrderValid(startdate, enddate):
-        if utils.HasEnoughBalance(startdate, enddate, leave_db.GetLeaveBalance(member.id, leavetype)):
-            await ProccessRequest(ctx, member, client, startdate, enddate, leavetype, reason)
-        else:
-            await ctx.send(content = db.GetCaption(2) + leave_db.GetLeaveBalance(member.id, leavetype))
-    else:
-        await ctx.send(content = db.GetCaption(3))
+    await ProccessRequest(ctx, member, client, startdate, enddate, leavetype, reason)                
 
 async def ProccessRequest(ctx, member, client, startdate, enddate, leavetype, reason):
     if IsLeaveRequestedAfterCore(startdate):
