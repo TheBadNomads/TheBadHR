@@ -91,4 +91,8 @@ def IsLeaveRequest(message_id):
     return len(GetLeavesByRequestID(message_id)) != 0
 
 def IsLeaveRequestPending(message_id):
-    return GetLeaveStatus(message_id).lower() == "pending"
+    if IsLeaveRequest(message_id):
+        return GetLeaveStatus(message_id).lower() == "pending"
+    
+    return False
+    

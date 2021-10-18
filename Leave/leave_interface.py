@@ -63,16 +63,17 @@ async def HandleLeaveReactions(client, payload):
     message = await channel.fetch_message(payload.message_id)
     embed = message.embeds[0]
 
-    if utils.isNotBot(payload.member) and utils.IsAdmin(payload.member) and leave_db.IsLeaveRequest(payload.message_id) and leave_db.IsLeaveRequestPending(payload.message_id):
+    if utils.isNotBot(payload.member) and utils.IsAdmin(payload.member) and leave_db.IsLeaveRequestPending(payload.message_id):
         status = UI.ParseEmoji(payload.emoji)
         if status != None:
             await UpdateLeaveStatus(client, payload, status, message, embed)
-            if status == "Approved":
-                UpdateLeaveBalance(payload.message_id)
 
 async def UpdateLeaveStatus(client, payload, status, message, embed):
     try:
         leave_db.UpdateLeaveStatus(payload.message_id, status)
+        if status == "Approved":
+                UpdateLeaveBalance(payload.message_id)
+
         await UI.UpdateEmbedLeaveStatus(message, embed, status)
         member = client.get_user(utils.GetMemberIDFromEmbed(embed))
         await member.send(content = "Your request was " + status)
