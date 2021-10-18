@@ -64,9 +64,11 @@ async def UpdateLeaveStatus(client, payload, status, message, embed):
 
 def UpdateLeaveBalanceOfRequestID(message_id):
     leaves = leave_db.GetLeavesByRequestID(message_id)
-    for leave in leaves:
-        leave_db.UpdateLeaveBalance(leave["member_id"], leave["leave_type"], -1)
-    
+    member_id = leaves[0]["member_id"]
+    leave_type = leaves[0]["leave_type"]
+    leave_db.UpdateLeaveBalance(member_id, leave_type, -1)
+    leaves.remove(leaves[0])
+    leave_db.UpdateLeaveBalance(member_id, leave_type, -len(leaves))    
 
 def UpdateLeaveBalance(member_id, leave_type, added_balance):
     leave_db.UpdateLeaveBalance(member_id, leave_type, added_balance)
