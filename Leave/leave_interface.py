@@ -53,7 +53,7 @@ async def UpdateLeaveStatus(client, payload, status, message, embed):
     try:
         leave_db.UpdateLeaveStatus(payload.message_id, status)
         if status == "Approved":
-            UpdateLeaveBalanceAccordingToLeaveType(payload.message_id)
+            UpdateLeaveBalanceOfRequestID(payload.message_id)
 
         await UI.UpdateEmbedLeaveStatus(message, embed, status)
         member = client.get_user(utils.GetMemberIDFromEmbed(embed))
@@ -62,7 +62,7 @@ async def UpdateLeaveStatus(client, payload, status, message, embed):
     except Exception as e:
         print(e)
 
-def UpdateLeaveBalanceAccordingToLeaveType(message_id):
+def UpdateLeaveBalanceOfRequestID(message_id):
     leaves = leave_db.GetLeavesByRequestID(message_id)
     for leave in leaves:
         leave_db.UpdateLeaveBalance(leave["member_id"], leave["leave_type"], -1)
