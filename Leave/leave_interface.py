@@ -8,12 +8,11 @@ from db import db
 from Leave import leave_db
 
 async def RequestLeave(ctx, member, client, leavetype, startdate, enddate, reason):
-    previously_requested_days = GetPreviouslyIntersectedRequestedDays(member.id, startdate, enddate)
-
     if not (utils.IsDateOrderValid(startdate, enddate)):
         await ctx.send(content = db.GetCaption(3))
         return 
 
+    previously_requested_days = GetPreviouslyIntersectedRequestedDays(member.id, startdate, enddate)
     if len(previously_requested_days) > 0:
         await ctx.send(content = f"Leave request already exists for {previously_requested_days}")
         return
@@ -22,25 +21,7 @@ async def RequestLeave(ctx, member, client, leavetype, startdate, enddate, reaso
         await ctx.send(content = db.GetCaption(2) + leave_db.GetLeaveBalance(member.id, leavetype))
         return
     
-    await ProccessRequest(ctx, member, client, startdate, enddate, leavetype, reason)                
-
-async def ProccessRequest(ctx, member, client, startdate, enddate, leavetype, reason):
-    if IsLeaveRequestedAfterCore(startdate):
-        await CompleteSpecialRequest(ctx, member, client, startdate, enddate, leavetype, reason)
-        return
-        
-    await CompleteRequest(ctx, member, client, startdate, enddate, leavetype, reason)
-
-async def CompleteSpecialRequest(ctx, member, client, startdate, enddate, leavetype, reason):
-    requested_days = utils.GetRequestedDays(startdate, enddate)
-
-    if leave_db.GetLeaveBalance(member.id, "Emergency") > 0:
-        await CompleteRequest(ctx, member, client, requested_days[0], requested_days[0], "Emergency", reason)
-    else:
-        await CompleteRequest(ctx, member, client, requested_days[0], requested_days[0], "Unpaid", reason)
-    
-    if len(requested_days) > 1:
-        await CompleteRequest(ctx, member, client, requested_days[1], enddate, leavetype, reason)
+    await CompleteRequest(ctx, member, client, startdate, enddate, leavetype, reason)            
     
 
 async def CompleteRequest(ctx, member, client, startdate, enddate, leaveType, reason):
@@ -72,7 +53,7 @@ async def UpdateLeaveStatus(client, payload, status, message, embed):
     try:
         leave_db.UpdateLeaveStatus(payload.message_id, status)
         if status == "Approved":
-                UpdateLeaveBalance(payload.message_id)
+            UpdateLeaveBalanceAccordingToLeaveType(payload.message_id)
 
         await UI.UpdateEmbedLeaveStatus(message, embed, status)
         member = client.get_user(utils.GetMemberIDFromEmbed(embed))
@@ -81,27 +62,18 @@ async def UpdateLeaveStatus(client, payload, status, message, embed):
     except Exception as e:
         print(e)
 
-def UpdateLeaveBalance(message_id):
+def UpdateLeaveBalanceAccordingToLeaveType(message_id):
     leaves = leave_db.GetLeavesByRequestID(message_id)
-    leave = leaves[0]
-    leave_db.UpdateLeaveBalance(leave["member_id"], leave["leave_type"], -len(leaves))
+    for leave in leaves:
+        leave_db.UpdateLeaveBalance(leave["member_id"], leave["leave_type"], -1)
+    
+
+def UpdateLeaveBalance(member_id, leave_type, added_balance):
+    leave_db.UpdateLeaveBalance(member_id, leave_type, added_balance)
 
 def GetPreviouslyIntersectedRequestedDays(member_id, start_date, end_date):
     requested_days = utils.GetRequestedDays(start_date, end_date)
     already_applied_days = [d['date'] for d in leave_db.GetLeavesMemberID(member_id)]
     previously_requested_days = set(requested_days).intersection(already_applied_days)
     return [day.strftime('%d/%m/%Y') for day in previously_requested_days]
-
-def IsLeaveRequestedAfterCore(startdate):
-    current_hour = datetime.datetime.now().time()
-    end_of_core = datetime.time(13)
-    today = datetime.datetime.today().date()
-
-    if (startdate.date() == today):
-        return True
-    
-    if ((current_hour >= end_of_core) and (startdate.date() == today + datetime.timedelta(1))):
-        return True
-
-    return  False 
                 
