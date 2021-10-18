@@ -56,7 +56,7 @@ async def UpdateLeaveStatus(client, payload, status, message, embed):
             UpdateLeaveBalanceOfRequestID(payload.message_id)
 
         await UI.UpdateEmbedLeaveStatus(message, embed, status)
-        member = client.get_user(utils.GetMemberIDFromEmbed(embed))
+        member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
         await member.send(content = "Your request was " + status)
 
     except Exception as e:
@@ -64,11 +64,10 @@ async def UpdateLeaveStatus(client, payload, status, message, embed):
 
 def UpdateLeaveBalanceOfRequestID(message_id):
     leaves = leave_db.GetLeavesByRequestID(message_id)
-    member_id = leaves[0]["member_id"]
-    leave_type = leaves[0]["leave_type"]
-    leave_db.UpdateLeaveBalance(member_id, leave_type, -1)
+    leave_db.UpdateLeaveBalance(leaves[0]["member_id"], leaves[0]["leave_type"], -1)
     leaves.remove(leaves[0])
-    leave_db.UpdateLeaveBalance(member_id, leave_type, -len(leaves))    
+    if len(leaves) > 0:
+        leave_db.UpdateLeaveBalance(leaves[0]["member_id"], leaves[0]["leave_type"], -len(leaves))    
 
 def UpdateLeaveBalance(member_id, leave_type, added_balance):
     leave_db.UpdateLeaveBalance(member_id, leave_type, added_balance)

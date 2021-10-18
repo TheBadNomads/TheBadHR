@@ -1,7 +1,7 @@
 import Utilities as utils
+import datetime
 
 from db import db
-from datetime import datetime
 
 def GetLeaveByID(id):
     db.GetDBCursor().execute(f'SELECT * FROM [leaves] WHERE id = {id}')
