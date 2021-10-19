@@ -34,12 +34,6 @@ def GetLeaveTypesWithBalance():
     return leaves_types
 
 def InsertLeave(member_id, request_id, leave_type, date, reason, remark, leave_status):
-    if utils.IsLeaveRequestedAfterCore(date):
-        if GetLeaveBalance(member_id, "Emergency") > 0:
-            leave_type = "Emergency"
-        else:
-            leave_type = "Unpaid"
-
     try:
         db.GetDBCursor().execute(
             "INSERT INTO [leaves] (member_id, request_id, leave_type, date, reason, remark, leave_status) VALUES (?, ?, ?, ?, ?, ?, ?)",

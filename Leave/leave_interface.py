@@ -23,7 +23,6 @@ async def RequestLeave(ctx, member, client, leavetype, startdate, enddate, reaso
     
     await CompleteRequest(ctx, member, client, startdate, enddate, leavetype, reason)            
     
-
 async def CompleteRequest(ctx, member, client, startdate, enddate, leaveType, reason):
     await ctx.send(content = db.GetCaption(1))
     embed = UI.CreateLeaveEmbed(ctx, startdate, enddate, leaveType)
@@ -35,15 +34,20 @@ async def CompleteRequest(ctx, member, client, startdate, enddate, leaveType, re
 
 def CompleteRequest_DB(member, message_id, startdate, enddate, leaveType, leaveStatus, reason):
     requested_days = utils.GetRequestedDays(startdate, enddate)
-
+    emergency_balance = leave_db.GetLeaveBalance(member.id, "Emergency")
     for day in requested_days:
-        leave_db.InsertLeave(member.id, message_id, leaveType, day, reason, "", leaveStatus)
-
+        if not (utils.IsLeaveRequestedAfterCore(day)):
+            leave_db.InsertLeave(member.id, message_id, leaveType, day, reason, "", leaveStatus)
+            continue
+        if emergency_balance > 0:
+            leave_db.InsertLeave(member.id, message_id, "Emergency", day, reason, "", leaveStatus)
+        else:
+            leave_db.InsertLeave(member.id, message_id, "Unpaid", day, reason, "", leaveStatus)
+                
 async def HandleLeaveReactions(client, payload):
     channel = client.get_channel(payload.channel_id)
     message = await channel.fetch_message(payload.message_id)
     embed = message.embeds[0]
-
     if utils.isNotBot(payload.member) and utils.IsAdmin(payload.member) and leave_db.IsLeaveRequestPending(payload.message_id):
         status = UI.ParseEmoji(payload.emoji)
         if status != None:
@@ -58,7 +62,6 @@ async def UpdateLeaveStatus(client, payload, status, message, embed):
         await UI.UpdateEmbedLeaveStatus(message, embed, status)
         member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
         await member.send(content = "Your request was " + status)
-
     except Exception as e:
         print(e)
 
