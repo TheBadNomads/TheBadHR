@@ -34,7 +34,7 @@ def GetLeaveTypesWithBalance():
     return leaves_types
 
 def InsertLeave(member_id, request_id, leave_type, date, reason, remark, leave_status):
-    if IsLeaveRequestedAfterCore(date):
+    if utils.IsLeaveRequestedAfterCore(date):
         if GetLeaveBalance(member_id, "Emergency") > 0:
             leave_type = "Emergency"
         else:
@@ -100,17 +100,4 @@ def IsLeaveRequestPending(message_id):
     if IsLeaveRequest(message_id):
         return GetLeaveStatus(message_id).lower() == "pending"
     
-    return False
-
-def IsLeaveRequestedAfterCore(startdate):
-    current_hour = datetime.datetime.now().time()
-    end_of_core = datetime.time(13)
-    today = datetime.datetime.today().date()
-
-    if (startdate.date() == today):
-        return True
-    
-    if ((current_hour >= end_of_core) and (startdate.date() == today + datetime.timedelta(1))):
-        return True
-
-    return  False     
+    return False    
