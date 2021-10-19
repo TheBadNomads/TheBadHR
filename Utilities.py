@@ -1,7 +1,6 @@
 import discord
 import os
-
-from datetime import datetime, timedelta
+import datetime
 
 def isNotBot(member):
     return not member.bot
@@ -36,7 +35,7 @@ def HasEnoughBalance(startdate, enddate, current_balance):
 def GetRequestedDays(startdate, enddate):
     requested_days = []
     for i in range((enddate - startdate).days + 1):
-        day = startdate + timedelta(days = i)
+        day = startdate + datetime.timedelta(days = i)
         if (day.weekday() not in [4, 5]):
             requested_days.append(day) 
 
@@ -52,4 +51,16 @@ def IsAdmin(member):
 def GetMemberIDFromEmbed(embed):
     text = embed.description
     return int(text[text.find("<@!")+len("<@!"):text.rfind(">")])
+
+def IsLeaveRequestedAfterCore(startdate):
+    current_hour = datetime.datetime.now().time()
+    end_of_core = datetime.time(13)
+    today = datetime.datetime.today().date()
+
+    if (startdate.date() == today):
+        return True
     
+    if ((current_hour >= end_of_core) and (startdate.date() == today + datetime.timedelta(1))):
+        return True
+
+    return  False 
