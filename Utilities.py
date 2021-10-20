@@ -52,15 +52,15 @@ def GetMemberIDFromEmbed(embed):
     text = embed.description
     return int(text[text.find("<@!")+len("<@!"):text.rfind(">")])
 
-def IsLeaveRequestedAfterCore(startdate):
+def IsLeaveRequestedAfterCore(leave_date):
     current_hour = datetime.datetime.now().time()
     end_of_core = datetime.time(13)
     today = datetime.datetime.today().date()
 
-    if (startdate.date() == today):
+    if (leave_date.date() == today):
         return True
     
-    if ((current_hour >= end_of_core) and (startdate.date() == today + datetime.timedelta(1))):
+    if ((current_hour >= end_of_core) and (leave_date.date() == today + datetime.timedelta(1))):
         return True
 
     return  False 
