@@ -8,7 +8,7 @@ from db import db
 from Leave import leave_db
 
 async def RequestLeave(ctx, member, client, leavetype, startdate, enddate, reason):
-    if not (utils.IsDateOrderValid(startdate, enddate)):
+    if enddate < startdate:
         await ctx.send(content = db.GetCaption(3))
         return 
 

@@ -41,10 +41,7 @@ def GetRequestedDays(startdate, enddate):
             requested_days.append(day) 
 
     return requested_days
-
-def IsDateOrderValid(startdate, enddate):
-    return enddate >= startdate
-
+    
 def IsAdmin(member):
     role = discord.utils.get(member.guild.roles, id = int(os.getenv("Admin_Role_id")))
     return (role in member.roles)
