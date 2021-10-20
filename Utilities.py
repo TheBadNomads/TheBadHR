@@ -62,3 +62,6 @@ def IsLeaveRequestedAfterCore(leave_date):
         return True
 
     return  False 
+
+def ConvertDatesToStrings(dates_array):
+    return [day.strftime('%d/%m/%Y') for day in dates_array]

@@ -12,7 +12,7 @@ async def RequestLeave(ctx, member, client, leavetype, startdate, enddate, reaso
         await ctx.send(content = db.GetCaption(3))
         return 
 
-    previously_requested_days = GetRequestedDaysBetween(member.id, startdate, enddate)
+    previously_requested_days = utils.ConvertDatesToStrings(GetRequestedDaysBetween(member.id, startdate, enddate))
     if len(previously_requested_days) > 0:
         await ctx.send(content = f"Leave request already exists for {previously_requested_days}")
         return
@@ -79,5 +79,5 @@ def GetRequestedDaysBetween(member_id, start_date, end_date):
     requested_days = utils.GetRequestedDays(start_date, end_date)
     already_applied_days = [d['date'] for d in leave_db.GetLeavesMemberID(member_id)]
     previously_requested_days = set(requested_days).intersection(already_applied_days)
-    return [day.strftime('%d/%m/%Y') for day in previously_requested_days]
+    return previously_requested_days
                 
