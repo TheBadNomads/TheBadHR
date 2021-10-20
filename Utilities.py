@@ -55,7 +55,7 @@ def IsLeaveRequestedAfterCore(leave_date):
     end_of_core = datetime.time(13)
     today = datetime.datetime.today().date()
 
-    if (leave_date.date() <= today):
+    if (leave_date.date() == today):
         return True
     
     if ((current_hour >= end_of_core) and (leave_date.date() == today + datetime.timedelta(1))):
