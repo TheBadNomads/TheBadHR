@@ -30,9 +30,9 @@ async def CompleteRequest(ctx, member, client, startdate, enddate, leaveType, re
     message = await channel.send(embed = embed)
     await message.add_reaction(os.getenv("Approve_Emoji"))
     await message.add_reaction(os.getenv("Reject_Emoji"))
-    CompleteRequest_DB(member, message.id, startdate, enddate, leaveType, "Pending", reason)
+    AddLeaveRequestToDB(member, message.id, startdate, enddate, leaveType, "Pending", reason)
 
-def CompleteRequest_DB(member, message_id, startdate, enddate, leaveType, leaveStatus, reason):
+def AddLeaveRequestToDB(member, message_id, startdate, enddate, leaveType, leaveStatus, reason):
     requested_days = utils.GetRequestedDays(startdate, enddate)
     emergency_balance = leave_db.GetLeaveBalance(member.id, "Emergency")
     for day in requested_days:
