@@ -1,6 +1,7 @@
 import discord
 import os
 import datetime
+import re 
 
 def isNotBot(member):
     return not member.bot
@@ -50,7 +51,7 @@ def IsAdmin(member):
 
 def GetMemberIDFromEmbed(embed):
     text = embed.description
-    return int(text[text.find("<@!")+len("<@!"):text.rfind(">")])
+    return int(re.match(r'<@!(\d+)>', text).group(1))
 
 def IsLeaveRequestedAfterCore(leave_date):
     current_hour = datetime.datetime.now().time()
