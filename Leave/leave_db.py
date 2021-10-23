@@ -77,9 +77,9 @@ def UpdateLeaveStatus(request_id, leave_status):
         db.GetDBConnection().rollback()
         return "Failed"
 
-def UpdateLeaveBalance(member_id, leave_type, requested_days):
+def UpdateLeaveBalance(member_id, leave_type, requested_days_count):
     try:
-        db.GetDBCursor().execute("UPDATE [leavesBalance] SET balance = balance + ? WHERE member_id = ? AND leave_type = ?", requested_days, member_id, leave_type)
+        db.GetDBCursor().execute("UPDATE [leavesBalance] SET balance = balance + ? WHERE member_id = ? AND leave_type = ?", requested_days_count, member_id, leave_type)
         db.GetDBConnection().commit()
         return "Success"
 
