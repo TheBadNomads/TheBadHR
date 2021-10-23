@@ -7,7 +7,7 @@ from Channels import Channels
 from db import db
 from Leave import leave_db
 
-async def RequestLeave(ctx, member, client, leave_type, start_date, end_date, reason):
+async def ProcessLeaveRequest(ctx, member, client, leave_type, start_date, end_date, reason):
     if end_date < start_date:
         await ctx.send(content = db.GetCaption(3))
         return 
