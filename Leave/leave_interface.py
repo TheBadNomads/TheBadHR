@@ -36,7 +36,7 @@ def AddLeaveRequestToDB(member, message_id, startdate, enddate, leaveType, leave
     requested_days = utils.GetRequestedDays(startdate, enddate)
     emergency_balance = leave_db.GetLeaveBalance(member.id, "Emergency")
     for day in requested_days:
-        if not (utils.IsLeaveRequestedAfterCore(day)):
+        if not (utils.IsLateToApplyForLeave(day)):
             leave_db.InsertLeave(member.id, message_id, leaveType, day, reason, "", leaveStatus)
             continue
         if emergency_balance > 0:
