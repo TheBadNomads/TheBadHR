@@ -12,7 +12,7 @@ async def RequestLeave(ctx, member, client, leavetype, startdate, enddate, reaso
         await ctx.send(content = db.GetCaption(3))
         return 
 
-    previously_requested_days = utils.ConvertDatesToStrings(GetRequestedDaysBetween(member.id, startdate, enddate))
+    previously_requested_days = utils.ConvertDatesToStrings(GetRepeatedRequestedDaysBetween(member.id, startdate, enddate))
     if len(previously_requested_days) > 0:
         await ctx.send(content = f"Leave request already exists for {previously_requested_days}")
         return
@@ -75,9 +75,9 @@ def UpdateLeaveBalanceOfRequestID(message_id):
 def UpdateLeaveBalance(member_id, leave_type, added_balance):
     leave_db.UpdateLeaveBalance(member_id, leave_type, added_balance)
 
-def GetRequestedDaysBetween(member_id, start_date, end_date):
-    requested_days = utils.GetRequestedDays(start_date, end_date)
-    already_applied_days = [d['date'] for d in leave_db.GetLeavesMemberID(member_id)]
-    previously_requested_days = set(requested_days).intersection(already_applied_days)
-    return previously_requested_days
+def GetRepeatedRequestedDaysBetween(member_id, start_date, end_date):
+    current_requested_days = utils.GetRequestedDays(start_date, end_date)
+    previously_requested_days = [d['date'] for d in leave_db.GetLeavesMemberID(member_id)]
+    repeated_requested_days = set(current_requested_days).intersection(previously_requested_days)
+    return repeated_requested_days
                 
