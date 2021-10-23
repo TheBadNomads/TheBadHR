@@ -1,7 +1,7 @@
 import Utilities as utils
 import os
 import UI
-import datetime
+import collections
 
 from Channels import Channels
 from db import db
@@ -66,11 +66,13 @@ async def UpdateLeaveStatus(client, payload, status, message, embed):
         print(e)
 
 def UpdateLeaveBalanceOfRequestID(message_id):
-    leaves = leave_db.GetLeavesByRequestID(message_id)
-    UpdateLeaveBalance(leaves[0]["member_id"], leaves[0]["leave_type"], -1)
-    leaves.remove(leaves[0])
-    if len(leaves) > 0:
-        UpdateLeaveBalance(leaves[0]["member_id"], leaves[0]["leave_type"], -len(leaves))    
+    requested_leaves = leave_db.GetLeavesByRequestID(message_id)
+    ordered_requested_leaves = collections.defaultdict(list)
+    for leave in requested_leaves:
+        ordered_requested_leaves[leave['leave_type']].append(leave)
+
+    for leaves_array in list(ordered_requested_leaves.values()):
+        UpdateLeaveBalance(leaves_array[0]["member_id"], leaves_array[0]["leave_type"], -len(leaves_array))
 
 def UpdateLeaveBalance(member_id, leave_type, added_balance):
     leave_db.UpdateLeaveBalance(member_id, leave_type, added_balance)
