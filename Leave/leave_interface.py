@@ -82,4 +82,3 @@ def GetRepeatedRequestedDaysBetween(member_id, start_date, end_date):
     previously_requested_days = [d['date'] for d in leave_db.GetLeavesMemberID(member_id)]
     repeated_requested_days = set(current_requested_days).intersection(previously_requested_days)
     return repeated_requested_days
-                
