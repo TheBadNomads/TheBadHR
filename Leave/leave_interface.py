@@ -72,10 +72,7 @@ def UpdateLeaveBalanceOfRequestID(message_id):
         ordered_requested_leaves[leave['leave_type']].append(leave)
 
     for leaves_array in list(ordered_requested_leaves.values()):
-        UpdateLeaveBalance(leaves_array[0]["member_id"], leaves_array[0]["leave_type"], -len(leaves_array))
-
-def UpdateLeaveBalance(member_id, leave_type, added_balance):
-    leave_db.UpdateLeaveBalance(member_id, leave_type, added_balance)
+        leave_db.UpdateLeaveBalance(leaves_array[0]["member_id"], leaves_array[0]["leave_type"], -len(leaves_array))
 
 def GetRepeatedRequestedDaysBetween(member_id, start_date, end_date):
     current_requested_days = utils.GetRequestedDays(start_date, end_date)
