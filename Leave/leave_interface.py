@@ -7,31 +7,31 @@ from Channels import Channels
 from db import db
 from Leave import leave_db
 
-async def RequestLeave(ctx, member, client, leavetype, startdate, enddate, reason):
-    if enddate < startdate:
+async def RequestLeave(ctx, member, client, leave_type, start_date, end_date, reason):
+    if end_date < start_date:
         await ctx.send(content = db.GetCaption(3))
         return 
 
-    repeated_requested_days = utils.ConvertDatesToStrings(GetRepeatedRequestedDaysBetween(member.id, startdate, enddate))
+    repeated_requested_days = utils.ConvertDatesToStrings(GetRepeatedRequestedDaysBetween(member.id, start_date, end_date))
     if len(repeated_requested_days) > 0:
         await ctx.send(content = f"Leave request already exists for {repeated_requested_days}")
         return
     
-    leave_balance = leave_db.GetLeaveBalance(member.id, leavetype)
-    if not (utils.HasEnoughBalance(startdate, enddate, leave_balance)):
+    leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
+    if not (utils.HasEnoughBalance(start_date, end_date, leave_balance)):
         await ctx.send(content = db.GetCaption(2) + leave_balance)
         return
     
-    await CompleteRequest(ctx, member, client, startdate, enddate, leavetype, reason)            
+    await CompleteRequest(ctx, member, client, start_date, end_date, leave_type, reason)            
     
-async def CompleteRequest(ctx, member, client, startdate, enddate, leaveType, reason):
+async def CompleteRequest(ctx, member, client, start_date, end_date, leave_type, reason):
     await ctx.send(content = db.GetCaption(1))
-    embed = UI.CreateLeaveEmbed(ctx, startdate, enddate, leaveType)
+    embed = UI.CreateLeaveEmbed(ctx, start_date, end_date, leave_type)
     channel = Channels.GetLeaveApprovalsChannel(client)
     message = await channel.send(embed = embed)
     await message.add_reaction(os.getenv("Approve_Emoji"))
     await message.add_reaction(os.getenv("Reject_Emoji"))
-    AddLeaveRequestToDB(member, message.id, startdate, enddate, leaveType, "Pending", reason)
+    AddLeaveRequestToDB(member, message.id, start_date, end_date, leave_type, "Pending", reason)
 
 def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason):
     requested_days = utils.GetRequestedDays(start_date, end_date)
