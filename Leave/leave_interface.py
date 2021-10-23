@@ -12,13 +12,14 @@ async def RequestLeave(ctx, member, client, leavetype, startdate, enddate, reaso
         await ctx.send(content = db.GetCaption(3))
         return 
 
-    previously_requested_days = utils.ConvertDatesToStrings(GetRepeatedRequestedDaysBetween(member.id, startdate, enddate))
-    if len(previously_requested_days) > 0:
-        await ctx.send(content = f"Leave request already exists for {previously_requested_days}")
+    repeated_requested_days = utils.ConvertDatesToStrings(GetRepeatedRequestedDaysBetween(member.id, startdate, enddate))
+    if len(repeated_requested_days) > 0:
+        await ctx.send(content = f"Leave request already exists for {repeated_requested_days}")
         return
-        
-    if not (utils.HasEnoughBalance(startdate, enddate, leave_db.GetLeaveBalance(member.id, leavetype))):
-        await ctx.send(content = db.GetCaption(2) + leave_db.GetLeaveBalance(member.id, leavetype))
+    
+    leave_balance = leave_db.GetLeaveBalance(member.id, leavetype)
+    if not (utils.HasEnoughBalance(startdate, enddate, leave_balance)):
+        await ctx.send(content = db.GetCaption(2) + leave_balance)
         return
     
     await CompleteRequest(ctx, member, client, startdate, enddate, leavetype, reason)            
@@ -32,17 +33,17 @@ async def CompleteRequest(ctx, member, client, startdate, enddate, leaveType, re
     await message.add_reaction(os.getenv("Reject_Emoji"))
     AddLeaveRequestToDB(member, message.id, startdate, enddate, leaveType, "Pending", reason)
 
-def AddLeaveRequestToDB(member, message_id, startdate, enddate, leaveType, leaveStatus, reason):
-    requested_days = utils.GetRequestedDays(startdate, enddate)
+def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason):
+    requested_days = utils.GetRequestedDays(start_date, end_date)
     emergency_balance = leave_db.GetLeaveBalance(member.id, "Emergency")
     for day in requested_days:
         if not (utils.IsLateToApplyForLeave(day)):
-            leave_db.InsertLeave(member.id, message_id, leaveType, day, reason, "", leaveStatus)
+            leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status)
             continue
         if emergency_balance > 0:
-            leave_db.InsertLeave(member.id, message_id, "Emergency", day, reason, "", leaveStatus)
+            leave_db.InsertLeave(member.id, message_id, "Emergency", day, reason, "", leave_status)
         else:
-            leave_db.InsertLeave(member.id, message_id, "Unpaid", day, reason, "", leaveStatus)
+            leave_db.InsertLeave(member.id, message_id, "Unpaid", day, reason, "", leave_status)
                 
 async def HandleLeaveReactions(client, payload):
     channel = client.get_channel(payload.channel_id)
