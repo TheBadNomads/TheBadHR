@@ -29,4 +29,3 @@ def InsertMember(id:int, name:str, email:str, start_date:datetime):
     except Exception as e:
         db.GetDBConnection().rollback()
         return "failed"
-        
