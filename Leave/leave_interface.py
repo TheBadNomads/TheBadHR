@@ -49,10 +49,13 @@ async def HandleLeaveReactions(client, payload):
     channel = client.get_channel(payload.channel_id)
     message = await channel.fetch_message(payload.message_id)
     embed = message.embeds[0]
+    
+    status = UI.ParseEmoji(payload.emoji)
+    if status == None:
+        return
+
     if utils.isNotBot(payload.member) and utils.IsAdmin(payload.member) and leave_db.IsLeaveRequestPending(payload.message_id):
-        status = UI.ParseEmoji(payload.emoji)
-        if status != None:
-            await UpdateLeaveStatus(client, payload, status, message, embed)
+        await UpdateLeaveStatus(client, payload, status, message, embed)
 
 async def UpdateLeaveStatus(client, payload, status, message, embed):
     try:
