@@ -27,10 +27,10 @@ def CalculateProratedAnnualLeaves(start_date, starting_balance):
     return leaves_months_count * leave_balance_per_month
 
 def HasEnoughBalance(startdate, enddate, current_balance):
-    requested_days_count = len(GetRequestedDays(startdate, enddate))
+    requested_days_count = len(GetWorkDays(startdate, enddate))
     return current_balance >= requested_days_count
 
-def GetRequestedDays(startdate, enddate):
+def GetWorkDays(startdate, enddate):
     requested_days = []
     for i in range((enddate - startdate).days + 1):
         day = startdate + datetime.timedelta(days = i)

@@ -12,7 +12,7 @@ async def ProcessLeaveRequest(ctx, member, client, leave_type, start_date, end_d
         await ctx.send(content = db.GetCaption(3))
         return 
 
-    repeated_requested_days = utils.ConvertDatesToStrings(GetRepeatedRequestedDaysBetween(member.id, start_date, end_date))
+    repeated_requested_days = utils.ConvertDatesToStrings(GetRequestedDaysBetween(member.id, start_date, end_date))
     if len(repeated_requested_days) > 0:
         await ctx.send(content = f"Leave request already exists for {repeated_requested_days}")
         return
@@ -38,9 +38,9 @@ async def SubmitRequest(ctx, member, client, start_date, end_date, leave_type, r
     AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, "Pending", reason)
 
 def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason):
-    requested_days = utils.GetRequestedDays(start_date, end_date)
+    work_days = utils.GetWorkDays(start_date, end_date)
     emergency_balance = leave_db.GetLeaveBalance(member.id, "Emergency")
-    for day in requested_days:
+    for day in work_days:
         if not (utils.IsLateToApplyForLeave(day)):
             leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status)
             continue
@@ -82,8 +82,8 @@ def UpdateLeaveBalanceOfRequestID(message_id):
     for leaves_array in list(ordered_requested_leaves.values()):
         leave_db.UpdateLeaveBalance(leaves_array[0]["member_id"], leaves_array[0]["leave_type"], -len(leaves_array))
 
-def GetRepeatedRequestedDaysBetween(member_id, start_date, end_date):
-    current_requested_days = utils.GetRequestedDays(start_date, end_date)
+def GetRequestedDaysBetween(member_id, start_date, end_date):
+    work_days = utils.GetWorkDays(start_date, end_date)
     previously_requested_days = [d['date'] for d in leave_db.GetLeavesMemberID(member_id)]
-    repeated_requested_days = set(current_requested_days).intersection(previously_requested_days)
-    return repeated_requested_days
+    requested_days = set(work_days).intersection(previously_requested_days)
+    return requested_days
