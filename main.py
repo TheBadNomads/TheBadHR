@@ -1,6 +1,9 @@
+from datetime import datetime
 import discord
 import os
-import Leaves
+import Utilities
+
+from discord import utils
 import UI
 import db
 
@@ -9,6 +12,7 @@ from discord.ext import commands
 from discord_slash import SlashCommand
 from discord_components import DiscordComponents, Button, Select, SelectOption, message
 from Member import member_db 
+from Leave import leave_interface
 
 load_dotenv()
 
@@ -24,16 +28,19 @@ async def on_ready():
 
 @client.event
 async def on_raw_reaction_add(payload):
-    await Leaves.HandleLeaveReactions(client, payload)
+    await leave_interface.HandleLeaveReactions(client, payload)
 
 @slash.slash(name = "RequestLeave", description = "Request an annual leave", options = UI.CreateDateOptions(), guild_ids = guild_ids)
-async def RequestLeave(ctx, leavetype, startdate, enddate):
-    await Leaves.RequestLeave(ctx, client, leavetype, startdate, enddate)
+async def RequestLeave(ctx, leavetype, startdate, enddate, reason = ""):
+    await leave_interface.ProcessLeaveRequest(ctx, ctx.author, client, leavetype, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), reason)
 
 @slash.slash(name = "InsertMember", description = "Insert new member into the database", options = UI.CreateMemberOptions(), guild_ids = guild_ids)
 async def InsertMember(ctx, discorduser, name, email, startdate):
-    result = member_db.InsertMember(discorduser.id, name, email, startdate)
-    await ctx.send(content = result)
+    if Utilities.IsAdmin(ctx.author):
+        result = member_db.InsertMember(discorduser.id, name, email, datetime.strptime(startdate, '%d/%m/%Y'))
+        await ctx.send(content = result)
+    else:
+        await ctx.send(content = "This command is for Admins only")
    
 
 client.run(os.getenv("Bot_token"))

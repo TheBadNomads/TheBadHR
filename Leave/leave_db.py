@@ -1,39 +1,39 @@
 import Utilities as utils
+import datetime
 
 from db import db
-from datetime import datetime
 
 def GetLeaveByID(id):
     db.GetDBCursor().execute(f'SELECT * FROM [leaves] WHERE id = {id}')
     leave = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
-
     return leave
+
+def GetLeavesMemberID(member_id):
+    db.GetDBCursor().execute(f"SELECT * FROM [leaves] WHERE member_id = {member_id}")
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
+    return leaves
 
 def GetLeavesByRequestID(request_id):
     db.GetDBCursor().execute(f'SELECT * FROM [leaves] WHERE request_id = {request_id}')
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
-
     return leaves
 
 def GetLeaveStatus(request_id):
     db.GetDBCursor().execute(f'SELECT leave_status FROM [leaves] WHERE request_id = {request_id}')
     leave = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
-
     return leave["leave_status"]
 
 def GetLeaveBalance(member_id, leave_type):
     db.GetDBCursor().execute(f"SELECT balance FROM [leavesBalance] WHERE member_id = {member_id} AND leave_type = '{leave_type}'")
     leaves_balance = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
-
     return float(leaves_balance["balance"])
 
 def GetLeaveTypesWithBalance():
     db.GetDBCursor().execute('SELECT * FROM [leaveTypesWithBalance]')
     leaves_types = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
-
     return leaves_types
 
-def InsertLeave(member_id:int, request_id:int, leave_type:int, date:datetime, reason:str, remark:str, leave_status:str):
+def InsertLeave(member_id, request_id, leave_type, date, reason, remark, leave_status):
     try:
         db.GetDBCursor().execute(
             "INSERT INTO [leaves] (member_id, request_id, leave_type, date, reason, remark, leave_status) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -46,18 +46,18 @@ def InsertLeave(member_id:int, request_id:int, leave_type:int, date:datetime, re
         db.GetDBConnection().rollback()
         return "Failed"
 
-def InsertLeaveBalance(member_id:int, start_date:datetime):
+def InsertInitialLeaveBalance(member_id:int, start_date:datetime):
     try:
         leave_types_with_balance = utils.CalculateInitialLeavesBalance(GetLeaveTypesWithBalance(), start_date)
 
-        for name, balance in leave_types_with_balance:
+        for name, balance in leave_types_with_balance.items():
             try:
                 db.GetDBCursor().execute(
                     "INSERT INTO [leavesBalance] (member_id, leave_type, balance) VALUES (?, ?, ?)",
                     (member_id, name, balance)
                 )
             except Exception as e:
-                print(e)
+                db.GetDBConnection().rollback()
                 return "Failed"
 
         db.GetDBConnection().commit()
@@ -77,9 +77,20 @@ def UpdateLeaveStatus(request_id, leave_status):
         db.GetDBConnection().rollback()
         return "Failed"
 
-def UpdateLeaveBalance(member_id, leave_type, requested_days):
+def UpdateMultipleLeavesBalance(leaves_array):
     try:
-        db.GetDBCursor().execute("UPDATE [leavesBalance] SET balance = balance + ? WHERE member_id = ? AND leave_type = ?", requested_days, member_id, leave_type)
+        for leave in leaves_array:
+            db.GetDBCursor().execute("UPDATE [leavesBalance] SET balance = balance - 1 WHERE member_id = ? AND leave_type = ?", leave["member_id"], leave["leave_type"])
+        db.GetDBConnection().commit()
+        return "Success"
+
+    except Exception as e:
+        db.GetDBConnection().rollback()
+        return "Failed"
+
+def UpdateLeaveBalance(member_id, leave_type, requested_days_count):
+    try:
+        db.GetDBCursor().execute("UPDATE [leavesBalance] SET balance = balance + ? WHERE member_id = ? AND leave_type = ?", requested_days_count, member_id, leave_type)
         db.GetDBConnection().commit()
         return "Success"
 
@@ -91,4 +102,7 @@ def IsLeaveRequest(message_id):
     return len(GetLeavesByRequestID(message_id)) != 0
 
 def IsLeaveRequestPending(message_id):
-    return GetLeaveStatus(message_id).lower() == "pending"
+    if IsLeaveRequest(message_id):
+        return GetLeaveStatus(message_id).lower() == "pending"
+    
+    return False    
