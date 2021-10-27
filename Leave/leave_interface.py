@@ -80,7 +80,7 @@ def UpdateLeaveBalanceOfRequestID(message_id):
         ordered_requested_leaves[leave['leave_type']].append(leave)
 
     for leaves_array in list(ordered_requested_leaves.values()):
-        leave_db.UpdateLeaveBalance(leaves_array[0]["member_id"], leaves_array[0]["leave_type"], -len(leaves_array))
+        leave_db.UpdateMultipleLeavesBalance(leaves_array)
 
 def GetRequestedDaysBetween(member_id, start_date, end_date):
     work_days = utils.GetWorkDays(start_date, end_date)
