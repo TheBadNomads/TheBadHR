@@ -24,6 +24,10 @@ async def ProcessLeaveRequest(ctx, member, client, leave_type, start_date, end_d
     
     await SubmitRequest(ctx, member, client, start_date, end_date, leave_type, reason)            
 
+async def SubmitRequest(ctx, member, client, start_date, end_date, leave_type, reason):
+    message_id = await SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_type)
+    AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, "Pending", reason)
+    
 async def SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_type):
     await ctx.send(content = db.GetCaption(1))
     embed = UI.CreateLeaveEmbed(ctx, start_date, end_date, leave_type)
@@ -32,10 +36,6 @@ async def SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_typ
     await message.add_reaction(os.getenv("Approve_Emoji"))
     await message.add_reaction(os.getenv("Reject_Emoji"))
     return message.id
-
-async def SubmitRequest(ctx, member, client, start_date, end_date, leave_type, reason):
-    message_id = await SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_type)
-    AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, "Pending", reason)
 
 def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason):
     work_days = utils.GetWorkDays(start_date, end_date)
