@@ -31,12 +31,12 @@ def HasEnoughBalance(startdate, enddate, current_balance):
     return current_balance >= requested_days_count
 
 def GetWorkDays(startdate, enddate):
-    requested_days = []
+    work_days = []
     for i in range((enddate - startdate).days + 1):
         day = startdate + datetime.timedelta(days = i)
         if (day.weekday() not in [4, 5]):
-            requested_days.append(day) 
-    return requested_days
+            work_days.append(day) 
+    return work_days
     
 def IsAdmin(member):
     role = discord.utils.get(member.guild.roles, id = int(os.getenv("Admin_Role_id")))
