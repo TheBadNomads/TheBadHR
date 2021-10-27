@@ -9,7 +9,7 @@ from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option, create_choice
 from Leave import leave_db
 
-def CreateLeaveEmbed(ctx, startdate, enddate, leaveType, reason):
+def CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason):
     leaveImages = {
         "Annual"   : os.getenv("Annual_Leave_Link"),
         "Emergency": os.getenv("Emergency_Leave_Link"),
@@ -21,18 +21,15 @@ def CreateLeaveEmbed(ctx, startdate, enddate, leaveType, reason):
         description = f'{ctx.author.mention} is requesting a leave', 
         colour = 0x4682B4
     )
+    footer_text = (("\u200B " * 150) + datetime.date.today().strftime("%d/%m/%Y")) # magic number 150
 
-    embed.set_thumbnail(url = leaveImages[leaveType])
-    embed.add_field(name = "Leave Type", value = leaveType, inline = False)
-    embed.add_field(name = "Start Date", value = startdate.date(), inline = True)
-    embed.add_field(name = "End Date", value = enddate.date(), inline = True)
-    embed.add_field(name = "No. of Days", value = len(utils.GetWorkDays(startdate, enddate)), inline = True)
+    embed.set_thumbnail(url = leaveImages[leave_type])
+    embed.add_field(name = "Leave Type", value = leave_type, inline = False)
+    embed.add_field(name = "Start Date", value = start_date.date(), inline = True)
+    embed.add_field(name = "End Date", value = end_date.date(), inline = True)
+    embed.add_field(name = "No. of Days", value = len(utils.GetWorkDays(start_date, end_date)), inline = True)
     embed.add_field(name = "Reason", value = reason, inline = False)
     embed.add_field(name = "Status", value = "Pending", inline = False)
-    footer_text = ""
-    for counter in range(150):
-        footer_text += "\u200B "
-    footer_text += datetime.date.today().strftime("%d/%m/%Y")
     embed.set_footer(text = footer_text)
     return embed
     
