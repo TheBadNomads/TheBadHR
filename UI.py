@@ -1,6 +1,7 @@
 import discord
 import os
 import datetime
+import Utilities as utils
 
 from db import db
 from collections import defaultdict
@@ -8,7 +9,7 @@ from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option, create_choice
 from Leave import leave_db
 
-def CreateLeaveEmbed(ctx, startdate, enddate, leaveType):
+def CreateLeaveEmbed(ctx, startdate, enddate, leaveType, reason):
     leaveImages = {
         "Annual"   : os.getenv("Annual_Leave_Link"),
         "Emergency": os.getenv("Emergency_Leave_Link"),
@@ -17,18 +18,23 @@ def CreateLeaveEmbed(ctx, startdate, enddate, leaveType):
     }
 
     embed = discord.Embed(
-        title = f'{leaveType} Leave Request', 
-        description = f'{ctx.author.mention} is requesting '+ leaveType.lower() +' leave', 
+        title = 'Leave Request', 
+        description = f'{ctx.author.mention} is requesting a leave', 
         colour = 0x4682B4
     )
 
     embed.set_thumbnail(url = leaveImages[leaveType])
+    embed.add_field(name = "Leave Type", value = leaveType, inline = False)
     embed.add_field(name = "Start Date", value = startdate.date(), inline = True)
     embed.add_field(name = "End Date", value = enddate.date(), inline = True)
-    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+    embed.add_field(name = "Days Amount", value = len(utils.GetWorkDays(startdate, enddate)), inline = True)
+    embed.add_field(name = "Reason", value = reason, inline = False)
     embed.add_field(name = "Status", value = "Pending", inline = False)
-    embed.set_footer(text = datetime.date.today())
-
+    footer_text = ""
+    for counter in range(150):
+        footer_text += "\u200B "
+    footer_text += datetime.date.today().strftime("%d/%m/%Y")
+    embed.set_footer(text = footer_text)
     return embed
     
 def CreateLeaveTypeChoices():
