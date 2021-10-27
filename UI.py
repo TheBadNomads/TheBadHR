@@ -16,7 +16,6 @@ def CreateLeaveEmbed(ctx, startdate, enddate, leaveType, reason):
         "Sick"     : os.getenv("Sick_Leave_Link"),
         "Unpaid"   : os.getenv("Unpaid_Leave_Link")
     }
-
     embed = discord.Embed(
         title = 'Leave Request', 
         description = f'{ctx.author.mention} is requesting a leave', 
@@ -27,7 +26,7 @@ def CreateLeaveEmbed(ctx, startdate, enddate, leaveType, reason):
     embed.add_field(name = "Leave Type", value = leaveType, inline = False)
     embed.add_field(name = "Start Date", value = startdate.date(), inline = True)
     embed.add_field(name = "End Date", value = enddate.date(), inline = True)
-    embed.add_field(name = "Days Amount", value = len(utils.GetWorkDays(startdate, enddate)), inline = True)
+    embed.add_field(name = "No. of Days", value = len(utils.GetWorkDays(startdate, enddate)), inline = True)
     embed.add_field(name = "Reason", value = reason, inline = False)
     embed.add_field(name = "Status", value = "Pending", inline = False)
     footer_text = ""
