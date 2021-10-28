@@ -1,6 +1,7 @@
 import discord
 import os
 import datetime
+import Utilities as utils
 
 from db import db
 from collections import defaultdict
@@ -8,27 +9,28 @@ from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option, create_choice
 from Leave import leave_db
 
-def CreateLeaveEmbed(ctx, startdate, enddate, leaveType):
+def CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason):
     leaveImages = {
         "Annual"   : os.getenv("Annual_Leave_Link"),
         "Emergency": os.getenv("Emergency_Leave_Link"),
         "Sick"     : os.getenv("Sick_Leave_Link"),
         "Unpaid"   : os.getenv("Unpaid_Leave_Link")
     }
-
     embed = discord.Embed(
-        title = f'{leaveType} Leave Request', 
-        description = f'{ctx.author.mention} is requesting '+ leaveType.lower() +' leave', 
+        title = 'Leave Request', 
+        description = f'{ctx.author.mention} is requesting a leave', 
         colour = 0x4682B4
     )
+    footer_text = (("\u200B " * 150) + datetime.date.today().strftime("%d/%m/%Y")) # magic number 150
 
-    embed.set_thumbnail(url = leaveImages[leaveType])
-    embed.add_field(name = "Start Date", value = startdate.date(), inline = True)
-    embed.add_field(name = "End Date", value = enddate.date(), inline = True)
-    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+    embed.set_thumbnail(url = leaveImages[leave_type])
+    embed.add_field(name = "Leave Type", value = leave_type, inline = False)
+    embed.add_field(name = "Start Date", value = start_date.date(), inline = True)
+    embed.add_field(name = "End Date", value = end_date.date(), inline = True)
+    embed.add_field(name = "No. of Days", value = len(utils.GetWorkDays(start_date, end_date)), inline = True)
+    embed.add_field(name = "Reason", value = reason, inline = False)
     embed.add_field(name = "Status", value = "Pending", inline = False)
-    embed.set_footer(text = datetime.date.today())
-
+    embed.set_footer(text = footer_text)
     return embed
     
 def CreateLeaveTypeChoices():
