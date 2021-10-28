@@ -90,9 +90,9 @@ def GetRequestedDaysBetween(member_id, start_date, end_date):
 
 async def ApplyLateLeave(ctx, member, start_date, end_date, leave_type, reason):
     work_days = utils.GetWorkDays(start_date, end_date)
-    repeated_requested_days = utils.ConvertDatesToStrings(GetRequestedDaysBetween(member.id, start_date, end_date))
-    if len(repeated_requested_days) > 0:
-        await ctx.send(content = f"Leave request already exists for {repeated_requested_days}")
+    requested_days = utils.ConvertDatesToStrings(GetRequestedDaysBetween(member.id, start_date, end_date))
+    if len(requested_days) > 0:
+        await ctx.send(content = f"Leave request already exists for {requested_days}")
         return
     
     message = await ctx.send(content = "Late leave application was completed successfully")
