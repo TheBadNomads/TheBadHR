@@ -91,5 +91,5 @@ def GetRequestedDaysBetween(member_id, start_date, end_date):
 
 async def ApplyLateLeave(ctx, member, startdate, enddate, leavetype, reason):
     message = await ctx.send(content = "Success")
-    CompleteRequest_DB(member, message.id, startdate, enddate, leavetype, "Approved", reason)
-    UpdateLeaveBalance(message.id) 
+    AddLeaveRequestToDB(member, message.id, startdate, enddate, leavetype, "Approved", reason)
+    UpdateLeaveBalanceOfRequestID(message.id) 
