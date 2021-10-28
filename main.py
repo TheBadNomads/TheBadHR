@@ -44,11 +44,10 @@ async def InsertMember(ctx, discorduser, name, email, startdate):
 
 @slash.slash(name = "LateRequestLeave", description = "Request an annual leave", options = UI.CreateLateLeaveApplicationOptions(), guild_ids = guild_ids)
 async def LateRequestLeave(ctx, discorduser, leavetype, startdate, enddate, reason = ""):
-    role = discord.utils.find(lambda r: r.name == os.getenv("Admin_Role"), ctx.guild.roles)
-
-    if role in ctx.author.roles:
-        await leave_interface.ApplyLateLeave(ctx, discorduser, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), leavetype, reason)
+    if Utilities.IsAdmin(ctx.author):
+        message = await ctx.send(content = "Success")
+        await leave_interface.ApplyLateLeave(ctx, discorduser, message.id, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), leavetype, reason)
     else:
-        await ctx.send(content = "This command is for Admin roles only")   
+        await ctx.send(content = "This command is for Admins only")
 
 client.run(os.getenv("Bot_token"))
