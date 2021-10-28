@@ -37,9 +37,14 @@ async def SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_typ
     await message.add_reaction(os.getenv("Reject_Emoji"))
     return message.id
 
-def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason):
+def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason, requested_by_admin = False):
     work_days = utils.GetWorkDays(start_date, end_date)
     emergency_balance = leave_db.GetLeaveBalance(member.id, "Emergency")
+    if requested_by_admin:
+        for day in work_days:
+            leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status)
+        return
+
     for day in work_days:
         if not (utils.IsLateToApplyForLeave(day)):
             leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status)
@@ -88,6 +93,6 @@ def GetRequestedDaysBetween(member_id, start_date, end_date):
     requested_days = set(work_days).intersection(previously_requested_days)
     return requested_days
 
-def ApplyLateLeave(ctx, member, message_id, start_date, end_date, leave_type, reason):
-    AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason)
+def ApplyLateLeave(member, message_id, start_date, end_date, leave_type, reason):
+    AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason, True)
     UpdateLeaveBalanceOfRequestID(message_id) 
