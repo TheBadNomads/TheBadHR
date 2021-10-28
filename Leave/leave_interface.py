@@ -95,5 +95,6 @@ def GetRequestedDaysBetween(member_id, start_date, end_date):
     return requested_days
 
 def ApplyLateLeave(member, message_id, start_date, end_date, leave_type, reason):
+    work_days = utils.GetWorkDays(start_date, end_date)
     AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason, True)
-    UpdateLeaveBalanceOfRequestID(message_id) 
+    leave_db.UpdateLeaveBalance(member.id, leave_type, -len(work_days)) 
