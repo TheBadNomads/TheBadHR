@@ -88,7 +88,6 @@ def GetRequestedDaysBetween(member_id, start_date, end_date):
     requested_days = set(work_days).intersection(previously_requested_days)
     return requested_days
 
-async def ApplyLateLeave(ctx, member, startdate, enddate, leavetype, reason):
-    message = await ctx.send(content = "Success")
-    AddLeaveRequestToDB(member, message.id, startdate, enddate, leavetype, "Approved", reason)
-    UpdateLeaveBalanceOfRequestID(message.id) 
+def ApplyLateLeave(ctx, member, message_id, start_date, end_date, leave_type, reason):
+    AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason)
+    UpdateLeaveBalanceOfRequestID(message_id) 
