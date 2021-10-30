@@ -58,7 +58,7 @@ def CreateDateChoices():
     
     return dateChoices
 
-def CreateLateLeaveApplicationOptions():
+def CreateLateLeaveRequestOptions():
     late_application_options = [
         create_option(
             name = "discorduser",
