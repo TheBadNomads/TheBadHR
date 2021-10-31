@@ -88,7 +88,7 @@ def GetRequestedDaysBetween(member_id, start_date, end_date):
     requested_days = set(work_days).intersection(previously_requested_days)
     return requested_days
 
-async def ApplyLateLeave(ctx, member, start_date, end_date, leave_type, reason):
+async def InsertLateLeave(ctx, member, start_date, end_date, leave_type, reason):
     requested_days = utils.ConvertDatesToStrings(GetRequestedDaysBetween(member.id, start_date, end_date))
     if len(requested_days) > 0:
         await ctx.send(content = f"Leave request already exists for {requested_days}")
