@@ -90,14 +90,14 @@ def GetRequestedDaysBetween(member_id, start_date, end_date):
     return requested_days
 
 async def InsertLateLeave(ctx, member, start_date, end_date, leave_type, reason):
+    work_days = utils.GetWorkDays(start_date, end_date)
+    if len(work_days) == 0:
+        await ctx.send(content = "The requested dates are weekends/holidays")
+        return
+
     requested_days = utils.ConvertDatesToStrings(GetRequestedDaysBetween(member.id, start_date, end_date))
     if len(requested_days) > 0:
         await ctx.send(content = f"Leave request already exists for {requested_days}")
-        return
-
-    work_days = utils.GetWorkDays(start_date, end_date)
-    if len(work_days) == 0:
-        await ctx.send(content = "This leave is a weekend/holiday")
         return
 
     requested_leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
