@@ -34,7 +34,7 @@ async def on_raw_reaction_add(payload):
 async def RequestLeave(ctx, leavetype, startdate, enddate, reason = ""):
     await leave_interface.ProcessLeaveRequest(ctx, ctx.author, client, leavetype, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), reason)
 
-@slash.slash(name = "InsertMember", description = "Insert new member into the database", options = UI.CreateInsertMemberOptions(), guild_ids = guild_ids)
+@slash.slash(name = "InsertMember", description = "Insert new member into the database", options = UI.CreateMemberInsertionOptions(), guild_ids = guild_ids)
 async def InsertMember(ctx, discorduser, name, email, startdate):
     if Utilities.IsAdmin(ctx.author):
         result = member_db.InsertMember(discorduser.id, name, email, datetime.strptime(startdate, '%d/%m/%Y'))
@@ -42,7 +42,7 @@ async def InsertMember(ctx, discorduser, name, email, startdate):
     else:
         await ctx.send(content = "This command is for Admins only")
 
-@slash.slash(name = "ApplyLateLeave", description = "Apply a late leave (Admins Only)", options = UI.CreateLateLeaveRequestOptions(), guild_ids = guild_ids)
+@slash.slash(name = "ApplyLateLeave", description = "Apply a late leave (Admins Only)", options = UI.CreateLateLeaveInsertionOptions(), guild_ids = guild_ids)
 async def ApplyLateLeave(ctx, discorduser, leavetype, startdate, enddate, reason = ""):
     if Utilities.IsAdmin(ctx.author):
         await leave_interface.ApplyLateLeave(ctx, discorduser, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), leavetype, reason)
