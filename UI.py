@@ -91,7 +91,7 @@ def CreateLeaveRequestOptions():
 
     return requestLeave_options
 
-def CreateLateLeaveInsertionOptions():
+def CreateLateLeaveRequestOptions():
     late_application_options = [
         create_option(
             name = "discorduser",

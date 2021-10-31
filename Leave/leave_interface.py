@@ -89,7 +89,7 @@ def GetRequestedDaysBetween(member_id, start_date, end_date):
     requested_days = set(work_days).intersection(previously_requested_days)
     return requested_days
 
-async def ApplyLateLeave(ctx, member, start_date, end_date, leave_type, reason):
+async def RequestLateLeave(ctx, member, start_date, end_date, leave_type, reason):
     work_days = utils.GetWorkDays(start_date, end_date)
     if len(work_days) == 0:
         await ctx.send(content = "The requested dates are weekends/holidays")
