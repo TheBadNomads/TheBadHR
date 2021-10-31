@@ -95,14 +95,18 @@ async def InsertLateLeave(ctx, member, start_date, end_date, leave_type, reason)
         return
 
     work_days = utils.GetWorkDays(start_date, end_date)
+    if len(work_days) == 0:
+        await ctx.send(content = "This leave is a weekend/holiday")
+        return
+
     requested_leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
     message = await ctx.send(content = "Late leave is being processed...")
     try:
         InsertLateLeaveIntoDB(member, message.id, work_days, leave_type, requested_leave_balance, reason)
         UpdateLeaveBalanceOfRequestID(message.id)
-        await ctx.send(content = "Late leave was requested successfully")
+        await message.edit(content = "Late leave was inserted successfully")
     except Exception as e:
-        await ctx.send(content = "Something went wrong, please try again later")
+        await message.edit(content = "Something went wrong, please try again later")
         print(e)
 
 def InsertLateLeaveIntoDB(member, message_id, work_days, leave_type, requested_leave_balance, reason):
