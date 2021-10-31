@@ -58,6 +58,39 @@ def CreateDateChoices():
     
     return dateChoices
 
+def CreateLeaveRequestOptions():
+    requestLeave_options = [
+        create_option(
+            name = "leavetype",
+            description = "leave type",
+            option_type = SlashCommandOptionType.STRING,
+            required = True,
+            choices = CreateLeaveTypeChoices()
+        ),
+        create_option(
+            name = "startdate",
+            description = "starting date of your leave",
+            option_type = SlashCommandOptionType.STRING,
+            required = True,
+            choices = CreateDateChoices()
+        ),
+        create_option(
+            name = "enddate",
+            description = "Leave empty for 1 day leave",
+            option_type = SlashCommandOptionType.STRING,
+            required = True,
+            choices = CreateDateChoices()
+        ),
+        create_option(
+            name = "reason",
+            description = "reason for the leave (optional)",
+            option_type = SlashCommandOptionType.STRING,
+            required = False
+        )
+    ]
+
+    return requestLeave_options
+
 def CreateLateLeaveInsertionOptions():
     late_application_options = [
         create_option(
@@ -93,39 +126,6 @@ def CreateLateLeaveInsertionOptions():
         )
     ]
     return late_application_options
-
-def CreateLeaveRequestOptions():
-    requestLeave_options = [
-        create_option(
-            name = "leavetype",
-            description = "leave type",
-            option_type = SlashCommandOptionType.STRING,
-            required = True,
-            choices = CreateLeaveTypeChoices()
-        ),
-        create_option(
-            name = "startdate",
-            description = "starting date of your leave",
-            option_type = SlashCommandOptionType.STRING,
-            required = True,
-            choices = CreateDateChoices()
-        ),
-        create_option(
-            name = "enddate",
-            description = "Leave empty for 1 day leave",
-            option_type = SlashCommandOptionType.STRING,
-            required = True,
-            choices = CreateDateChoices()
-        ),
-        create_option(
-            name = "reason",
-            description = "reason for the leave (optional)",
-            option_type = SlashCommandOptionType.STRING,
-            required = False
-        )
-    ]
-
-    return requestLeave_options
 
 def CreateMemberInsertionOptions():
     member_options = [
