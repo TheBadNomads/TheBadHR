@@ -89,23 +89,28 @@ def GetRequestedDaysBetween(member_id, start_date, end_date):
     requested_days = set(work_days).intersection(previously_requested_days)
     return requested_days
 
-async def RequestLateLeave(ctx, member, start_date, end_date, leave_type, reason):
-    work_days = utils.GetWorkDays(start_date, end_date)
+async def ApplyLateLeave(ctx, member, start_date, end_date, leave_type, reason):
     requested_days = utils.ConvertDatesToStrings(GetRequestedDaysBetween(member.id, start_date, end_date))
     if len(requested_days) > 0:
         await ctx.send(content = f"Leave request already exists for {requested_days}")
         return
-    
-    message = await ctx.send(content = "Late leave was requested successfully")
-    AddAdminLeaveRequestToDB(member, message.id, work_days, leave_type, "Approved", reason)
-    UpdateLeaveBalanceOfRequestID(message.id) 
 
-def AddAdminLeaveRequestToDB(member, message_id, work_days, leave_type, leave_status, reason):
+    work_days = utils.GetWorkDays(start_date, end_date)
     requested_leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
+    message = await ctx.send(content = "Late leave is being processed...")
+    try:
+        InsertLateLeaveIntoDB(member, message.id, work_days, leave_type, requested_leave_balance, reason)
+        UpdateLeaveBalanceOfRequestID(message.id)
+        await ctx.send(content = "Late leave was requested successfully")
+    except Exception as e:
+        await ctx.send(content = "Something went wrong, please try again later")
+        print(e)
+
+def InsertLateLeaveIntoDB(member, message_id, work_days, leave_type, requested_leave_balance, reason):
     for day in work_days:
         if requested_leave_balance > 0:
-            leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status)
+            leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", "Approved")
             requested_leave_balance -= 1
         else:
-            leave_db.InsertLeave(member.id, message_id, "Unpaid", day, reason, "", leave_status)
+            leave_db.InsertLeave(member.id, message_id, "Unpaid", day, reason, "", "Approved")
     return
