@@ -19,7 +19,8 @@ async def ProcessLeaveRequest(ctx, member, client, leave_type, start_date, end_d
     
     leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
     if not (utils.HasEnoughBalance(start_date, end_date, leave_balance)):
-        await ctx.send(content = db.GetCaption(2) + str(leave_balance))
+        await ctx.send(content = "Request Failed")
+        await ctx.author.send(content = db.GetCaption(2) + str(leave_balance))
         return
     
     await SubmitRequest(ctx, member, client, start_date, end_date, leave_type, reason)            
