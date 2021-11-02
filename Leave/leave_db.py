@@ -33,11 +33,11 @@ def GetLeaveTypesWithBalance():
     leaves_types = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves_types
 
-def InsertLeave(member_id, request_id, leave_type, date, reason, remark, leave_status):
+def InsertLeave(member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency = False):
     try:
         db.GetDBCursor().execute(
-            "INSERT INTO [leaves] (member_id, request_id, leave_type, date, reason, remark, leave_status) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            (member_id, request_id, leave_type, date, reason, remark, leave_status)
+            "INSERT INTO [leaves] (member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency)
         )
         db.GetDBConnection().commit()
         return "Success"
