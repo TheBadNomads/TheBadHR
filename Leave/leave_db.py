@@ -28,11 +28,10 @@ def GetEmergencyLeavesForYear(member_id, year):
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
 
-def GetLeavesBalancesForMember(member_id):
+def GetLeavesBalanceForMember(member_id):
     db.GetDBCursor().execute(f"SELECT leave_type, balance FROM [leavesBalance] WHERE member_id = {member_id}")
-    leaves_balances = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
-
-    return leaves_balances
+    leaves_balance = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
+    return leaves_balance
 
 def GetLeaveBalance(member_id, leave_type):
     db.GetDBCursor().execute(f"SELECT balance FROM [leavesBalance] WHERE member_id = {member_id} AND leave_type = '{leave_type}'")

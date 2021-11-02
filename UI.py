@@ -9,9 +9,9 @@ from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option, create_choice
 from Leave import leave_db
 
-def CreateLeavesBalancesEmbed(ctx):
+def CreateLeavesBalancesEmbed(member_id):
     try:
-        leaves_types_with_balance = leave_db.GetLeavesBalancesForMember(ctx.author.id)
+        leaves_types_with_balance = leave_db.GetLeavesBalanceForMember(member_id)
         embed = discord.Embed(
             title = f'Leaves Balances',
             description = f'Your balances are:',
@@ -19,8 +19,8 @@ def CreateLeavesBalancesEmbed(ctx):
         )
         embed.set_thumbnail(url = os.getenv("Leave_Balance_Link"))
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+        
         counter = 0
-
         for entry in leaves_types_with_balance:
             if(counter + 2) % 3 != 0:
                 embed.add_field(name = entry["leave_type"], value = entry["balance"], inline = True)
@@ -28,7 +28,6 @@ def CreateLeavesBalancesEmbed(ctx):
                 embed.add_field(name = '\u200B', value = '\u200B', inline = True)
                 embed.add_field(name = entry["leave_type"], value = entry["balance"], inline = True)
                 counter += 1
-            
             counter += 1
 
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)

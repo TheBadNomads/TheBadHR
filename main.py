@@ -49,7 +49,7 @@ async def InsertMember(ctx, discorduser, name, email, startdate):
    
 @slash.slash(name = "ShowLeavesBalance", description = "Returns your leaves balances", guild_ids = guild_ids)
 async def ShowLeavesBalance(ctx):
-    embed = UI.CreateLeavesBalancesEmbed(ctx)
+    embed = UI.CreateLeavesBalancesEmbed(ctx.author.id)
     if embed == None:
         await ctx.send(content = "your request failed, try again later")
     else:
