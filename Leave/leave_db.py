@@ -24,7 +24,7 @@ def GetLeaveStatus(request_id):
     return leave["leave_status"]
 
 def GetEmergencyLeaves(member_id):
-    db.GetDBCursor().execute(f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND is_emergency = True")
+    db.GetDBCursor().execute(f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND is_emergency = 'True'")
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
 
