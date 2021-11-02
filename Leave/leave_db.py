@@ -80,6 +80,11 @@ def UpdateLeaveStatus(request_id, leave_status):
 def UpdateMultipleLeavesBalance(leaves_array):
     try:
         for leave in leaves_array:
+            if (leave["leave_type"].lower() == "emergency"):
+                if (GetLeaveBalance(leave["member_id"], "annual") > 0):
+                    db.GetDBCursor().execute("UPDATE [leavesBalance] SET balance = balance - 1 WHERE member_id = ? AND leave_type = ?", leave["member_id"], "Annual")
+                else:
+                    db.GetDBCursor().execute("UPDATE [leavesBalance] SET balance = balance - 1 WHERE member_id = ? AND leave_type = ?", leave["member_id"], "Unpaid")
             db.GetDBCursor().execute("UPDATE [leavesBalance] SET balance = balance - 1 WHERE member_id = ? AND leave_type = ?", leave["member_id"], leave["leave_type"])
         db.GetDBConnection().commit()
         return "Success"
