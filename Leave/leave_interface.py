@@ -95,5 +95,5 @@ def GetRequestedDaysBetween(member_id, start_date, end_date):
 
 def GetRemainingEmergencyLeaves(member_id):
     requested_emergency_count = len(leave_db.GetEmergencyLeaves(member_id))
-    max_emergency_balance = int(os.getenv("Emergency_Leaves_Max_Count"))
-    return (max_emergency_balance - requested_emergency_count)
+    max_emergency_count = int(os.getenv("Emergency_Leaves_Max_Count"))
+    return (max_emergency_count - requested_emergency_count)
