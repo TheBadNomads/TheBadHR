@@ -18,12 +18,6 @@ async def ProcessLeaveRequest(ctx, member, client, leave_type, start_date, end_d
         await ctx.send(content = f"Leave request already exists for {repeated_requested_days}")
         return
     
-    leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
-    if not (utils.HasEnoughBalance(start_date, end_date, leave_balance)):
-        await ctx.send(content = "Request Failed")
-        await ctx.author.send(content = db.GetCaption(2) + str(leave_balance))
-        return
-    
     await SubmitRequest(ctx, member, client, start_date, end_date, leave_type, reason)            
 
 async def SubmitRequest(ctx, member, client, start_date, end_date, leave_type, reason):
