@@ -40,7 +40,7 @@ async def SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_typ
 
 def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason):
     work_days = utils.GetWorkDays(start_date, end_date)
-    remaining_emergencies = GetRemainingEmergencyLeaves(member.id)
+    remaining_emergencies = GetRemainingEmergencyLeavesCount(member.id)
     for day in work_days:
         if not (utils.IsLateToApplyForLeave(day)):
             leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, False)
@@ -93,7 +93,7 @@ def GetRequestedDaysBetween(member_id, start_date, end_date):
     requested_days = set(work_days).intersection(previously_requested_days)
     return requested_days
 
-def GetRemainingEmergencyLeaves(member_id):
+def GetRemainingEmergencyLeavesCount(member_id):
     requested_emergency_count = len(leave_db.GetEmergencyLeaves(member_id))
     max_emergency_count = int(os.getenv("Emergency_Leaves_Max_Count"))
     return (max_emergency_count - requested_emergency_count)
