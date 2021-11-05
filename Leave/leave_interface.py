@@ -42,15 +42,13 @@ def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, le
     work_days = utils.GetWorkDays(start_date, end_date)
     remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
     for day in work_days:
-        if not (utils.IsLateToApplyForLeave(day)):
-            leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, False)
-            continue
-        if leave_type.lower() == "annual":
-            if remaining_emergency_count > 0:
-                leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, True)
-            else:
-                leave_db.InsertLeave(member.id, message_id, "Unpaid", day, reason, "", leave_status, False)
-            continue
+        if (leave_type.lower() == "annual"):
+            if (utils.IsLateToApplyForLeave(day)): 
+                if (remaining_emergency_count > 0):
+                    leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, True)
+                else:
+                    leave_db.InsertLeave(member.id, message_id, "Unpaid", day, reason, "", leave_status, False)
+                continue
         leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, False)
                 
 async def HandleLeaveReactions(client, payload):
