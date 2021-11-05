@@ -1,3 +1,4 @@
+import datetime
 import Utilities as utils
 import os
 import UI
@@ -92,6 +93,6 @@ def GetRequestedDaysBetween(member_id, start_date, end_date):
     return requested_days
 
 def GetRemainingEmergencyLeavesCount(member_id):
-    requested_emergency_count = len(leave_db.GetEmergencyLeaves(member_id))
+    requested_emergency_count = len(leave_db.GetEmergencyLeavesForYear(member_id, datetime.date.today().year))
     max_emergency_count = int(os.getenv("Emergency_Leaves_Max_Count"))
     return (max_emergency_count - requested_emergency_count)
