@@ -42,15 +42,16 @@ async def SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_typ
 def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason):
     work_days = utils.GetWorkDays(start_date, end_date)
     remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
+    adjusted_leave_type = leave_type
+    is_emergency = False
     for day in work_days:
         if (leave_type.lower() == "annual"):
-            if (utils.IsLateToApplyForLeave(day)): 
-                if (remaining_emergency_count > 0):
-                    leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, True)
-                else:
-                    leave_db.InsertLeave(member.id, message_id, "Unpaid", day, reason, "", leave_status, False)
-                continue
-        leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, False)
+            if (utils.IsLateToApplyForLeave(day)):
+                is_emergency = True
+                if (remaining_emergency_count <= 0):
+                    adjusted_leave_type = "Unpaid"
+
+        leave_db.InsertLeave(member.id, message_id, adjusted_leave_type, day, reason, "", leave_status, is_emergency)
                 
 async def HandleLeaveReactions(client, payload):
     channel = client.get_channel(payload.channel_id)
