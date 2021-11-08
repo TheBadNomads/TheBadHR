@@ -45,11 +45,10 @@ def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, le
     adjusted_leave_type = leave_type
     is_emergency = False
     for day in work_days:
-        if (leave_type.lower() == "annual"):
-            if (utils.IsLateToApplyForLeave(day)):
-                is_emergency = True
-                if (remaining_emergency_count <= 0):
-                    adjusted_leave_type = "Unpaid"
+        if (leave_type.lower() == "annual") and (utils.IsLateToApplyForLeave(day)):
+            is_emergency = True
+            if (remaining_emergency_count <= 0):
+                adjusted_leave_type = "Unpaid"
 
         leave_db.InsertLeave(member.id, message_id, adjusted_leave_type, day, reason, "", leave_status, is_emergency)
                 
