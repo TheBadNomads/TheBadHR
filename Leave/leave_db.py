@@ -8,7 +8,7 @@ def GetLeaveByID(id):
     leave = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
     return leave
 
-def GetLeavesMemberID(member_id):
+def GetLeavesByMemberID(member_id):
     db.GetDBCursor().execute(f"SELECT * FROM [leaves] WHERE member_id = {member_id}")
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
@@ -23,6 +23,11 @@ def GetLeaveStatus(request_id):
     leave = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
     return leave["leave_status"]
 
+def GetEmergencyLeavesForYear(member_id, year):
+    db.GetDBCursor().execute(f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND is_emergency = 'True' AND YEAR(date) = {year}")
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
+    return leaves
+
 def GetLeaveBalance(member_id, leave_type):
     db.GetDBCursor().execute(f"SELECT balance FROM [leavesBalance] WHERE member_id = {member_id} AND leave_type = '{leave_type}'")
     leaves_balance = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
@@ -33,11 +38,11 @@ def GetLeaveTypesWithBalance():
     leaves_types = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves_types
 
-def InsertLeave(member_id, request_id, leave_type, date, reason, remark, leave_status):
+def InsertLeave(member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency):
     try:
         db.GetDBCursor().execute(
-            "INSERT INTO [leaves] (member_id, request_id, leave_type, date, reason, remark, leave_status) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            (member_id, request_id, leave_type, date, reason, remark, leave_status)
+            "INSERT INTO [leaves] (member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency)
         )
         db.GetDBConnection().commit()
         return "Success"

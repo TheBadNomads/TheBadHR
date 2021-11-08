@@ -1,3 +1,4 @@
+import datetime
 import Utilities as utils
 import os
 import UI
@@ -19,7 +20,8 @@ async def ProcessLeaveRequest(ctx, member, client, leave_type, start_date, end_d
     
     leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
     if not (utils.HasEnoughBalance(start_date, end_date, leave_balance)):
-        await ctx.send(content = db.GetCaption(2) + leave_balance)
+        await ctx.send(content = "Request Failed")
+        await ctx.author.send(content = db.GetCaption(2) + str(leave_balance))
         return
     
     await SubmitRequest(ctx, member, client, start_date, end_date, leave_type, reason)            
@@ -39,15 +41,16 @@ async def SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_typ
 
 def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason):
     work_days = utils.GetWorkDays(start_date, end_date)
-    emergency_balance = leave_db.GetLeaveBalance(member.id, "Emergency")
+    remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
+    adjusted_leave_type = leave_type
+    is_emergency = False
     for day in work_days:
-        if not (utils.IsLateToApplyForLeave(day)):
-            leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status)
-            continue
-        if emergency_balance > 0:
-            leave_db.InsertLeave(member.id, message_id, "Emergency", day, reason, "", leave_status)
-        else:
-            leave_db.InsertLeave(member.id, message_id, "Unpaid", day, reason, "", leave_status)
+        if (leave_type.lower() == "annual") and (utils.IsLateToApplyForLeave(day)):
+            is_emergency = True
+            if (remaining_emergency_count <= 0):
+                adjusted_leave_type = "Unpaid"
+
+        leave_db.InsertLeave(member.id, message_id, adjusted_leave_type, day, reason, "", leave_status, is_emergency)
                 
 async def HandleLeaveReactions(client, payload):
     channel = client.get_channel(payload.channel_id)
@@ -84,7 +87,12 @@ def UpdateLeaveBalanceOfRequestID(message_id):
 
 def GetRequestedDaysBetween(member_id, start_date, end_date):
     work_days = utils.GetWorkDays(start_date, end_date)
-    previous_leaves = leave_db.GetLeavesMemberID(member_id)
+    previous_leaves = leave_db.GetLeavesByMemberID(member_id)
     previously_requested_days = [d['date'] for d in utils.FilterOutLeavesByStatus(previous_leaves, "rejected")]
     requested_days = set(work_days).intersection(previously_requested_days)
     return requested_days
+
+def GetRemainingEmergencyLeavesCount(member_id):
+    requested_emergency_count = len(leave_db.GetEmergencyLeavesForYear(member_id, datetime.date.today().year))
+    max_emergency_count = int(os.getenv("Emergency_Leaves_Max_Count"))
+    return (max_emergency_count - requested_emergency_count)
