@@ -85,7 +85,7 @@ def UpdateLeaveStatus(request_id, leave_status):
 def UpdateMultipleLeavesBalance(leaves_array):
     try:
         for leave in leaves_array:
-            db.GetDBCursor().execute("UPDATE [leavesBalance] SET balance = IIF((balance > 0), balance - 1, 0) WHERE member_id = ? AND leave_type = ?", leave["member_id"], leave["leave_type"])
+            db.GetDBCursor().execute("UPDATE [leavesBalance] SET balance = IIF((balance > 0), (balance - 1), 0) WHERE member_id = ? AND leave_type = ?", leave["member_id"], leave["leave_type"])
         db.GetDBConnection().commit()
         return "Success"
 
