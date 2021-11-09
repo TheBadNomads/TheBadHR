@@ -35,9 +35,8 @@ def CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason):
     
 def CreateLeaveTypeChoices():
     leaveTypeChoices = []
-    for type in leave_db.GetLeaveTypesWithBalance():
-        leaveTypeChoices.append(create_choice(name = type["name"], value = type["name"]))
-
+    for leaveType in leave_db.GetLeaveTypesWithBalance():
+        leaveTypeChoices.append(create_choice(name = leaveType["name"], value = leaveType["name"]))
     return leaveTypeChoices
 
 def CreateDateChoices():
