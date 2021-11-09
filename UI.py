@@ -12,7 +12,7 @@ from Leave import leave_db
 def CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason):
     leaveImages = {
         "Annual"   : os.getenv("Annual_Leave_Link"),
-        "Sick"     : os.getenv("Sick_Leave_Link")
+        "Sick"     : os.getenv("Sick_Leave_Link"),
     }
     embed = discord.Embed(
         title = 'Leave Request', 
