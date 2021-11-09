@@ -41,7 +41,7 @@ def GetLeaveTypesWithBalance():
 def InsertLeave(member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency, is_unpaid):
     try:
         db.GetDBCursor().execute(
-            "INSERT INTO [leaves] (member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO [leaves] (member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency, is_unpaid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency, is_unpaid)
         )
         db.GetDBConnection().commit()
