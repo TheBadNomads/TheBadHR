@@ -35,9 +35,9 @@ def CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason):
     
 def CreateLeaveTypeChoices():
     leaveTypeChoices = []
-    filtered_choices = [leaveType for leaveType in leave_db.GetLeaveTypesWithBalance() if leaveType["name"].lower() != "unpaid"]
-    for leaveType in filtered_choices:
-        leaveTypeChoices.append(create_choice(name = leaveType["name"], value = leaveType["name"]))
+    filtered_types = [leaveType for leaveType in leave_db.GetLeaveTypesWithBalance() if leaveType["name"].lower() != "unpaid"]
+    for type in filtered_types:
+        leaveTypeChoices.append(create_choice(name = type["name"], value = type["name"]))
 
     return leaveTypeChoices
 
