@@ -37,7 +37,7 @@ def CreateLeaveTypeChoices():
     leaveTypeChoices = []
     for leaveType in leave_db.GetLeaveTypesWithBalance():
         leaveTypeChoices.append(create_choice(name = leaveType["name"], value = leaveType["name"]))
-        
+
     return leaveTypeChoices
 
 def CreateDateChoices():
