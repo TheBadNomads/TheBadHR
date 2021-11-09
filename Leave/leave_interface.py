@@ -38,16 +38,16 @@ def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, le
     remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
     leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
     for day in work_days:
-        adjusted_leave_type = leave_type
         is_emergency = False
+        is_unpaid = False
         if ((utils.IsLateToApplyForLeave(day)) and (leave_type.lower() != "sick")):
             is_emergency = True
         if ((leave_balance <= 0) or ((is_emergency) and (remaining_emergency_count <= 0))):
-            adjusted_leave_type = "Unpaid"
+            is_unpaid = True
         else:
             leave_balance -= 1
 
-        leave_db.InsertLeave(member.id, message_id, adjusted_leave_type, day, reason, "", leave_status, is_emergency)
+        leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
                 
 async def HandleLeaveReactions(client, payload):
     channel = client.get_channel(payload.channel_id)
