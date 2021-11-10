@@ -68,3 +68,10 @@ def FilterOutLeavesByStatus(leaves_array, leave_status):
         if (leave["leave_status"].lower() != leave_status):
             filtered_leaves.append(leave)
     return filtered_leaves
+
+def IsEmergencyLeave(leave_date, leave_type):
+    return (IsLateToApplyForLeave(leave_date) and (leave_type.lower() == "annual"))
+
+def IsUnpaidLeave(leave_date, leave_type, leave_balance, remaining_emergency_count):
+    is_emergency = IsEmergencyLeave(leave_date, leave_type)
+    return ((leave_balance <= 0) or ((is_emergency) and (remaining_emergency_count <= 0)))
