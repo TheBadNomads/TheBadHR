@@ -37,13 +37,14 @@ async def RequestLeave(ctx, leavetype, startdate, enddate, reason = ""):
 
 @slash.slash(name = "InsertMember", description = "Insert new member into the database", options = UI.CreateMemberOptions(), guild_ids = guild_ids)
 async def InsertMember(ctx, discorduser, name, email, startdate):
+    message_content = ""
     if Utilities.IsAdmin(ctx.author):
         result = member_db.InsertMember(discorduser.id, name, email, datetime.strptime(startdate, '%d/%m/%Y'))
-        await ctx.author.send(content = result)
-        await ctx.send(content = result)
+        message_content = result
     else:
-        await ctx.author.send(content = "This command is for Admins only")
-        await ctx.send(content = "This command is for Admins only")
+        message_content = "This command is for Admins only"
+    await ctx.send(content = message_content)
+    await ctx.author.send(content = message_content)
     await ctx.message.delete()
    
 
