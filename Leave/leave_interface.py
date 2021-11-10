@@ -13,6 +13,10 @@ async def ProcessLeaveRequest(ctx, member, client, leave_type, start_date, end_d
         await ctx.send(content = db.GetCaption(3))
         return 
 
+    if (len(utils.GetWorkDays(start_date, end_date)) <= 0):
+        await ctx.send(content = "This request consists of Holidays/Weekends ONLY")
+        return
+
     repeated_requested_days = utils.ConvertDatesToStrings(GetRequestedDaysBetween(member.id, start_date, end_date))
     if len(repeated_requested_days) > 0:
         await ctx.send(content = f"Leave request already exists for {repeated_requested_days}")
