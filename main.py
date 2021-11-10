@@ -45,7 +45,7 @@ async def InsertMember(ctx, discorduser, name, email, startdate):
         message_content = "This command is for Admins only"
 
     await ctx.author.send(content = message_content)
-    await ctx.send(content = message_content, delete_after = 0.5)
+    await ctx.send(content = message_content, delete_after = 0.1)
    
 
 client.run(os.getenv("Bot_token"))
