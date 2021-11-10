@@ -39,8 +39,10 @@ async def RequestLeave(ctx, leavetype, startdate, enddate, reason = ""):
 async def InsertMember(ctx, discorduser, name, email, startdate):
     if Utilities.IsAdmin(ctx.author):
         result = member_db.InsertMember(discorduser.id, name, email, datetime.strptime(startdate, '%d/%m/%Y'))
+        await ctx.author.send(content = result)
         await ctx.send(content = result)
     else:
+        await ctx.author.send(content = "This command is for Admins only")
         await ctx.send(content = "This command is for Admins only")
     await ctx.message.delete()
    
