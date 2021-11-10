@@ -43,8 +43,9 @@ async def InsertMember(ctx, discorduser, name, email, startdate):
         message_content = result
     else:
         message_content = "This command is for Admins only"
-    await ctx.send(content = message_content)
+        
     await ctx.author.send(content = message_content)
+    await ctx.send(content = message_content)
     await ctx.message.delete()
    
 
