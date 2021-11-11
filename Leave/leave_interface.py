@@ -106,3 +106,28 @@ def IsLeaveRequestValid(member_id, start_date, end_date):
         return (f"Leave request already exists for {utils.ConvertDatesToStrings(utils.GetDatesOfLeaves(previously_requested_days))}")
         
     return (True, "")
+
+async def InsertLateLeave(member, start_date, end_date, leave_type, reason):
+    is_request_valid, message = IsLeaveRequestValid(member.id, start_date, end_date)
+    try:
+        if is_request_valid:
+            work_days = utils.GetWorkDays(start_date, end_date)
+            leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
+            InsertLateLeaveIntoDB(member, message.id, work_days, leave_type, leave_balance, reason)
+            UpdateLeaveBalanceOfRequestID(message.id)
+        return message
+    except Exception as e:
+        print(e)
+        return ("Something went wrong, please try again later")
+
+def InsertLateLeaveIntoDB(member, message_id, work_days, leave_type, leave_balance, reason):
+    for day in work_days:
+        is_emergency = False
+        is_unpaid = False
+        if leave_balance <= 0:
+            is_unpaid = True
+        else:
+            leave_balance -= 1
+
+        leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", "Approved", is_emergency, is_unpaid)
+    return
