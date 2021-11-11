@@ -32,15 +32,15 @@ async def on_raw_reaction_add(payload):
 
 @slash.slash(name = "RequestLeave", description = "Request an annual leave", options = UI.CreateDateOptions(), guild_ids = guild_ids)
 async def RequestLeave(ctx, leavetype, startdate, enddate, reason = ""):
-    await leave_interface.ProcessLeaveRequest(ctx, ctx.author, client, leavetype, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), reason)
-    await ctx.message.delete()
+    message_content = await leave_interface.ProcessLeaveRequest(ctx, ctx.author, client, leavetype, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), reason)
+    await ctx.author.send(content = message_content)
+    await ctx.send(content = message_content, delete_after = 0.1)
 
 @slash.slash(name = "InsertMember", description = "Insert new member into the database", options = UI.CreateMemberOptions(), guild_ids = guild_ids)
 async def InsertMember(ctx, discorduser, name, email, startdate):
     message_content = ""
     if Utilities.IsAdmin(ctx.author):
-        result = member_db.InsertMember(discorduser.id, name, email, datetime.strptime(startdate, '%d/%m/%Y'))
-        message_content = result
+        message_content = member_db.InsertMember(discorduser.id, name, email, datetime.strptime(startdate, '%d/%m/%Y'))
     else:
         message_content = "This command is for Admins only"
 
