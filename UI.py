@@ -119,6 +119,42 @@ def CreateMemberInsertionOptions():
 
     return member_options
 
+def CreateLateLeaveRequestOptions():
+    late_application_options = [
+        create_option(
+            name = "discorduser",
+            description = "discord user",
+            option_type = SlashCommandOptionType.USER,
+            required = True
+        ),
+        create_option(
+            name = "leavetype",
+            description = "leave type",
+            option_type = SlashCommandOptionType.STRING,
+            required = True,
+            choices = CreateLeaveTypeChoices()
+        ),
+         create_option(
+            name = "startdate",
+            description = "starting date of the leave in DD/MM/YYYY format",
+            option_type = SlashCommandOptionType.STRING,
+            required = True
+        ),
+        create_option(
+            name = "enddate",
+            description = "ending date of the leave in DD/MM/YYYY format",
+            option_type = SlashCommandOptionType.STRING,
+            required = True
+        ),
+        create_option(
+            name = "reason",
+            description = "reason for the leave (optional)",
+            option_type = SlashCommandOptionType.STRING,
+            required = False
+        )
+    ]
+    return late_application_options
+
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
 
