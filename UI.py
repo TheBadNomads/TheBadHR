@@ -56,7 +56,7 @@ def CreateDateChoices():
     
     return dateChoices
 
-def CreateDateOptions():
+def CreateLeaveRequestOptions():
     requestLeave_options = [
         create_option(
             name = "leavetype",
@@ -89,7 +89,7 @@ def CreateDateOptions():
 
     return requestLeave_options
 
-def CreateMemberOptions():
+def CreateMemberInsertionOptions():
     member_options = [
         create_option(
             name = "discorduser",
