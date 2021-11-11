@@ -77,4 +77,4 @@ def IsUnpaidLeave(leave_date, leave_type, leave_balance, remaining_emergency_cou
     return ((leave_balance <= 0) or ((is_emergency) and (remaining_emergency_count <= 0)))
 
 def GetDatesOfLeaves(leaves_array):
-    return [d['date'] for d in leaves_array]
+    return ([d['date'] for d in leaves_array])
