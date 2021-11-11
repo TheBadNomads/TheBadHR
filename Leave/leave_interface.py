@@ -93,7 +93,7 @@ def GetRequestedLeavesBetween(member_id, start_date, end_date):
     previous_leaves = leave_db.GetLeavesByMemberID(member_id)
     requested_leaves = []
     for leave in previous_leaves:
-        if leave["date"] in work_days:
+        if (leave["date"] in work_days):
            requested_leaves.append(leave)
     return requested_leaves
 
