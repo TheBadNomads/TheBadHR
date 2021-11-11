@@ -9,17 +9,11 @@ from db import db
 from Leave import leave_db
 
 async def ProcessLeaveRequest(ctx, member, client, leave_type, start_date, end_date, reason):
-    if end_date < start_date:
-        return (db.GetCaption(3))
+    is_request_valid, message = IsLeaveRequestValid(member.id, start_date, end_date)
+    if is_request_valid:
+        return await SubmitRequest(ctx, member, client, start_date, end_date, leave_type, reason)   
 
-    if (len(utils.GetWorkDays(start_date, end_date)) <= 0):
-        return ("This request consists of Holidays/Weekends ONLY")
-
-    previously_requested_days = utils.FilterOutLeavesByStatus(GetRequestedLeavesBetween(member.id, start_date, end_date), "rejected")
-    if len(previously_requested_days) > 0:
-        return (f"Leave request already exists for {utils.ConvertDatesToStrings(utils.GetDatesOfLeaves(previously_requested_days))}")
-    
-    return await SubmitRequest(ctx, member, client, start_date, end_date, leave_type, reason)            
+    return message
 
 async def SubmitRequest(ctx, member, client, start_date, end_date, leave_type, reason):
     message_id = await SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_type, reason)
@@ -99,3 +93,16 @@ def GetRemainingEmergencyLeavesCount(member_id):
     requested_emergency_count = len(leave_db.GetEmergencyLeavesForYear(member_id, datetime.date.today().year))
     max_emergency_count = int(os.getenv("Emergency_Leaves_Max_Count"))
     return (max_emergency_count - requested_emergency_count)
+
+def IsLeaveRequestValid(member_id, start_date, end_date):
+    if end_date < start_date:
+        return (False, (db.GetCaption(3)))
+
+    if (len(utils.GetWorkDays(start_date, end_date)) <= 0):
+        return (False, ("This request consists of Holidays/Weekends ONLY"))
+
+    previously_requested_days = utils.FilterOutLeavesByStatus(GetRequestedLeavesBetween(member_id, start_date, end_date), "rejected")
+    if len(previously_requested_days) > 0:
+        return (f"Leave request already exists for {utils.ConvertDatesToStrings(utils.GetDatesOfLeaves(previously_requested_days))}")
+        
+    return (True, "")
