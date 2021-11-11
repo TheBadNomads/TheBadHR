@@ -84,7 +84,8 @@ def UpdateLeaveBalanceOfRequestID(message_id):
 
 def GetRequestedDaysBetween(member_id, start_date, end_date):
     work_days = utils.GetWorkDays(start_date, end_date)
-    previously_requested_days = [d['date'] for d in leave_db.GetLeavesMemberID(member_id)]
+    previous_leaves = leave_db.GetLeavesMemberID(member_id)
+    previously_requested_days = [d['date'] for d in utils.FilterOutLeavesByStatus(previous_leaves, "rejected")]
     requested_days = set(work_days).intersection(previously_requested_days)
     return requested_days
 

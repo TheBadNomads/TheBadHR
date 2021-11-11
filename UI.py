@@ -21,6 +21,8 @@ def CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason):
         description = f'{ctx.author.mention} is requesting a leave', 
         colour = 0x4682B4
     )
+    if reason == "":
+        reason = "None"
     footer_text = (("\u200B " * 150) + datetime.date.today().strftime("%d/%m/%Y")) # magic number 150
 
     embed.set_thumbnail(url = leaveImages[leave_type])
