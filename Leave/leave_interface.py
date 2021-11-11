@@ -10,26 +10,22 @@ from Leave import leave_db
 
 async def ProcessLeaveRequest(ctx, member, client, leave_type, start_date, end_date, reason):
     if end_date < start_date:
-        await ctx.send(content = db.GetCaption(3))
-        return 
+        return (db.GetCaption(3))
 
     if (len(utils.GetWorkDays(start_date, end_date)) <= 0):
-        await ctx.send(content = "This request consists of Holidays/Weekends ONLY")
-        return
+        return ("This request consists of Holidays/Weekends ONLY")
 
     repeated_requested_days = utils.ConvertDatesToStrings(GetRequestedDaysBetween(member.id, start_date, end_date))
     if len(repeated_requested_days) > 0:
-        await ctx.send(content = f"Leave request already exists for {repeated_requested_days}")
-        return
+        return (f"Leave request already exists for {repeated_requested_days}")
     
-    await SubmitRequest(ctx, member, client, start_date, end_date, leave_type, reason)            
+    return await SubmitRequest(ctx, member, client, start_date, end_date, leave_type, reason)            
 
 async def SubmitRequest(ctx, member, client, start_date, end_date, leave_type, reason):
     message_id = await SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_type, reason)
-    AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, "Pending", reason)
+    return AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, "Pending", reason)
     
 async def SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_type, reason):
-    await ctx.send(content = db.GetCaption(1))
     embed = UI.CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason)
     channel = Channels.GetLeaveApprovalsChannel(client)
     message = await channel.send(embed = embed)
@@ -38,16 +34,24 @@ async def SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_typ
     return message.id
 
 def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason):
-    work_days = utils.GetWorkDays(start_date, end_date)
-    remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
-    leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
-    for day in work_days:
-        is_emergency = utils.IsEmergencyLeave(day, leave_type)
-        is_unpaid = utils.IsUnpaidLeave(day, leave_type, leave_balance, remaining_emergency_count)
-        if (not (is_unpaid)):
-            leave_balance -= 1
+    if message_id == None:
+        return ("Failed")
 
-        leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
+    try:
+        work_days = utils.GetWorkDays(start_date, end_date)
+        remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
+        leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
+        for day in work_days:
+            is_emergency = utils.IsEmergencyLeave(day, leave_type)
+            is_unpaid = utils.IsUnpaidLeave(day, leave_type, leave_balance, remaining_emergency_count)
+            if (not (is_unpaid)):
+                leave_balance -= 1
+
+            leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
+        return (db.GetCaption(1))
+    except Exception as e:
+        print(e)
+        return ("Failed")
                 
 async def HandleLeaveReactions(client, payload):
     channel = client.get_channel(payload.channel_id)
