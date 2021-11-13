@@ -110,7 +110,7 @@ def IsLeaveRequestValid(member_id, start_date, end_date):
     if len(previously_requested_days) > 0:
         return (f"Leave request already exists for {utils.ConvertDatesToStrings(utils.GetDatesOfLeaves(previously_requested_days))}")
         
-    return (True, "")
+    return (True, "Success")
 
 async def InsertLateLeave(member, message_id, start_date, end_date, leave_type, reason):
     is_request_valid, message = IsLeaveRequestValid(member.id, start_date, end_date)
