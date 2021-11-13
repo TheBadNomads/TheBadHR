@@ -47,7 +47,7 @@ async def InsertMember(ctx, discorduser, name, email, startdate):
     await ctx.author.send(content = message_content)
     await ctx.send(content = "Done", delete_after = 0.1)
 
-@slash.slash(name = "InsertLateLeave", description = "Inserts a late leave (Admins Only)", options = UI.CreateLateLeaveRequestOptions(), guild_ids = guild_ids)
+@slash.slash(name = "InsertLateLeave", description = "Inserts a late leave (Admins Only)", options = UI.CreateLateLeaveInsertionOptions(), guild_ids = guild_ids)
 async def InsertLateLeave(ctx, discorduser, leavetype, startdate, enddate, reason = ""):
     message_content = ""
     if Utilities.IsAdmin(ctx.author):

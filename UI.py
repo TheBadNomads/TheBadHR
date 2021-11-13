@@ -119,7 +119,7 @@ def CreateMemberInsertionOptions():
 
     return member_options
 
-def CreateLateLeaveRequestOptions():
+def CreateLateLeaveInsertionOptions():
     late_application_options = [
         create_option(
             name = "discorduser",
