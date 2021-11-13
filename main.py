@@ -57,6 +57,6 @@ async def InsertLateLeave(ctx, discorduser, leavetype, startdate, enddate, reaso
         message_content = "This command is for Admins only"
         
     await ctx.author.send(content = message_content)
-    await ctx.send(content = "Done", delete_after = 0.1)
+    await message.delete()
 
 client.run(os.getenv("Bot_token"))
