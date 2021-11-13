@@ -41,7 +41,7 @@ def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, le
                 is_emergency = utils.IsEmergencyLeave(day, leave_type)
             elif count == 0:
                 is_emergency = True
-                
+
             is_unpaid = utils.IsUnpaidLeave(leave_balance, is_emergency, remaining_emergency_count)
             if (not (is_unpaid)):
                 leave_balance -= 1
