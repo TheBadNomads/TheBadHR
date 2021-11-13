@@ -27,7 +27,7 @@ async def SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_typ
     await message.add_reaction(os.getenv("Reject_Emoji"))
     return message.id
 
-def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason):
+def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason, is_applied_late = False):
     if message_id == None:
         return ("Failed")
 
@@ -35,9 +35,14 @@ def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, le
         work_days = utils.GetWorkDays(start_date, end_date)
         remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
         leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
-        for day in work_days:
-            is_emergency = utils.IsEmergencyLeave(day, leave_type)
-            is_unpaid = utils.IsUnpaidLeave(day, leave_type, leave_balance, remaining_emergency_count)
+        for count, day in enumerate(work_days):
+            is_emergency = False
+            if (not (is_applied_late)):
+                is_emergency = utils.IsEmergencyLeave(day, leave_type)
+            elif count == 0:
+                is_emergency = True
+                
+            is_unpaid = utils.IsUnpaidLeave(leave_balance, is_emergency, remaining_emergency_count)
             if (not (is_unpaid)):
                 leave_balance -= 1
 
@@ -107,27 +112,15 @@ def IsLeaveRequestValid(member_id, start_date, end_date):
         
     return (True, "")
 
-async def InsertLateLeave(member, start_date, end_date, leave_type, reason):
+async def InsertLateLeave(member, message_id, start_date, end_date, leave_type, reason):
     is_request_valid, message = IsLeaveRequestValid(member.id, start_date, end_date)
     try:
         if is_request_valid:
-            work_days = utils.GetWorkDays(start_date, end_date)
-            leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
-            InsertLateLeaveIntoDB(member, message.id, work_days, leave_type, leave_balance, reason)
-            UpdateLeaveBalanceOfRequestID(message.id)
+            result = AddLeaveRequestToDB(member.id, message_id, start_date, end_date, leave_type, "Approved", reason, True)
+            UpdateLeaveBalanceOfRequestID(message_id)
+            return result
+
         return message
     except Exception as e:
         print(e)
         return ("Something went wrong, please try again later")
-
-def InsertLateLeaveIntoDB(member, message_id, work_days, leave_type, leave_balance, reason):
-    for day in work_days:
-        is_emergency = False
-        is_unpaid = False
-        if leave_balance <= 0:
-            is_unpaid = True
-        else:
-            leave_balance -= 1
-
-        leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", "Approved", is_emergency, is_unpaid)
-    return
