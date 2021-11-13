@@ -116,7 +116,8 @@ async def InsertLateLeave(member, message_id, start_date, end_date, leave_type, 
     is_request_valid, message = IsLeaveRequestValid(member.id, start_date, end_date)
     try:
         if is_request_valid:
-            result = AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason, True)
+            is_late_entry = True
+            result = AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason, is_late_entry)
             UpdateLeaveBalanceOfRequestID(message_id)
             return result
 
