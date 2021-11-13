@@ -27,7 +27,7 @@ async def SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_typ
     await message.add_reaction(os.getenv("Reject_Emoji"))
     return message.id
 
-def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason, is_applied_late = False):
+def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason, is_late_entry = False):
     if message_id == None:
         return ("Failed")
 
@@ -37,7 +37,7 @@ def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, le
         leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
         for index, day in enumerate(work_days):
             is_emergency = False
-            if (not (is_applied_late)):
+            if (not (is_late_entry)):
                 is_emergency = utils.IsEmergencyLeave(day, leave_type)
             elif (index == 0):
                 is_emergency = True
