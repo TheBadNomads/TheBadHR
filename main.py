@@ -51,12 +51,12 @@ async def InsertMember(ctx, discorduser, name, email, startdate):
 async def InsertLateLeave(ctx, discorduser, leavetype, startdate, enddate, reason = ""):
     message_content = ""
     if Utilities.IsAdmin(ctx.author):
-        message = await ctx.send(content = "Processing")
-        message_content = await leave_interface.InsertLateLeave(discorduser, message.id, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), leavetype, reason)
+        await ctx.send(content = "Processing")
+        message_content = await leave_interface.InsertLateLeave(discorduser, ctx.message.id, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), leavetype, reason)
     else:
         message_content = "This command is for Admins only"
         
     await ctx.author.send(content = message_content)
-    await message.delete()
+    await ctx.message.delete()
 
 client.run(os.getenv("Bot_token"))
