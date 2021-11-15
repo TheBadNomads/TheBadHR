@@ -15,11 +15,9 @@ async def ProcessLeaveRequest(ctx, member, client, leave_type, start_date, end_d
     if (len(utils.GetWorkDays(start_date, end_date)) <= 0):
         return ("This request consists of Holidays/Weekends ONLY")
 
-    repeated_requested_leaves = GetRequestedLeavesBetween(member.id, start_date, end_date)
-    filtered_requested_days = utils.GetDatesOfLeaves(utils.FilterOutLeavesByStatus(repeated_requested_leaves, "rejected"))
-    previously_requested_days = utils.ConvertDatesToStrings(filtered_requested_days)
+    previously_requested_days = utils.FilterOutLeavesByStatus(GetRequestedLeavesBetween(member.id, start_date, end_date), "rejected")
     if len(previously_requested_days) > 0:
-        return (f"Leave request already exists for {previously_requested_days}")
+        return (f"Leave request already exists for {utils.ConvertDatesToStrings(utils.GetDatesOfLeaves(previously_requested_days))}")
     
     return await SubmitRequest(ctx, member, client, start_date, end_date, leave_type, reason)            
 
