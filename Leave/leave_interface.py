@@ -135,4 +135,4 @@ def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type
             leave_balance -= 1
 
         leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
-    return (db.GetCaption(1))
+    return ("Retroactive leave was inserted successfully")
