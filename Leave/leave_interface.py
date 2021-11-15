@@ -15,9 +15,9 @@ async def ProcessLeaveRequest(ctx, member, client, leave_type, start_date, end_d
     if (len(utils.GetWorkDays(start_date, end_date)) <= 0):
         return ("This request consists of Holidays/Weekends ONLY")
 
-    repeated_requested_days = utils.ConvertDatesToStrings(GetRequestedDaysBetween(member.id, start_date, end_date))
-    if len(repeated_requested_days) > 0:
-        return (f"Leave request already exists for {repeated_requested_days}")
+    previously_requested_days = utils.FilterOutLeavesByStatus(GetRequestedLeavesBetween(member.id, start_date, end_date), "rejected")
+    if len(previously_requested_days) > 0:
+        return (f"Leave request already exists for {utils.ConvertDatesToStrings(utils.GetDatesOfLeaves(previously_requested_days))}")
     
     return await SubmitRequest(ctx, member, client, start_date, end_date, leave_type, reason)            
 
@@ -86,12 +86,14 @@ def UpdateLeaveBalanceOfRequestID(message_id):
     for leaves_array in list(ordered_requested_leaves.values()):
         leave_db.UpdateMultipleLeavesBalance(leaves_array)
 
-def GetRequestedDaysBetween(member_id, start_date, end_date):
+def GetRequestedLeavesBetween(member_id, start_date, end_date):
     work_days = utils.GetWorkDays(start_date, end_date)
     previous_leaves = leave_db.GetLeavesByMemberID(member_id)
-    previously_requested_days = [d['date'] for d in utils.FilterOutLeavesByStatus(previous_leaves, "rejected")]
-    requested_days = set(work_days).intersection(previously_requested_days)
-    return requested_days
+    requested_leaves = []
+    for leave in previous_leaves:
+        if (leave["date"] in work_days):
+           requested_leaves.append(leave)
+    return requested_leaves
 
 def GetRemainingEmergencyLeavesCount(member_id):
     requested_emergency_count = len(leave_db.GetEmergencyLeavesForYear(member_id, datetime.date.today().year))
