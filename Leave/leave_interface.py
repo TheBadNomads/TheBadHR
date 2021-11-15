@@ -27,7 +27,7 @@ async def SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_typ
     await message.add_reaction(os.getenv("Reject_Emoji"))
     return message.id
 
-def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason, is_retroactive_entry = False):
+def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason, is_retroactive_entry = False, is_retroactive_requested_late = False):
     if message_id == None:
         return ("Failed")
 
@@ -40,7 +40,7 @@ def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, le
             if (not (is_retroactive_entry)):
                 is_emergency = utils.IsEmergencyLeave(day, leave_type)
             elif (index == 0):
-                is_emergency = True
+                is_emergency = is_retroactive_requested_late
 
             is_unpaid = utils.IsUnpaidLeave(leave_balance, is_emergency, remaining_emergency_count)
             if (not (is_unpaid)):
@@ -116,7 +116,8 @@ async def InsertRetroactiveLeave(member, message_id, start_date, end_date, leave
     is_request_valid, message = IsLeaveRequestValid(member.id, start_date, end_date)
     try:
         if is_request_valid:
-            result = AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason, requested_late)
+            is_retroactive_entry = True
+            result = AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason, is_retroactive_entry, requested_late)
             UpdateLeaveBalanceOfRequestID(message_id)
             return result
 
