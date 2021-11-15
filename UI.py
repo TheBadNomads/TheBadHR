@@ -119,8 +119,8 @@ def CreateMemberInsertionOptions():
 
     return member_options
 
-def CreateLateLeaveInsertionOptions():
-    late_application_options = [
+def CreateRetroactiveLeaveInsertionOptions():
+    retroactive_application_options = [
         create_option(
             name = "discorduser",
             description = "discord user",
@@ -147,13 +147,19 @@ def CreateLateLeaveInsertionOptions():
             required = True
         ),
         create_option(
+            name = "isemergency",
+            description = "determines if the user requested the retroactive leave late",
+            option_type = SlashCommandOptionType.BOOLEAN,
+            required = True
+        ),
+        create_option(
             name = "reason",
             description = "reason for the leave (optional)",
             option_type = SlashCommandOptionType.STRING,
             required = False
         )
     ]
-    return late_application_options
+    return retroactive_application_options
 
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
