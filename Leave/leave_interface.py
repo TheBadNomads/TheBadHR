@@ -27,7 +27,7 @@ async def SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_typ
     await message.add_reaction(os.getenv("Reject_Emoji"))
     return message.id
 
-def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason, is_retroactive_entry = False, is_retroactive_requested_late = False):
+def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason):
     if message_id == None:
         return ("Failed")
 
@@ -35,13 +35,8 @@ def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, le
         work_days = utils.GetWorkDays(start_date, end_date)
         remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
         leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
-        for index, day in enumerate(work_days):
-            is_emergency = False
-            if (not (is_retroactive_entry)):
-                is_emergency = utils.IsEmergencyLeave(day, leave_type)
-            elif (index == 0):
-                is_emergency = is_retroactive_requested_late
-
+        for day in work_days:
+            is_emergency = utils.IsEmergencyLeave(day, leave_type)
             is_unpaid = utils.IsUnpaidLeave(leave_balance, is_emergency, remaining_emergency_count)
             if (not (is_unpaid)):
                 leave_balance -= 1
@@ -117,7 +112,7 @@ async def InsertRetroactiveLeave(member, message_id, start_date, end_date, leave
     try:
         if is_request_valid:
             is_retroactive_entry = True
-            result = AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason, is_retroactive_entry, requested_late)
+            result = AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason, is_retroactive_entry, requested_late)
             UpdateLeaveBalanceOfRequestID(message_id)
             return result
 
@@ -125,3 +120,20 @@ async def InsertRetroactiveLeave(member, message_id, start_date, end_date, leave
     except Exception as e:
         print(e)
         return ("Something went wrong, please try again later")
+
+def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason, is_retroactive_requested_late = False, is_unpaid_retroactive = False):
+    work_days = utils.GetWorkDays(start_date, end_date)
+    remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
+    leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
+    for index, day in enumerate(work_days):
+        is_emergency = False
+        is_unpaid = False
+        if (index == 0):
+            is_emergency = is_retroactive_requested_late
+        if (is_unpaid_retroactive or (utils.IsUnpaidLeave(leave_balance, is_emergency, remaining_emergency_count))):
+            is_unpaid = True
+        else:
+            leave_balance -= 1
+
+        leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
+    return (db.GetCaption(1))
