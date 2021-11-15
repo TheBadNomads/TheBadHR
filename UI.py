@@ -153,6 +153,12 @@ def CreateRetroactiveLeaveInsertionOptions():
             required = True
         ),
         create_option(
+            name = "unpaid",
+            description = "determines if the leave is considered unpaid",
+            option_type = SlashCommandOptionType.BOOLEAN,
+            required = True
+        ),
+        create_option(
             name = "reason",
             description = "reason for the leave (optional)",
             option_type = SlashCommandOptionType.STRING,

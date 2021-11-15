@@ -107,12 +107,11 @@ def IsLeaveRequestValid(member_id, start_date, end_date):
         
     return (True, "Success")
 
-async def InsertRetroactiveLeave(member, message_id, start_date, end_date, leave_type, requested_late, reason):
+async def InsertRetroactiveLeave(member, message_id, start_date, end_date, leave_type, is_requested_late, is_unpaid_retroactive, reason):
     is_request_valid, message = IsLeaveRequestValid(member.id, start_date, end_date)
     try:
         if is_request_valid:
-            is_retroactive_entry = True
-            result = AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason, is_retroactive_entry, requested_late)
+            result = AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason, is_requested_late, is_unpaid_retroactive)
             UpdateLeaveBalanceOfRequestID(message_id)
             return result
 
@@ -121,7 +120,7 @@ async def InsertRetroactiveLeave(member, message_id, start_date, end_date, leave
         print(e)
         return ("Something went wrong, please try again later")
 
-def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason, is_retroactive_requested_late = False, is_unpaid_retroactive = False):
+def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason, is_requested_late, is_unpaid_retroactive):
     work_days = utils.GetWorkDays(start_date, end_date)
     remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
     leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
@@ -129,7 +128,7 @@ def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type
         is_emergency = False
         is_unpaid = False
         if (index == 0):
-            is_emergency = is_retroactive_requested_late
+            is_emergency = is_requested_late
         if (is_unpaid_retroactive or (utils.IsUnpaidLeave(leave_balance, is_emergency, remaining_emergency_count))):
             is_unpaid = True
         else:
