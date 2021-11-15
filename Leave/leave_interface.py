@@ -112,11 +112,11 @@ def IsLeaveRequestValid(member_id, start_date, end_date):
         
     return (True, "Success")
 
-async def InsertRetroactiveLeave(member, message_id, start_date, end_date, leave_type, is_emergency, reason):
+async def InsertRetroactiveLeave(member, message_id, start_date, end_date, leave_type, requested_late, reason):
     is_request_valid, message = IsLeaveRequestValid(member.id, start_date, end_date)
     try:
         if is_request_valid:
-            result = AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason, is_emergency)
+            result = AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason, requested_late)
             UpdateLeaveBalanceOfRequestID(message_id)
             return result
 

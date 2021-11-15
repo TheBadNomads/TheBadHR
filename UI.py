@@ -147,7 +147,7 @@ def CreateRetroactiveLeaveInsertionOptions():
             required = True
         ),
         create_option(
-            name = "isemergency",
+            name = "requestedlate",
             description = "determines if the user requested the retroactive leave late",
             option_type = SlashCommandOptionType.BOOLEAN,
             required = True
