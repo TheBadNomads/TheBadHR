@@ -11,3 +11,4 @@ set "tag_name=%tag_name:",=%"
 curl -L -o %filename% https://github.com/%Owner%/%Repo%/archive/%tag_name%/%filename%
 "C:\Program Files\7-Zip\7z.exe" e %filename% -o%OutputDir% -y
 del /f %filename%
+del /f response.txt
