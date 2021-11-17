@@ -1,7 +1,7 @@
 @echo off
-set Owner=AbdoHamed-TheBadNomads
-set Repo=Abdo_Test_Repo
-set filename=Abdo.zip
+set Owner=TheBadNomads
+set Repo=TheBadHR
+set filename=latest.zip
 set OutputDir=%CD%
 
 curl -H "Authorization: token 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" https://api.github.com/repos/%Owner%/%Repo%/releases/latest > response.txt
