@@ -4,7 +4,7 @@ set Repo=Abdo_Test_Repo_public
 set filename=Abdo.zip
 set OutputDir=%CD%
 
-curl https://api.github.com/repos/AbdoHamed-TheBadNomads/Abdo_test_repo_public/releases/latest > response.txt
+curl https://api.github.com/repos/%Owner%/%Repo%/releases/latest > response.txt
 FOR /F "tokens=*" %%g IN ('FIND "tag_name" "response.txt"') do (SET result=%%g)
 set "tag_name=%result:"tag_name": "=%"
 set "tag_name=%tag_name:",=%"
