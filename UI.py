@@ -147,13 +147,13 @@ def CreateRetroactiveLeaveInsertionOptions():
             required = True
         ),
         create_option(
-            name = "requestedlate",
+            name = "isemergency",
             description = "determines if the user requested the retroactive leave late",
             option_type = SlashCommandOptionType.BOOLEAN,
             required = True
         ),
         create_option(
-            name = "unpaid",
+            name = "isunpaid",
             description = "determines if the leave is considered unpaid",
             option_type = SlashCommandOptionType.BOOLEAN,
             required = True

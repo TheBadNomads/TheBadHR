@@ -120,19 +120,14 @@ async def InsertRetroactiveLeave(member, message_id, start_date, end_date, leave
         print(e)
         return ("Something went wrong, please try again later")
 
-def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason, is_requested_late, is_unpaid_retroactive):
+def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason, is_emergency, is_unpaid):
     work_days = utils.GetWorkDays(start_date, end_date)
     remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
     leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
-    for index, day in enumerate(work_days):
-        is_emergency = False
-        is_unpaid = False
-        if (index == 0):
-            is_emergency = is_requested_late
-        if (is_unpaid_retroactive or (utils.IsUnpaidLeave(leave_balance, is_emergency, remaining_emergency_count))):
-            is_unpaid = True
-        else:
-            leave_balance -= 1
+    for day in work_days:
+        is_unpaid = ((is_unpaid) or (utils.IsUnpaidLeave(leave_balance, is_emergency, remaining_emergency_count))) 
+        if (not (is_unpaid)):
+                leave_balance -= 1
 
         leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
     return ("Retroactive leave was inserted successfully")
