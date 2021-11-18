@@ -12,8 +12,9 @@ async def ProcessLeaveRequest(ctx, member, client, leave_type, start_date, end_d
     is_request_valid, message = IsLeaveRequestValid(member.id, start_date, end_date)
     if is_request_valid:
         return await SubmitRequest(ctx, member, client, start_date, end_date, leave_type, reason)   
-
-    return message
+        
+    else:
+        return message
 
 async def SubmitRequest(ctx, member, client, start_date, end_date, leave_type, reason):
     message_id = await SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_type, reason)
