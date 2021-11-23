@@ -17,7 +17,7 @@ curl -H "Authorization: token %token%" -L -o %filename% https://github.com/%Owne
 mkdir %OutputDir%
 tar -zxvf %filename% -C %OutputDir%
 for /D %%x in (%OutputDir%\*) do set newOutDir=%%x
-Xcopy %newOutDir% %currentDir% /E /H /C /I /Y
+Xcopy "%newOutDir%" "%currentDir%" /E /H /C /I /Y
 del /f %filename%
 del /f response.txt
 rmdir /s /q %OutputDir%
