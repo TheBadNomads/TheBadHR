@@ -6,7 +6,6 @@ set outputDir=%CD%
 
 FOR /F "tokens=*" %%t IN ('FIND "Personal_Access_Token" ".env"') do (SET token_result=%%t)
 set "token=%token_result:~24%"
-echo %token%
 
 curl -H "Authorization: token %token%" https://api.github.com/repos/%Owner%/%Repo%/releases/latest > response.txt
 FOR /F "tokens=*" %%g IN ('FIND "tag_name" "response.txt"') do set result=%%g
