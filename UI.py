@@ -56,7 +56,7 @@ def CreateDateChoices():
     
     return dateChoices
 
-def CreateDateOptions():
+def CreateLeaveRequestOptions():
     requestLeave_options = [
         create_option(
             name = "leavetype",
@@ -89,7 +89,7 @@ def CreateDateOptions():
 
     return requestLeave_options
 
-def CreateMemberOptions():
+def CreateMemberInsertionOptions():
     member_options = [
         create_option(
             name = "discorduser",
@@ -118,6 +118,54 @@ def CreateMemberOptions():
     ]
 
     return member_options
+
+def CreateRetroactiveLeaveInsertionOptions():
+    retroactive_application_options = [
+        create_option(
+            name = "discorduser",
+            description = "discord user",
+            option_type = SlashCommandOptionType.USER,
+            required = True
+        ),
+        create_option(
+            name = "leavetype",
+            description = "leave type",
+            option_type = SlashCommandOptionType.STRING,
+            required = True,
+            choices = CreateLeaveTypeChoices()
+        ),
+         create_option(
+            name = "startdate",
+            description = "starting date of the leave in DD/MM/YYYY format",
+            option_type = SlashCommandOptionType.STRING,
+            required = True
+        ),
+        create_option(
+            name = "enddate",
+            description = "ending date of the leave in DD/MM/YYYY format",
+            option_type = SlashCommandOptionType.STRING,
+            required = True
+        ),
+        create_option(
+            name = "isemergency",
+            description = "determines if the user requested the retroactive leave late",
+            option_type = SlashCommandOptionType.BOOLEAN,
+            required = True
+        ),
+        create_option(
+            name = "isunpaid",
+            description = "determines if the leave is considered unpaid",
+            option_type = SlashCommandOptionType.BOOLEAN,
+            required = True
+        ),
+        create_option(
+            name = "reason",
+            description = "reason for the leave (optional)",
+            option_type = SlashCommandOptionType.STRING,
+            required = False
+        )
+    ]
+    return retroactive_application_options
 
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()

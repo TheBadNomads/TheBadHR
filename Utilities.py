@@ -72,9 +72,8 @@ def FilterOutLeavesByStatus(leaves_array, leave_status):
 def IsEmergencyLeave(leave_date, leave_type):
     return (IsLateToApplyForLeave(leave_date) and (leave_type.lower() == "annual"))
 
-def IsUnpaidLeave(leave_date, leave_type, leave_balance, remaining_emergency_count):
-    is_emergency = IsEmergencyLeave(leave_date, leave_type)
-    return ((leave_balance <= 0) or ((is_emergency) and (remaining_emergency_count <= 0)))
+def IsUnpaidLeave(leave_balance, is_emergency, remaining_emergency_count):
+    return ((leave_balance < 1) or ((is_emergency) and (remaining_emergency_count < 1)))
 
 def GetDatesOfLeaves(leaves_array):
     return ([d['date'] for d in leaves_array])

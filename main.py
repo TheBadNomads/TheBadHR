@@ -30,13 +30,13 @@ async def on_ready():
 async def on_raw_reaction_add(payload):
     await leave_interface.HandleLeaveReactions(client, payload)
 
-@slash.slash(name = "RequestLeave", description = "Request an annual leave", options = UI.CreateDateOptions(), guild_ids = guild_ids)
+@slash.slash(name = "RequestLeave", description = "Requests an annual leave", options = UI.CreateLeaveRequestOptions(), guild_ids = guild_ids)
 async def RequestLeave(ctx, leavetype, startdate, enddate, reason = ""):
     message_content = await leave_interface.ProcessLeaveRequest(ctx, ctx.author, client, leavetype, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), reason)
     await ctx.author.send(content = message_content)
     await ctx.send(content = "Done", delete_after = 0.1)
 
-@slash.slash(name = "InsertMember", description = "Insert new member into the database", options = UI.CreateMemberOptions(), guild_ids = guild_ids)
+@slash.slash(name = "InsertMember", description = "Inserts a new member into the database", options = UI.CreateMemberInsertionOptions(), guild_ids = guild_ids)
 async def InsertMember(ctx, discorduser, name, email, startdate):
     message_content = ""
     if Utilities.IsAdmin(ctx.author):
@@ -46,6 +46,17 @@ async def InsertMember(ctx, discorduser, name, email, startdate):
 
     await ctx.author.send(content = message_content)
     await ctx.send(content = "Done", delete_after = 0.1)
-   
+
+@slash.slash(name = "InsertRetroactiveLeave", description = "Inserts a late leave (Admins Only)", options = UI.CreateRetroactiveLeaveInsertionOptions(), guild_ids = guild_ids)
+async def InsertRetroactiveLeave(ctx, discorduser, leavetype, startdate, enddate, isemergency, isunpaid, reason = ""):
+    message_content = ""
+    await ctx.send(content = "Processing")
+    if Utilities.IsAdmin(ctx.author):
+        message_content = await leave_interface.InsertRetroactiveLeave(discorduser, ctx.message.id, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), leavetype, isemergency, isunpaid, reason)
+    else:
+        message_content = "This command is for Admins only"
+        
+    await ctx.author.send(content = message_content)
+    await ctx.message.delete()
 
 client.run(os.getenv("Bot_token"))
