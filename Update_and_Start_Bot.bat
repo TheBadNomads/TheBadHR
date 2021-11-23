@@ -1,9 +1,8 @@
 @echo off
-set owner=TheBadNomads
-set repo=TheBadHR
-set filename=latest.zip
-set outputDir="C:\bot_latest_tmp"
-set currentDir=%CD%
+FOR /f "tokens=1,2 delims== " %%G in ('FIND "Batch_Repo_Owner" ".env"') do set owner=%%H
+FOR /f "tokens=1,2 delims== " %%G in ('FIND "Batch_Repo" ".env"') do set repo=%%H
+FOR /f "tokens=1,2 delims== " %%G in ('FIND "Batch_File_Name" ".env"') do set filename=%%H
+FOR /f "tokens=1,2 delims== " %%G in ('FIND "Batch_Output_Dir" ".env"') do set outputDir=%%H
 
 curl https://api.github.com/repos/%Owner%/%Repo%/releases/latest > response.txt
 FOR /F "tokens=*" %%g IN ('FIND "tag_name" "response.txt"') do set result=%%g
@@ -14,7 +13,7 @@ curl -L -o %filename% https://github.com/%Owner%/%Repo%/archive/%tag_name%/%file
 mkdir %OutputDir%
 tar -zxvf %filename% -C %OutputDir%
 for /D %%x in (%OutputDir%\*) do set newOutDir=%%x
-Xcopy "%newOutDir%" "%currentDir%" /E /H /C /Y
+Xcopy "%newOutDir%" "%CD%" /E /H /C /Y
 del /f %filename%
 del /f response.txt
 rmdir /s /q %OutputDir%
