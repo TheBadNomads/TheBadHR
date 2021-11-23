@@ -2,7 +2,8 @@
 set owner=TheBadNomads
 set repo=TheBadHR
 set filename=latest.zip
-set outputDir=%CD%
+set outputDir="C:\bot_latest_tmp"
+set currentDir=%CD%
 
 FOR /F "tokens=*" %%t IN ('FIND "Personal_Access_Token" ".env"') do (SET token_result=%%t)
 set "token=%token_result:~24%"
