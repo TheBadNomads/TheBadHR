@@ -3,7 +3,7 @@ set owner=TheBadNomads
 set repo=TheBadHR
 set filename=latest.zip
 set outputDir=%CD%
-set token=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
+set token=XXXXXX
 
 curl -H "Authorization: token %token%" https://api.github.com/repos/%owner%/%repo%/releases/latest > response.txt
 FOR /F "tokens=*" %%g IN ('FIND "tag_name" "response.txt"') do (SET result=%%g)
