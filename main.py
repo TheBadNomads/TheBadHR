@@ -50,8 +50,8 @@ async def InsertMember(ctx, discorduser, name, email, startdate):
 @slash.slash(name = "InsertRetroactiveLeave", description = "Inserts a late leave (Admins Only)", options = UI.CreateRetroactiveLeaveInsertionOptions(), guild_ids = guild_ids)
 async def InsertRetroactiveLeave(ctx, discorduser, leavetype, startdate, enddate, isemergency, isunpaid, reason = ""):
     message_content = ""
+    await ctx.send(content = "Processing")
     if Utilities.IsAdmin(ctx.author):
-        await ctx.send(content = "Processing")
         message_content = await leave_interface.InsertRetroactiveLeave(discorduser, ctx.message.id, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), leavetype, isemergency, isunpaid, reason)
     else:
         message_content = "This command is for Admins only"
