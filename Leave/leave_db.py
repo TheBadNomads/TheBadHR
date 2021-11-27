@@ -33,8 +33,8 @@ def GetLeaveBalance(member_id, leave_type):
     leaves_balance = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
     return float(leaves_balance["balance"])
 
-def GetLeaveTypesWithBalance():
-    db.GetDBCursor().execute('SELECT * FROM [leaveTypesWithBalance]')
+def GetLeaveTypes():
+    db.GetDBCursor().execute('SELECT * FROM [leaveTypes]')
     leaves_types = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves_types
 
@@ -53,7 +53,7 @@ def InsertLeave(member_id, request_id, leave_type, date, reason, remark, leave_s
 
 def InsertInitialLeaveBalance(member_id:int, start_date:datetime):
     try:
-        leave_types_with_balance = utils.CalculateInitialLeavesBalance(GetLeaveTypesWithBalance(), start_date)
+        leave_types_with_balance = utils.CalculateInitialLeavesBalance(GetLeaveTypes(), start_date)
 
         for name, balance in leave_types_with_balance.items():
             try:
