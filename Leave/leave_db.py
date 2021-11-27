@@ -2,6 +2,7 @@ import Utilities as utils
 import datetime
 
 from db import db
+from Member import member_db
 
 def GetLeaveByID(id):
     db.GetDBCursor().execute(f'SELECT * FROM [leaves] WHERE id = {id}')
@@ -29,9 +30,14 @@ def GetEmergencyLeavesForYear(member_id, year):
     return leaves
 
 def GetLeaveBalance(member_id, leave_type):
-    db.GetDBCursor().execute(f"SELECT balance FROM [leavesBalance] WHERE member_id = {member_id} AND leave_type = '{leave_type}'")
-    leaves_balance = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
-    return float(leaves_balance["balance"])
+    start_date = member_db.GetMemberByID(member_id)["start_date"]
+    initial_balance = utils.CalculateProrataForLeave(leave_type, start_date)
+    db.GetDBCursor().execute(f"SELECT SUM(extra_balance) FROM extraBalance WHERE member_id = {member_id} AND leave_type = '{leave_type}'")
+    extra_balance =  db.GetDBCursor().fetchone()[0]
+    db.GetDBCursor().execute(f"SELECT COUNT(*) FROM leaves WHERE member_id = {member_id} AND leave_type = '{leave_type}'")
+    applied_leaves_count = db.GetDBCursor().fetchone()[0]
+    current_balance = (initial_balance + extra_balance) - applied_leaves_count
+    return float(current_balance)
 
 def GetLeaveTypes():
     db.GetDBCursor().execute('SELECT * FROM [leaveTypes]')
@@ -44,27 +50,6 @@ def InsertLeave(member_id, request_id, leave_type, date, reason, remark, leave_s
             "INSERT INTO [leaves] (member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency, is_unpaid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency, is_unpaid)
         )
-        db.GetDBConnection().commit()
-        return "Success"
-
-    except Exception as e:
-        db.GetDBConnection().rollback()
-        return "Failed"
-
-def InsertInitialLeaveBalance(member_id:int, start_date:datetime):
-    try:
-        leave_types_with_balance = utils.CalculateInitialLeavesBalance(GetLeaveTypes(), start_date)
-
-        for name, balance in leave_types_with_balance.items():
-            try:
-                db.GetDBCursor().execute(
-                    "INSERT INTO [leavesBalance] (member_id, leave_type, balance) VALUES (?, ?, ?)",
-                    (member_id, name, balance)
-                )
-            except Exception as e:
-                db.GetDBConnection().rollback()
-                return "Failed"
-
         db.GetDBConnection().commit()
         return "Success"
 
