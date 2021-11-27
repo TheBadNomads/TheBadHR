@@ -63,23 +63,12 @@ async def HandleLeaveReactions(client, payload):
 async def UpdateLeaveStatus(client, payload, status, message, embed):
     try:
         leave_db.UpdateLeaveStatus(payload.message_id, status)
-        if status == "Approved":
-            UpdateLeaveBalanceOfRequestID(payload.message_id)
 
         await UI.UpdateEmbedLeaveStatus(message, embed, status)
         member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
         await member.send(content = "Your request was " + status)
     except Exception as e:
         print(e)
-
-def UpdateLeaveBalanceOfRequestID(message_id):
-    requested_leaves = leave_db.GetLeavesByRequestID(message_id)
-    ordered_requested_leaves = collections.defaultdict(list)
-    for leave in requested_leaves:
-        ordered_requested_leaves[leave['leave_type']].append(leave)
-
-    for leaves_array in list(ordered_requested_leaves.values()):
-        leave_db.UpdateMultipleLeavesBalance(leaves_array)
 
 def GetRequestedLeavesBetween(member_id, start_date, end_date):
     work_days = utils.GetWorkDays(start_date, end_date)
@@ -113,7 +102,6 @@ async def InsertRetroactiveLeave(member, message_id, start_date, end_date, leave
     try:
         if is_request_valid:
             result = AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason, is_requested_late, is_unpaid_retroactive)
-            UpdateLeaveBalanceOfRequestID(message_id)
             return result
 
         return message

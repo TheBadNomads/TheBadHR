@@ -82,27 +82,6 @@ def UpdateLeaveStatus(request_id, leave_status):
         db.GetDBConnection().rollback()
         return "Failed"
 
-def UpdateMultipleLeavesBalance(leaves_array):
-    try:
-        for leave in leaves_array:
-            db.GetDBCursor().execute("UPDATE [leavesBalance] SET balance = balance - 1 WHERE member_id = ? AND leave_type = ?", leave["member_id"], leave["leave_type"])
-        db.GetDBConnection().commit()
-        return "Success"
-
-    except Exception as e:
-        db.GetDBConnection().rollback()
-        return "Failed"
-
-def UpdateLeaveBalance(member_id, leave_type, requested_days_count):
-    try:
-        db.GetDBCursor().execute("UPDATE [leavesBalance] SET balance = balance + ? WHERE member_id = ? AND leave_type = ?", requested_days_count, member_id, leave_type)
-        db.GetDBConnection().commit()
-        return "Success"
-
-    except Exception as e:
-        db.GetDBConnection().rollback()
-        return "Failed"
-
 def IsLeaveRequest(message_id):
     return len(GetLeavesByRequestID(message_id)) != 0
 
