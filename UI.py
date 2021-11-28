@@ -177,16 +177,9 @@ def CreateLeavesBalancesEmbed(member_id):
         embed.set_thumbnail(url = os.getenv("Leave_Balance_Link"))
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
-        counter = 0
-        for type in leave_db.GetLeaveTypes():
-            balance = leave_db.GetLeaveBalance(member_id, type["name"])
-            if(counter + 2) % 3 != 0:
-                embed.add_field(name = type["name"], value = balance, inline = True)
-            else:
-                embed.add_field(name = '\u200B', value = '\u200B', inline = True)
-                embed.add_field(name = type["name"], value = balance, inline = True)
-                counter += 1
-            counter += 1
+        embed.add_field(name = "Annual", value = leave_db.GetLeaveBalance(member_id, "Annual"), inline = True)
+        embed.add_field(name = '\u200B', value = '\u200B', inline = True)
+        embed.add_field(name = "Emergency", value = GetEmergencyBalance(member_id), inline = True)
 
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
         embed.set_footer(text = datetime.date.today())
@@ -216,3 +209,8 @@ def ParseEmoji(emoji):
     reaction_emojis = defaultdict(None, **reaction_emojis)
 
     return reaction_emojis[emoji_str]
+
+def GetEmergencyBalance(member_id):
+    requested_emergency_count = len(leave_db.GetEmergencyLeavesForYear(member_id, datetime.date.today().year))
+    max_emergency_count = int(os.getenv("Emergency_Leaves_Max_Count"))
+    return (max_emergency_count - requested_emergency_count)
