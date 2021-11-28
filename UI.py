@@ -170,7 +170,7 @@ def CreateRetroactiveLeaveInsertionOptions():
 def CreateLeavesBalancesEmbed(member_id):
     try:
         embed = discord.Embed(
-            title = f'Leaves Balances',
+            title = f'Leave Balances',
             description = f'Your balances are:',
             colour = 0x4682B4
         )
