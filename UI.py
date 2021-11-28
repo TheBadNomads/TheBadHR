@@ -179,7 +179,7 @@ def CreateLeavesBalancesEmbed(member_id):
 
         embed.add_field(name = "Annual", value = leave_db.GetLeaveBalance(member_id, "Annual"), inline = True)
         embed.add_field(name = '\u200B', value = '\u200B', inline = True)
-        embed.add_field(name = "Emergency", value = GetEmergencyBalance(member_id), inline = True)
+        embed.add_field(name = "Emergency", value = max(GetEmergencyBalance(member_id), 0), inline = True)
 
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
         embed.set_footer(text = datetime.date.today())
