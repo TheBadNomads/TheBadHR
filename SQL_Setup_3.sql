@@ -14,5 +14,5 @@ CREATE TABLE extraBalance (
     [leave_type] varchar(255) NOT NULL FOREIGN KEY REFERENCES leaveTypes(name),
     [date] datetime NOT NULL,
     [reason] varchar(255),
-    [extra_balance] float NOT NULL
+    [days_count] float NOT NULL
 );

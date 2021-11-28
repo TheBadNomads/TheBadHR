@@ -32,7 +32,7 @@ def GetEmergencyLeavesForYear(member_id, year):
 def GetLeaveBalance(member_id, leave_type):
     start_date = member_db.GetMemberByID(member_id)["start_date"]
     initial_balance = utils.CalculateProrataForLeave(leave_type, start_date)
-    db.GetDBCursor().execute(f"SELECT SUM(extra_balance) FROM extraBalance WHERE receiver_id = {member_id} AND leave_type = '{leave_type}'")
+    db.GetDBCursor().execute(f"SELECT SUM(days_count) FROM extraBalance WHERE receiver_id = {member_id} AND leave_type = '{leave_type}'")
     extra_balance = db.GetDBCursor().fetchone()[0] or 0 
     db.GetDBCursor().execute(f"SELECT COUNT(*) FROM leaves WHERE member_id = {member_id} AND leave_type = '{leave_type}'")
     used_balance = db.GetDBCursor().fetchone()[0]
