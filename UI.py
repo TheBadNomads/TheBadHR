@@ -179,7 +179,7 @@ def CreateLeavesBalancesEmbed(member_id):
 
         counter = 0
         for type in leave_db.GetLeaveTypes():
-            balance = leave_db.GetLeaveBalance(member_id, type)
+            balance = leave_db.GetLeaveBalance(member_id, type["name"])
             if(counter + 2) % 3 != 0:
                 embed.add_field(name = type["name"], value = balance, inline = True)
             else:
