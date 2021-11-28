@@ -169,7 +169,6 @@ def CreateRetroactiveLeaveInsertionOptions():
 
 def CreateLeavesBalancesEmbed(member_id):
     try:
-        leaves_types_with_balance = leave_db.GetLeavesBalanceForMember(member_id)
         embed = discord.Embed(
             title = f'Leaves Balances',
             description = f'Your balances are:',
@@ -179,12 +178,13 @@ def CreateLeavesBalancesEmbed(member_id):
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
         counter = 0
-        for entry in leaves_types_with_balance:
+        for type in leave_db.GetLeaveTypes():
+            balance = leave_db.GetLeaveBalance(member_id, type)
             if(counter + 2) % 3 != 0:
-                embed.add_field(name = entry["leave_type"], value = entry["balance"], inline = True)
+                embed.add_field(name = type["leave_type"], value = balance, inline = True)
             else:
                 embed.add_field(name = '\u200B', value = '\u200B', inline = True)
-                embed.add_field(name = entry["leave_type"], value = entry["balance"], inline = True)
+                embed.add_field(name = type["leave_type"], value = balance, inline = True)
                 counter += 1
             counter += 1
 
