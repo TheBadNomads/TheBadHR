@@ -59,4 +59,13 @@ async def InsertRetroactiveLeave(ctx, discorduser, leavetype, startdate, enddate
     await ctx.author.send(content = message_content)
     await ctx.message.delete()
 
+@slash.slash(name = "ShowLeavesBalance", description = "Shows your leaves balance", guild_ids = guild_ids)
+async def ShowLeavesBalance(ctx):
+    embed = UI.CreateLeavesBalancesEmbed(ctx.author.id)
+    if embed == None:
+        await ctx.send(content = "your request failed, try again later")
+    else:
+        await ctx.send(content = "your request succeeded")
+        await ctx.author.send(embed = embed)
+
 client.run(os.getenv("Bot_token"))
