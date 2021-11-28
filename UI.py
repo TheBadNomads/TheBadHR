@@ -181,10 +181,10 @@ def CreateLeavesBalancesEmbed(member_id):
         for type in leave_db.GetLeaveTypes():
             balance = leave_db.GetLeaveBalance(member_id, type)
             if(counter + 2) % 3 != 0:
-                embed.add_field(name = type["leave_type"], value = balance, inline = True)
+                embed.add_field(name = type["name"], value = balance, inline = True)
             else:
                 embed.add_field(name = '\u200B', value = '\u200B', inline = True)
-                embed.add_field(name = type["leave_type"], value = balance, inline = True)
+                embed.add_field(name = type["name"], value = balance, inline = True)
                 counter += 1
             counter += 1
 
