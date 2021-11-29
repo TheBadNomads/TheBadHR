@@ -9,10 +9,10 @@ DROP TABLE leavesBalance
 
 CREATE TABLE extraBalance (
     id int NOT NULL IDENTITY(1,1) PRIMARY KEY,
-    [creditor_id] bigint NOT NULL FOREIGN KEY REFERENCES members(id),
-    [receiver_id] bigint NOT NULL,
-    [leave_type] varchar(255) NOT NULL FOREIGN KEY REFERENCES leaveTypes(name),
     [date] datetime NOT NULL,
+    [creditor_id] bigint NOT NULL FOREIGN KEY REFERENCES members(id),
+    [recipient_id] bigint NOT NULL,
+    [leave_type] varchar(255) NOT NULL FOREIGN KEY REFERENCES leaveTypes(name),
     [reason] varchar(255),
     [days_count] float NOT NULL
 );

@@ -39,7 +39,7 @@ def GetAnnualLeaveBalance(member_id):
     return current_balance
 
 def GetExtraBalance(member_id, leave_type):
-    db.GetDBCursor().execute(f"SELECT SUM(days_count) FROM extraBalance WHERE receiver_id = {member_id} AND leave_type = '{leave_type}'")
+    db.GetDBCursor().execute(f"SELECT SUM(days_count) FROM extraBalance WHERE recipient_id = {member_id} AND leave_type = '{leave_type}'")
     return db.GetDBCursor().fetchone()[0] or 0 
 
 def GetLeavesByMemberIDandType(member_id, leave_type):
