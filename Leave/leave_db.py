@@ -34,18 +34,13 @@ def GetAnnualLeaveBalance(member_id):
     start_date = member_db.GetMemberByID(member_id)["start_date"]
     initial_balance = utils.CalculateProratedAnnualLeaves(start_date, int(os.getenv("Annual_Leaves_Max_Count")))
     extra_balance = GetExtraBalance(member_id, "Annual")
-    used_balance = len(GetLeavesByMemberIDandType(member_id, "Annual"))
+    used_balance = len(list(filter(lambda leave: leave['leave_type'] == 'Annual', GetLeavesByMemberID(member_id))))
     current_balance = (initial_balance + extra_balance) - used_balance
     return current_balance
 
 def GetExtraBalance(member_id, leave_type):
     db.GetDBCursor().execute(f"SELECT SUM(days_count) FROM extraBalance WHERE recipient_id = {member_id} AND leave_type = '{leave_type}'")
     return db.GetDBCursor().fetchone()[0] or 0 
-
-def GetLeavesByMemberIDandType(member_id, leave_type):
-    db.GetDBCursor().execute(f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_type = '{leave_type}'")
-    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
-    return leaves
 
 def GetLeaveTypes():
     db.GetDBCursor().execute('SELECT * FROM [leaveTypes]')
