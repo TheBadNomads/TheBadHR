@@ -6,20 +6,6 @@ import re
 def isNotBot(member):
     return not member.bot
 
-
-def CalculateInitialLeavesBalance(leave_types, start_date):
-    calculated_leave_types_balance = {}
-    for leave_type in leave_types:
-        calculated_leave_types_balance[leave_type["name"]] = CalculateProrataForLeave(leave_type["name"], start_date)
-    return calculated_leave_types_balance
-
-def CalculateProrataForLeave(leave_type, start_date):
-    if leave_type == "Annual":
-        return CalculateProratedAnnualLeaves(start_date, int(os.getenv("Annual_Leaves_Max_Count")))
-
-    else:
-        return float('inf')
-
 def CalculateProratedAnnualLeaves(start_date, starting_balance):
     start_month = start_date.month
     leaves_months_count = (12 - start_month) + 1

@@ -35,12 +35,12 @@ def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, le
     try:
         work_days = utils.GetWorkDays(start_date, end_date)
         remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
-        leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
+        annual_leave_balance = leave_db.GetAnnualLeaveBalance(member.id)
         for day in work_days:
             is_emergency = utils.IsEmergencyLeave(day, leave_type)
-            is_unpaid = utils.IsUnpaidLeave(leave_balance, is_emergency, remaining_emergency_count)
+            is_unpaid = utils.IsUnpaidLeave(annual_leave_balance, is_emergency, remaining_emergency_count)
             if (not (is_unpaid)):
-                leave_balance -= 1
+                annual_leave_balance -= 1
 
             leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
         return (db.GetCaption(1))
@@ -112,11 +112,11 @@ async def InsertRetroactiveLeave(member, message_id, start_date, end_date, leave
 def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason, is_emergency, is_unpaid):
     work_days = utils.GetWorkDays(start_date, end_date)
     remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
-    leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
+    annual_leave_balance = leave_db.GetAnnualLeaveBalance(member.id)
     for day in work_days:
-        is_unpaid = ((is_unpaid) or (utils.IsUnpaidLeave(leave_balance, is_emergency, remaining_emergency_count))) 
+        is_unpaid = ((is_unpaid) or (utils.IsUnpaidLeave(annual_leave_balance, is_emergency, remaining_emergency_count))) 
         if (not (is_unpaid)):
-                leave_balance -= 1
+                annual_leave_balance -= 1
 
         leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
     return ("Retroactive leave was inserted successfully")

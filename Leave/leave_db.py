@@ -1,5 +1,6 @@
 import Utilities as utils
 import datetime
+import os
 
 from db import db
 from Member import member_db
@@ -29,12 +30,12 @@ def GetEmergencyLeavesForYear(member_id, year):
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
 
-def GetLeaveBalance(member_id, leave_type):
+def GetAnnualLeaveBalance(member_id):
     start_date = member_db.GetMemberByID(member_id)["start_date"]
-    initial_balance = utils.CalculateProrataForLeave(leave_type, start_date)
-    db.GetDBCursor().execute(f"SELECT SUM(days_count) FROM extraBalance WHERE receiver_id = {member_id} AND leave_type = '{leave_type}'")
+    initial_balance = utils.CalculateProratedAnnualLeaves(start_date, int(os.getenv("Annual_Leaves_Max_Count")))
+    db.GetDBCursor().execute(f"SELECT SUM(days_count) FROM extraBalance WHERE receiver_id = {member_id} AND leave_type = 'Annual'")
     extra_balance = db.GetDBCursor().fetchone()[0] or 0 
-    db.GetDBCursor().execute(f"SELECT COUNT(*) FROM leaves WHERE member_id = {member_id} AND leave_type = '{leave_type}'")
+    db.GetDBCursor().execute(f"SELECT COUNT(*) FROM leaves WHERE member_id = {member_id} AND leave_type = 'Annual'")
     used_balance = db.GetDBCursor().fetchone()[0]
     current_balance = (initial_balance + extra_balance) - used_balance
     return current_balance
