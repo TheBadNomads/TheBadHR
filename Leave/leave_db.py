@@ -33,12 +33,19 @@ def GetEmergencyLeavesForYear(member_id, year):
 def GetAnnualLeaveBalance(member_id):
     start_date = member_db.GetMemberByID(member_id)["start_date"]
     initial_balance = utils.CalculateProratedAnnualLeaves(start_date, int(os.getenv("Annual_Leaves_Max_Count")))
-    db.GetDBCursor().execute(f"SELECT SUM(days_count) FROM extraBalance WHERE receiver_id = {member_id} AND leave_type = 'Annual'")
-    extra_balance = db.GetDBCursor().fetchone()[0] or 0 
-    db.GetDBCursor().execute(f"SELECT COUNT(*) FROM leaves WHERE member_id = {member_id} AND leave_type = 'Annual'")
-    used_balance = db.GetDBCursor().fetchone()[0]
+    extra_balance = GetExtraBalance(member_id, "Annual")
+    used_balance = len(GetLeavesByMemberIDandType(member_id, "Annual"))
     current_balance = (initial_balance + extra_balance) - used_balance
     return current_balance
+
+def GetExtraBalance(member_id, leave_type):
+    db.GetDBCursor().execute(f"SELECT SUM(days_count) FROM extraBalance WHERE receiver_id = {member_id} AND leave_type = '{leave_type}'")
+    return db.GetDBCursor().fetchone()[0] or 0 
+
+def GetLeavesByMemberIDandType(member_id, leave_type):
+    db.GetDBCursor().execute(f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_type = '{leave_type}'")
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
+    return leaves
 
 def GetLeaveTypes():
     db.GetDBCursor().execute('SELECT * FROM [leaveTypes]')
