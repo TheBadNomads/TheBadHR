@@ -189,6 +189,24 @@ def CreateLeavesBalancesEmbed(member_id):
         print(e)
         return None
 
+def CreateIsMemberOnLeaveOptions():
+    member_options = [
+        create_option(
+            name = "discorduser",
+            description = "discord user",
+            option_type = SlashCommandOptionType.USER,
+            required = True
+        ),
+        create_option(
+            name = "date",
+            description = "date of interest",
+            option_type = SlashCommandOptionType.STRING,
+            required = True
+        )
+    ]
+
+    return member_options
+
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
 
