@@ -67,13 +67,13 @@ async def ShowLeavesBalance(ctx):
     else:
         await ctx.author.send(content = "your request failed, try again later")
 
-@slash.slash(name = "IsMemberOnLeave", description = "Checks if the required member is on leave for the requested day", options = UI.CreateIsMemberOnLeaveOptions(), guild_ids = guild_ids)
-async def IsMemberOnLeave(ctx, discorduser, date):
-    is_on_leave, reason = leave_interface.IsMemberOnLeave(discorduser.id, date)
+@slash.slash(name = "IsMemberWorking", description = "Checks if the required member is working on the requested day", options = UI.CreateIsMemberOnLeaveOptions(), guild_ids = guild_ids)
+async def IsMemberWorking(ctx, discorduser, date):
+    is_working, reason = leave_interface.IsMemberWorking(discorduser.id, date)
     if Utilities.IsAdmin(ctx.author):
-        await ctx.author.send(content = str(is_on_leave) + ", " + reason)
+        await ctx.author.send(content = str(is_working) + ", " + reason)
     else:
-        await ctx.author.send(content = is_on_leave)
+        await ctx.author.send(content = is_working)
         
     await ctx.send(content = "Done", delete_after = 0.1)
 
