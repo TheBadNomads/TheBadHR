@@ -119,10 +119,10 @@ def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type
     for day in work_days:
         is_unpaid = ((is_unpaid) or (utils.IsUnpaidLeave(annual_leave_balance, is_emergency, remaining_emergency_count)))
         if (leave_type == "Sick"):
-                is_emergency = False
-                is_unpaid = False
+            is_emergency = False
+            is_unpaid = False
         elif (leave_type == "Annual"):
             if (not (is_unpaid)):
-                    annual_leave_balance -= 1
+                annual_leave_balance -= 1
         leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
     return ("Retroactive leave was inserted successfully")
