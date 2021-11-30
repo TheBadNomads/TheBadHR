@@ -1,4 +1,5 @@
 import Utilities as utils
+import os
 
 from db import db
 from datetime import datetime
@@ -29,3 +30,10 @@ def InsertMember(id:int, name:str, email:str, start_date:datetime):
     except Exception as e:
         db.GetDBConnection().rollback()
         return "failed"
+
+def CalculateProratedAnnualLeaves(member_id):
+    start_month = GetMemberByID(member_id)["start_date"].month
+    leaves_months_count = (12 - start_month) + 1
+    starting_balance = int(os.getenv("Annual_Leaves_Max_Count"))
+    leave_balance_per_month = starting_balance / 12
+    return leaves_months_count * leave_balance_per_month

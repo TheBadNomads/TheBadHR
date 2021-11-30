@@ -35,12 +35,12 @@ def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, le
     try:
         work_days = utils.GetWorkDays(start_date, end_date)
         remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
-        leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
+        annual_leave_balance = leave_db.GetAnnualLeaveBalance(member.id)
         for day in work_days:
             is_emergency = utils.IsEmergencyLeave(day, leave_type)
-            is_unpaid = utils.IsUnpaidLeave(leave_balance, is_emergency, remaining_emergency_count)
+            is_unpaid = utils.IsUnpaidLeave(annual_leave_balance, is_emergency, remaining_emergency_count)
             if (not (is_unpaid)):
-                leave_balance -= 1
+                annual_leave_balance -= 1
 
             leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
         return (db.GetCaption(1))
@@ -63,23 +63,12 @@ async def HandleLeaveReactions(client, payload):
 async def UpdateLeaveStatus(client, payload, status, message, embed):
     try:
         leave_db.UpdateLeaveStatus(payload.message_id, status)
-        if status == "Approved":
-            UpdateLeaveBalanceOfRequestID(payload.message_id)
 
         await UI.UpdateEmbedLeaveStatus(message, embed, status)
         member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
         await member.send(content = "Your request was " + status)
     except Exception as e:
         print(e)
-
-def UpdateLeaveBalanceOfRequestID(message_id):
-    requested_leaves = leave_db.GetLeavesByRequestID(message_id)
-    ordered_requested_leaves = collections.defaultdict(list)
-    for leave in requested_leaves:
-        ordered_requested_leaves[leave['leave_type']].append(leave)
-
-    for leaves_array in list(ordered_requested_leaves.values()):
-        leave_db.UpdateMultipleLeavesBalance(leaves_array)
 
 def GetRequestedLeavesBetween(member_id, start_date, end_date):
     work_days = utils.GetWorkDays(start_date, end_date)
@@ -113,7 +102,6 @@ async def InsertRetroactiveLeave(member, message_id, start_date, end_date, leave
     try:
         if is_request_valid:
             result = AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason, is_requested_late, is_unpaid_retroactive)
-            UpdateLeaveBalanceOfRequestID(message_id)
             return result
 
         return message
@@ -124,11 +112,11 @@ async def InsertRetroactiveLeave(member, message_id, start_date, end_date, leave
 def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason, is_emergency, is_unpaid):
     work_days = utils.GetWorkDays(start_date, end_date)
     remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
-    leave_balance = leave_db.GetLeaveBalance(member.id, leave_type)
+    annual_leave_balance = leave_db.GetAnnualLeaveBalance(member.id)
     for day in work_days:
-        is_unpaid = ((is_unpaid) or (utils.IsUnpaidLeave(leave_balance, is_emergency, remaining_emergency_count))) 
+        is_unpaid = ((is_unpaid) or (utils.IsUnpaidLeave(annual_leave_balance, is_emergency, remaining_emergency_count))) 
         if (not (is_unpaid)):
-                leave_balance -= 1
+                annual_leave_balance -= 1
 
         leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
     return ("Retroactive leave was inserted successfully")

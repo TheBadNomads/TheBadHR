@@ -2,6 +2,7 @@ import Utilities as utils
 import datetime
 
 from db import db
+from Member import member_db
 
 def GetLeaveByID(id):
     db.GetDBCursor().execute(f'SELECT * FROM [leaves] WHERE id = {id}')
@@ -28,13 +29,19 @@ def GetEmergencyLeavesForYear(member_id, year):
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
 
-def GetLeaveBalance(member_id, leave_type):
-    db.GetDBCursor().execute(f"SELECT balance FROM [leavesBalance] WHERE member_id = {member_id} AND leave_type = '{leave_type}'")
-    leaves_balance = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
-    return float(leaves_balance["balance"])
+def GetAnnualLeaveBalance(member_id):
+    initial_balance = member_db.CalculateProratedAnnualLeaves(member_id)
+    extra_balance = GetExtraBalance(member_id, "Annual")
+    used_balance = len(list(filter(lambda leave: leave['leave_type'] == 'Annual', GetLeavesByMemberID(member_id))))
+    current_balance = initial_balance + extra_balance - used_balance
+    return current_balance
 
-def GetLeaveTypesWithBalance():
-    db.GetDBCursor().execute('SELECT * FROM [leaveTypesWithBalance]')
+def GetExtraBalance(member_id, leave_type):
+    db.GetDBCursor().execute(f"SELECT SUM(days_count) FROM extraBalance WHERE recipient_id = {member_id} AND leave_type = '{leave_type}'")
+    return db.GetDBCursor().fetchone()[0] or 0 
+
+def GetLeaveTypes():
+    db.GetDBCursor().execute('SELECT * FROM [leaveTypes]')
     leaves_types = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves_types
 
@@ -51,51 +58,9 @@ def InsertLeave(member_id, request_id, leave_type, date, reason, remark, leave_s
         db.GetDBConnection().rollback()
         return "Failed"
 
-def InsertInitialLeaveBalance(member_id:int, start_date:datetime):
-    try:
-        leave_types_with_balance = utils.CalculateInitialLeavesBalance(GetLeaveTypesWithBalance(), start_date)
-
-        for name, balance in leave_types_with_balance.items():
-            try:
-                db.GetDBCursor().execute(
-                    "INSERT INTO [leavesBalance] (member_id, leave_type, balance) VALUES (?, ?, ?)",
-                    (member_id, name, balance)
-                )
-            except Exception as e:
-                db.GetDBConnection().rollback()
-                return "Failed"
-
-        db.GetDBConnection().commit()
-        return "Success"
-
-    except Exception as e:
-        db.GetDBConnection().rollback()
-        return "Failed"
-
 def UpdateLeaveStatus(request_id, leave_status):
     try:
         db.GetDBCursor().execute("UPDATE [leaves] SET leave_status = ? WHERE request_id = ?", leave_status, request_id)
-        db.GetDBConnection().commit()
-        return "Success"
-
-    except Exception as e:
-        db.GetDBConnection().rollback()
-        return "Failed"
-
-def UpdateMultipleLeavesBalance(leaves_array):
-    try:
-        for leave in leaves_array:
-            db.GetDBCursor().execute("UPDATE [leavesBalance] SET balance = balance - 1 WHERE member_id = ? AND leave_type = ?", leave["member_id"], leave["leave_type"])
-        db.GetDBConnection().commit()
-        return "Success"
-
-    except Exception as e:
-        db.GetDBConnection().rollback()
-        return "Failed"
-
-def UpdateLeaveBalance(member_id, leave_type, requested_days_count):
-    try:
-        db.GetDBCursor().execute("UPDATE [leavesBalance] SET balance = balance + ? WHERE member_id = ? AND leave_type = ?", requested_days_count, member_id, leave_type)
         db.GetDBConnection().commit()
         return "Success"
 
