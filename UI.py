@@ -189,7 +189,7 @@ def CreateLeavesBalancesEmbed(member_id):
         print(e)
         return None
 
-def CreateIsMemberOnLeaveOptions():
+def CreateIsMemberWorkingOptions():
     member_options = [
         create_option(
             name = "discorduser",
