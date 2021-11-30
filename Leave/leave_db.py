@@ -1,6 +1,5 @@
 import Utilities as utils
 import datetime
-import os
 
 from db import db
 from Member import member_db
@@ -31,7 +30,7 @@ def GetEmergencyLeavesForYear(member_id, year):
     return leaves
 
 def GetAnnualLeaveBalance(member_id):
-    initial_balance = member_db.CalculateProratedAnnualLeaves(member_id, int(os.getenv("Annual_Leaves_Max_Count")))
+    initial_balance = member_db.CalculateProratedAnnualLeaves(member_id)
     extra_balance = GetExtraBalance(member_id, "Annual")
     used_balance = len(list(filter(lambda leave: leave['leave_type'] == 'Annual', GetLeavesByMemberID(member_id))))
     current_balance = initial_balance + extra_balance - used_balance
