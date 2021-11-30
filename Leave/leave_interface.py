@@ -38,15 +38,12 @@ def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, le
         annual_leave_balance = leave_db.GetAnnualLeaveBalance(member.id)
         for day in work_days:
             is_emergency = utils.IsEmergencyLeave(day, leave_type)
-            is_unpaid = utils.IsUnpaidLeave(annual_leave_balance, is_emergency, remaining_emergency_count)
-            if (leave_type == "Sick"):
-                is_emergency = False
-                is_unpaid = False
-            elif (leave_type == "Annual"):
-                if (not (is_unpaid)):
-                    annual_leave_balance -= 1
+            is_unpaid = utils.IsUnpaidLeave(leave_type, annual_leave_balance, is_emergency, remaining_emergency_count)
+            if ((leave_type == "Annual") and not (is_unpaid)):
+                annual_leave_balance -= 1
             leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
         return (db.GetCaption(1))
+        
     except Exception as e:
         print(e)
         return ("Failed")
@@ -117,12 +114,8 @@ def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type
     remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
     annual_leave_balance = leave_db.GetAnnualLeaveBalance(member.id)
     for day in work_days:
-        is_unpaid = ((is_unpaid) or (utils.IsUnpaidLeave(annual_leave_balance, is_emergency, remaining_emergency_count)))
-        if (leave_type == "Sick"):
-            is_emergency = False
-            is_unpaid = False
-        elif (leave_type == "Annual"):
-            if (not (is_unpaid)):
-                annual_leave_balance -= 1
+        is_unpaid = ((is_unpaid) or (utils.IsUnpaidLeave(leave_type, annual_leave_balance, is_emergency, remaining_emergency_count)))
+        if ((leave_type == "Annual") and not (is_unpaid)):
+            annual_leave_balance -= 1
         leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
     return ("Retroactive leave was inserted successfully")
