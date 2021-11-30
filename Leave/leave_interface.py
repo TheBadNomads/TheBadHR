@@ -39,7 +39,7 @@ def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, le
         for day in work_days:
             if (leave_type == "Sick"):
                 leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, False, False)
-            else:
+            elif (leave_type == "Annual"):
                 is_emergency = utils.IsEmergencyLeave(day, leave_type)
                 is_unpaid = utils.IsUnpaidLeave(annual_leave_balance, is_emergency, remaining_emergency_count)
                 if (not (is_unpaid)):
@@ -118,7 +118,7 @@ def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type
     for day in work_days:
         if (leave_type == "Sick"):
                 leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, False, False)
-        else:
+        elif (leave_type == "Annual"):
             is_unpaid = ((is_unpaid) or (utils.IsUnpaidLeave(annual_leave_balance, is_emergency, remaining_emergency_count))) 
             if (not (is_unpaid)):
                     annual_leave_balance -= 1
