@@ -31,8 +31,7 @@ def GetEmergencyLeavesForYear(member_id, year):
     return leaves
 
 def GetAnnualLeaveBalance(member_id):
-    start_date = member_db.GetMemberByID(member_id)["start_date"]
-    initial_balance = utils.CalculateProratedAnnualLeaves(start_date, int(os.getenv("Annual_Leaves_Max_Count")))
+    initial_balance = member_db.CalculateProratedAnnualLeaves(member_id, int(os.getenv("Annual_Leaves_Max_Count")))
     extra_balance = GetExtraBalance(member_id, "Annual")
     used_balance = len(list(filter(lambda leave: leave['leave_type'] == 'Annual', GetLeavesByMemberID(member_id))))
     current_balance = initial_balance + extra_balance - used_balance

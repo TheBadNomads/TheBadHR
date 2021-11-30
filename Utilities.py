@@ -6,12 +6,6 @@ import re
 def isNotBot(member):
     return not member.bot
 
-def CalculateProratedAnnualLeaves(start_date, starting_balance):
-    start_month = start_date.month
-    leaves_months_count = (12 - start_month) + 1
-    leave_balance_per_month = starting_balance / 12
-    return leaves_months_count * leave_balance_per_month
-
 def HasEnoughBalance(startdate, enddate, current_balance):
     requested_days_count = len(GetWorkDays(startdate, enddate))
     return current_balance >= requested_days_count
