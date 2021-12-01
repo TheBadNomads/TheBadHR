@@ -125,9 +125,18 @@ def IsMemberWorking(member_id, date):
     if len(work_days) <= 0:
         return (False, "Holiday/Weekend")
 
-    applied_leaves = list(filter(lambda leave: leave['date'] == date and leave['leave_status'] != "Approved", leave_db.GetLeavesByMemberID(member_id)))
-    if len(applied_leaves) > 0:
-        reason = applied_leaves[0]["reason"]
+    applied_leaves = FilterLeavesByDateAndStatus(leave_db.GetLeavesByMemberID(member_id), date, "Approved")
+    reason = GetReasonOfLeaves(applied_leaves)
+    if reason != None:
         return (False, reason)
-    
+        
     return (True, "Member is working on the selected date")
+
+def GetReasonOfLeaves(leaves_array):
+    if len(leaves_array) <= 0:
+        return None
+
+    return leaves_array[0]["reason"]
+    
+def FilterLeavesByDateAndStatus(leaves_array, date, status):
+    return list(filter(lambda leave: leave['date'] == date and leave['leave_status'] != status, leaves_array))
