@@ -75,7 +75,7 @@ async def IsMemberWorking(ctx, discorduser, date = datetime.today().strftime('%d
     if Utilities.IsAdmin(ctx.author):
         await ctx.author.send(content = str(is_working) + ", " + reason)
     else:
-        await ctx.author.send(content = is_working)
+        await ctx.author.send(content = str(is_working))
 
     await ctx.send(content = "Done", delete_after = 0.1)
 
