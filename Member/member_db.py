@@ -23,7 +23,6 @@ def InsertMember(id:int, name:str, email:str, start_date:datetime):
             "INSERT INTO [members] (id, name, email, start_date) VALUES (?, ?, ?, ?)",
             (id, name, email, start_date)
         )    
-        leave_db.InsertInitialLeaveBalance(id, start_date)
         db.GetDBConnection().commit()
         return "Success"
 
