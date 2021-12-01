@@ -93,7 +93,7 @@ def IsLeaveRequestValid(member_id, start_date, end_date):
 
     previously_requested_days = utils.FilterOutLeavesByStatus(GetRequestedLeavesBetween(member_id, start_date, end_date), "rejected")
     if len(previously_requested_days) > 0:
-        return (f"Leave request already exists for {utils.ConvertDatesToStrings(utils.GetDatesOfLeaves(previously_requested_days))}")
+        return (False, (f"Leave request already exists for {utils.ConvertDatesToStrings(utils.GetDatesOfLeaves(previously_requested_days))}"))
         
     return (True, "Success")
 
