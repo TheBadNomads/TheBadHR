@@ -199,9 +199,9 @@ def CreateIsMemberWorkingOptions():
         ),
         create_option(
             name = "date",
-            description = "date of interest",
+            description = "date of interest (optional) leave empty for today",
             option_type = SlashCommandOptionType.STRING,
-            required = True
+            required = False
         )
     ]
 
