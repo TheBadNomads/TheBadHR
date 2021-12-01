@@ -167,6 +167,28 @@ def CreateRetroactiveLeaveInsertionOptions():
     ]
     return retroactive_application_options
 
+def CreateLeavesBalancesEmbed(member_id):
+    try:
+        embed = discord.Embed(
+            title = f'Leave Balances',
+            description = f'Your balances are:',
+            colour = 0x4682B4
+        )
+        embed.set_thumbnail(url = os.getenv("Leave_Balance_Link"))
+        embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+
+        embed.add_field(name = "Annual", value = leave_db.GetLeaveBalance(member_id, "Annual"), inline = True)
+        embed.add_field(name = '\u200B', value = '\u200B', inline = True)
+        embed.add_field(name = "Emergency", value = max(GetEmergencyBalance(member_id), 0), inline = True)
+
+        embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+        embed.set_footer(text = datetime.date.today())
+        return embed
+
+    except Exception as e:
+        print(e)
+        return None
+
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
 
@@ -187,3 +209,8 @@ def ParseEmoji(emoji):
     reaction_emojis = defaultdict(None, **reaction_emojis)
 
     return reaction_emojis[emoji_str]
+
+def GetEmergencyBalance(member_id):
+    requested_emergency_count = len(leave_db.GetEmergencyLeavesForYear(member_id, datetime.date.today().year))
+    max_emergency_count = int(os.getenv("Emergency_Leaves_Max_Count"))
+    return (max_emergency_count - requested_emergency_count)
