@@ -74,7 +74,7 @@ def CreateLeaveRequestOptions():
         ),
         create_option(
             name = "enddate",
-            description = "Leave empty for 1 day leave",
+            description = "ending date of your leave",
             option_type = SlashCommandOptionType.STRING,
             required = True,
             choices = CreateDateChoices()
@@ -177,7 +177,7 @@ def CreateLeavesBalancesEmbed(member_id):
         embed.set_thumbnail(url = os.getenv("Leave_Balance_Link"))
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
-        embed.add_field(name = "Annual", value = leave_db.GetAnnualLeaveBalance(member_id, "Annual"), inline = True)
+        embed.add_field(name = "Annual", value = leave_db.GetAnnualLeaveBalance(member_id), inline = True)
         embed.add_field(name = '\u200B', value = '\u200B', inline = True)
         embed.add_field(name = "Emergency", value = max(GetEmergencyBalance(member_id), 0), inline = True)
 
@@ -201,7 +201,8 @@ def CreateIsMemberWorkingOptions():
             name = "date",
             description = "date of interest (optional) leave empty for today",
             option_type = SlashCommandOptionType.STRING,
-            required = False
+            required = False,
+            choices = CreateDateChoices()
         )
     ]
 
