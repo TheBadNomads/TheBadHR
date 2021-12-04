@@ -1,5 +1,11 @@
 @echo off
 
+SETLOCAL
+IF /i NOT "%~dp0"=="%temp%\" (
+ COPY /y "%~dpnx0" "%temp%\%~nx0" >nul
+ "%temp%\%~nx0"
+)
+
 set filename=latest.zip
 
 FOR /f "tokens=1,2 delims== " %%G in ('FIND "Repo_Owner" ".env"') do set owner=%%H
