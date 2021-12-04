@@ -119,3 +119,26 @@ def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type
             annual_leave_balance -= 1
         leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
     return ("Retroactive leave was inserted successfully")
+
+def IsMemberWorking(member_id, date):
+    work_days = utils.GetWorkDays(date, date)
+    if len(work_days) <= 0:
+        return (False, "Holiday/Weekend")
+
+    is_member_on_leave, reason = IsMemberOnLeave(member_id, date)
+    if is_member_on_leave:
+        return (False, reason)
+        
+    return (True, "Member is working on the selected date")
+
+def IsMemberOnLeave(member_id, date):
+    approved_leaves = list(filter(lambda leave: leave['date'] == date and leave['leave_status'] != "Approved", leave_db.GetLeavesByMemberID(member_id)))
+    if (len(approved_leaves) <= 0):
+        return (False, "Member is working on the selected date")
+    return (True, GetReasonOfLeaves(approved_leaves))   
+
+def GetReasonOfLeaves(leaves_array):
+    if len(leaves_array) <= 0:
+        return None
+
+    return leaves_array[0]["reason"]
