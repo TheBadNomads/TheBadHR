@@ -14,6 +14,14 @@ def GetLeavesByMemberID(member_id):
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
 
+def GetLeavesBetween(start_date, end_date, member):
+    if (member == None):
+        db.GetDBCursor().execute(f"SELECT * FROM [leaves] WHERE date >= '{start_date}' AND date <= '{end_date}'")
+    else:
+        db.GetDBCursor().execute(f"SELECT * FROM [leaves] WHERE WHERE date >= {start_date} AND date <= {end_date} AND member_id = {member.id}")
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
+    return leaves
+
 def GetLeavesByRequestID(request_id):
     db.GetDBCursor().execute(f'SELECT * FROM [leaves] WHERE request_id = {request_id}')
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
