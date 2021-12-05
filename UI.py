@@ -242,8 +242,32 @@ def CreateCreditLeavesOptions():
             required = False
         )
     ]
-
+    
     return extra_balance_options
+
+def CreateGetLeavesAcrossRangeOptions():
+    member_options = [
+        create_option(
+            name = "startdate",
+            description = "start date (inclusive) in DD/MM/YYYY format",
+            option_type = SlashCommandOptionType.STRING,
+            required = True
+        ),
+        create_option(
+            name = "enddate",
+            description = "end date (inclusive) in DD/MM/YYYY format",
+            option_type = SlashCommandOptionType.STRING,
+            required = True
+        ),
+        create_option(
+            name = "discorduser",
+            description = "discord user",
+            option_type = SlashCommandOptionType.USER,
+            required = False
+        )
+    ]
+
+    return member_options
 
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
