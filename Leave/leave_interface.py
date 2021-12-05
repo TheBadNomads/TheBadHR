@@ -131,6 +131,27 @@ def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type
         leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
     return ("Retroactive leave was inserted successfully")
 
+def GetLeavesAcrossRange(start_date, end_date, member):
+    start_date = AdjustDateToMatchDB(start_date)
+    end_date = AdjustDateToMatchDB(end_date)
+    embeds_to_send = []
+    leaves_group = []
+    leaves_group = GroupLeavesBy(leave_db.GetLeavesBetween(start_date, end_date, member), 'member_id')
+    for leaves_array in leaves_group:
+        leaves_sub_group = GroupLeavesBy(leaves_array, 'request_id')
+        embeds_to_send.append(UI.CreateMultipleLeavesEmbed(leaves_sub_group))
+    return embeds_to_send
+
+def GroupLeavesBy(leaves, col_name):
+    ordered_leaves = collections.defaultdict(list)
+    for leave in leaves:
+        ordered_leaves[leave[col_name]].append(leave)
+    return list(ordered_leaves.values())
+
+def AdjustDateToMatchDB(date_string):
+    date = datetime.datetime.strptime(date_string, '%d/%m/%Y')
+    return date.strftime("%Y-%m-%d")
+
 def IsMemberWorking(member_id, date):
     work_days = utils.GetWorkDays(date, date)
     if len(work_days) <= 0:
