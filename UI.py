@@ -167,6 +167,48 @@ def CreateRetroactiveLeaveInsertionOptions():
     ]
     return retroactive_application_options
 
+def CreatePreSystemLeaveInsertionOptions():
+    PreSystem_application_options = [
+        create_option(
+            name = "discorduser",
+            description = "discord user",
+            option_type = SlashCommandOptionType.USER,
+            required = True
+        ),
+        create_option(
+            name = "leavetype",
+            description = "leave type",
+            option_type = SlashCommandOptionType.STRING,
+            required = True,
+            choices = CreateLeaveTypeChoices()
+        ),
+         create_option(
+            name = "dayscount",
+            description = "the count of the days for this leave",
+            option_type = SlashCommandOptionType.INTEGER,
+            required = True
+        ),
+        create_option(
+            name = "isemergency",
+            description = "determines if the user requested the retroactive leave late",
+            option_type = SlashCommandOptionType.BOOLEAN,
+            required = True
+        ),
+        create_option(
+            name = "isunpaid",
+            description = "determines if the leave is considered unpaid",
+            option_type = SlashCommandOptionType.BOOLEAN,
+            required = True
+        ),
+        create_option(
+            name = "reason",
+            description = "reason for the leave (optional)",
+            option_type = SlashCommandOptionType.STRING,
+            required = False
+        )
+    ]
+    return PreSystem_application_options
+
 def CreateLeavesBalancesEmbed(member_id):
     try:
         embed = discord.Embed(
