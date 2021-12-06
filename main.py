@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import discord
 import os
 import Utilities
@@ -12,7 +12,7 @@ from discord.ext import commands
 from discord_slash import SlashCommand
 from discord_components import DiscordComponents, Button, Select, SelectOption, message
 from Member import member_db 
-from Leave import leave_interface
+from Leave import leave_interface, leave_db
 
 load_dotenv()
 
@@ -53,6 +53,21 @@ async def InsertRetroactiveLeave(ctx, discorduser, leavetype, startdate, enddate
     await ctx.send(content = "Processing")
     if Utilities.IsAdmin(ctx.author):
         message_content = await leave_interface.InsertRetroactiveLeave(discorduser, ctx.message.id, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), leavetype, isemergency, isunpaid, reason)
+    else:
+        message_content = "This command is for Admins only"
+        
+    await ctx.author.send(content = message_content)
+    await ctx.message.delete()
+
+@slash.slash(name = "InsertPreSystemLeave", description = "Inserts a pre system leave (Admins Only)", options = UI.CreatePreSystemLeaveInsertionOptions(), guild_ids = guild_ids)
+async def InsertPreSystemLeave(ctx, discorduser, leavetype, dayscount, isemergency, isunpaid, reason = ""):
+    message_content = ""
+    await ctx.send(content = "Processing")
+    if Utilities.IsAdmin(ctx.author):
+        first_date = member_db.GetMemberByID(discorduser.id)["start_date"]
+        for counter in range(dayscount):
+            date = first_date + timedelta(days = counter)
+            message_content = leave_db.InsertLeave(discorduser.id, ctx.message.id, leavetype, date, reason, "", "Approved", isemergency, isunpaid)
     else:
         message_content = "This command is for Admins only"
         
