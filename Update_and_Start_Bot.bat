@@ -16,7 +16,7 @@ FOR /F "tokens=*" %%g IN ('FIND "tag_name" "response.txt"') do set result=%%g
 set "tag_name=%result:"tag_name": "=%"
 set "tag_name=%tag_name:",=%"
 
->nul FIND "Current_Version" ".env" || (echo: >> ".env" | echo Current_Version = %tag_name% >> ".env")
+>nul FIND "Current_Version" ".env" || (echo: >> ".env" | echo Current_Version = 0 >> ".env")
 FOR /f "tokens=1,2 delims== " %%G in ('FIND "Current_Version" ".env"') do set current_version=%%H
 
 IF NOT %current_version%==%tag_name% (
