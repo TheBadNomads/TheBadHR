@@ -220,12 +220,12 @@ async def UpdateEmbedLeaveStatus(message, embed, newStatus):
 
     await message.edit(embed=embed)
 
-async def UpdateEmbedApprovedRejectedbyStatus(message, embed, member):
+async def UpdateEmbedApprovedRejectedby(message, embed, member):
     embed_dict = embed.to_dict()
 
     for field in embed_dict["fields"]:
-        if field["name"].lower() == "Approved/Rejected by":
-            field["value"] = member
+        if field["name"].lower() == "approved/rejected by":
+            field["value"] = f'<@!{member.id}>'
 
     embed = discord.Embed.from_dict(embed_dict)
 
