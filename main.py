@@ -64,9 +64,15 @@ async def InsertPreSystemLeave(ctx, discorduser, leavetype, dayscount, isemergen
     message_content = ""
     await ctx.send(content = "Processing")
     if Utilities.IsAdmin(ctx.author):
+        member_leaves_dates = Utilities.GetDatesOfLeaves(leave_db.GetLeavesByMemberID(discorduser.id))
         first_date = member_db.GetMemberByID(discorduser.id)["start_date"]
-        for counter in range(dayscount):
+        counter = 0
+        while counter < dayscount:
             date = first_date + timedelta(days = counter)
+            counter += 1
+            if(date in member_leaves_dates):
+                dayscount += 1
+                continue
             message_content = leave_db.InsertLeave(discorduser.id, ctx.message.id, leavetype, date, reason, "", "Approved", isemergency, isunpaid)
     else:
         message_content = "This command is for Admins only"
