@@ -213,6 +213,37 @@ async def UpdateLeaveEmbed(member, message, embed, newStatus):
     await UpdateEmbedLeaveStatus(message, embed, newStatus)
     await UpdateEmbedApprovedRejectedby(message, embed, member)
 
+def CreateInsertExtraBalanceOptions():
+    extra_balance_options = [
+        create_option(
+            name = "discorduser",
+            description = "discord user",
+            option_type = SlashCommandOptionType.USER,
+            required = True
+        ),
+        create_option(
+            name = "leavetype",
+            description = "leave type",
+            option_type = SlashCommandOptionType.STRING,
+            required = True,
+            choices = CreateLeaveTypeChoices()
+        ),
+        create_option(
+            name = "dayscount",
+            description = "amount of extra credit (can be negative number)",
+            option_type = SlashCommandOptionType.INTEGER,
+            required = True
+        ),
+        create_option(
+            name = "reason",
+            description = "reason behind the extra balance (optional)",
+            option_type = SlashCommandOptionType.STRING,
+            required = False
+        )
+    ]
+
+    return extra_balance_options
+
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
 
