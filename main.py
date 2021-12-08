@@ -147,4 +147,31 @@ async def GetLeavesBetween(ctx, startdate, enddate, discorduser = None):
     await ctx.author.send(embed = embed)
     await ctx.send(content = "Done", delete_after = deletion_timer)
 
+@slash.slash(name = "InsertPreSystemLeaves", description = "Inserts pre system leaves using excel sheet (Admins Only)", guild_ids = guild_ids)
+async def InsertPreSystemLeave(ctx):
+    message_content = ""
+    data = pd.read_excel (r'Leaves.xlsx')
+    data_dic = data.T.to_dict().values()
+    print(data_dic)
+    await ctx.send(content = "Processing")
+    # if Utilities.IsAdmin(ctx.author):
+    #     for record in data_dic:
+    #         member_leaves_dates = Utilities.GetDatesOfLeaves(leave_db.GetLeavesByMemberID(record["member_id"]))
+    #         first_date = member_db.GetMemberByID(record["member_id"])["start_date"]
+    #         counter = 0
+    #         days_count = record["days_count"]
+    #         while counter < days_count:
+    #             date = first_date + timedelta(days = counter)
+    #             counter += 1
+    #             if(date in member_leaves_dates):
+    #                 days_count += 1
+    #                 continue
+    #             message_content = leave_db.InsertLeave(record["member_id"], ctx.message.id, record["leave_type"], date, "", "", "Approved", record["is_emergency"], False)
+    # else:
+    #     message_content = "This command is for Admins only"
+
+    # await ctx.author.send(content = message_content)
+    # await ctx.message.delete()
+
+
 client.run(os.getenv("Bot_token"))
