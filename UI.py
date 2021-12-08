@@ -232,7 +232,7 @@ def CreateCreditLeavesOptions():
             name = "dayscount",
             description = "amount of extra credit (can be negative number)",
             option_type = SlashCommandOptionType.INTEGER,
-            required = True
+            required = False
         ),
         create_option(
             name = "reason",
