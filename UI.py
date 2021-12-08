@@ -208,6 +208,10 @@ def CreateIsMemberWorkingOptions():
     ]
 
     return member_options
+    
+async def UpdateLeaveEmbed(member, message, embed, newStatus):
+    await UpdateEmbedLeaveStatus(message, embed, newStatus)
+    await UpdateEmbedApprovedRejectedby(message, embed, member)
 
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()

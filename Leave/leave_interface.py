@@ -59,16 +59,14 @@ async def HandleLeaveReactions(client, payload):
 
     if utils.isNotBot(payload.member) and utils.IsAdmin(payload.member) and leave_db.IsLeaveRequestPending(payload.message_id):
         try:
-            await UpdateLeaveStatus(client, payload, status, message, embed)
-            await UI.UpdateEmbedApprovedRejectedby(message, embed, payload.member)
+            await UpdateLeaveStatus(client, payload, status, embed)
+            await UI.UpdateLeaveEmbed(message, embed, payload.member)
         except Exception as e:
             print(e)
 
-async def UpdateLeaveStatus(client, payload, status, message, embed):
+async def UpdateLeaveStatus(client, payload, status, embed):
     try:
         leave_db.UpdateLeaveStatus(payload.message_id, status)
-
-        await UI.UpdateEmbedLeaveStatus(message, embed, status)
         member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
         await member.send(content = "Your request was " + status)
     except Exception as e:
