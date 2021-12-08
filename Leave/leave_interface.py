@@ -60,7 +60,7 @@ async def HandleLeaveReactions(client, payload):
     if utils.isNotBot(payload.member) and utils.IsAdmin(payload.member) and leave_db.IsLeaveRequestPending(payload.message_id):
         try:
             await UpdateLeaveStatus(client, payload, status, embed)
-            await UI.UpdateLeaveEmbed(message, embed, payload.member)
+            await UI.UpdateLeaveEmbed(payload.member, message, embed, status)
         except Exception as e:
             print(e)
 
