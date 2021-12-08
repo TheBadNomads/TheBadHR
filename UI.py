@@ -269,7 +269,7 @@ def CreateGetLeavesAcrossRangeOptions():
 
     return member_options
 
-def CreateMultipleLeavesEmbed(leaves_group, is_requested_by_admin):
+def CreateMultipleLeavesEmbed(leaves_group, include_reason):
     embed = discord.Embed(
         title = f'Applied Leaves',
         description = f'<@!{leaves_group[0][0]["member_id"]}> has requested:',
@@ -281,7 +281,7 @@ def CreateMultipleLeavesEmbed(leaves_group, is_requested_by_admin):
         embed.add_field(name = "Leave Type", value = leaves_array[0]["leave_type"], inline = True)
         embed.add_field(name = "Start Date", value = leaves_array[0]["date"].strftime('%d/%m/%Y'), inline = True)
         embed.add_field(name = "End Date", value = leaves_array[-1]["date"].strftime('%d/%m/%Y'), inline = True)
-        if is_requested_by_admin:
+        if include_reason:
             reason = leaves_array[0]["reason"]
             embed.add_field(name = "Reason", value = "None" or reason, inline = False)
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
