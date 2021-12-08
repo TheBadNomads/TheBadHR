@@ -147,5 +147,4 @@ async def GetLeavesBetween(ctx, startdate, enddate, discorduser = None):
     await ctx.author.send(embed = embed)
     await ctx.send(content = "Done", delete_after = deletion_timer)
 
-
 client.run(os.getenv("Bot_token"))
