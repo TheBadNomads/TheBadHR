@@ -132,8 +132,8 @@ def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type
     return ("Retroactive leave was inserted successfully")
 
 def GetLeavesAcrossRange(start_date, end_date, member, is_requested_by_admin):
-    start_date = AdjustDateToMatchDB(start_date)
-    end_date = AdjustDateToMatchDB(end_date)
+    start_date = ConvertToISO8601(start_date)
+    end_date = ConvertToISO8601(end_date)
     embeds_to_send = []
     leaves_group = []
     leaves_group = GroupLeavesBy(leave_db.GetLeavesBetween(start_date, end_date, member), 'member_id')
@@ -148,7 +148,7 @@ def GroupLeavesBy(leaves, col_name):
         ordered_leaves[leave[col_name]].append(leave)
     return list(ordered_leaves.values())
 
-def AdjustDateToMatchDB(date_string):
+def ConvertToISO8601(date_string):
     date = datetime.datetime.strptime(date_string, '%d/%m/%Y')
     return date.strftime("%Y-%m-%d")
 
