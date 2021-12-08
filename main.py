@@ -150,7 +150,7 @@ async def GetLeavesBetween(ctx, startdate, enddate, discorduser = None):
 @slash.slash(name = "InsertPreSystemLeaves", description = "Inserts pre system leaves using excel sheet (Admins Only)", guild_ids = guild_ids)
 async def InsertPreSystemLeave(ctx):
     message_content = ""
-    data = pd.read_excel (r'Leaves.xlsx')
+    data = pd.read_excel (r'Leaves_Modified.xlsx')
     data_dic = data.T.to_dict().values()
     print(data_dic)
     await ctx.send(content = "Processing")
