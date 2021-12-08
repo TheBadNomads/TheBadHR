@@ -79,8 +79,8 @@ async def IsMemberWorking(ctx, discorduser, date = datetime.today().strftime('%d
 
     await ctx.send(content = "Done", delete_after = 0.1)
 
-@slash.slash(name = "InsertExtraLeaveBalance", description = "Inserts an extra credit for the provided leave type", options = UI.CreateInsertExtraBalanceOptions(), guild_ids = guild_ids)
-async def InsertExtraLeaveBalance(ctx, discorduser, leavetype, dayscount, reason = ""):
+@slash.slash(name = "CreditLeaves", description = "Inserts an extra credit for the provided leave type", options = UI.CreateCreditLeavesOptions(), guild_ids = guild_ids)
+async def CreditLeaves(ctx, discorduser, leavetype, dayscount, reason = ""):
     message_content = ""
     if Utilities.IsAdmin(ctx.author):
         message_content = leave_db.InsertExtraBalance(datetime.today().strftime('%d/%m/%Y'), ctx.author.id, discorduser.id, leavetype, reason, dayscount)

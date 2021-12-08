@@ -213,7 +213,7 @@ async def UpdateLeaveEmbed(member, message, embed, newStatus):
     await UpdateEmbedLeaveStatus(message, embed, newStatus)
     await UpdateEmbedApprovedRejectedby(message, embed, member)
 
-def CreateInsertExtraBalanceOptions():
+def CreateCreditLeavesOptions():
     extra_balance_options = [
         create_option(
             name = "discorduser",
