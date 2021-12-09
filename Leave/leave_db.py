@@ -17,7 +17,7 @@ def GetLeavesByMemberID(member_id):
 def GetLeavesBetween(start_date, end_date, member):
     query = f"SELECT * FROM [leaves] WHERE date >= '{start_date}' AND date <= '{end_date}'"
     if (member != None):
-        query += f'AND member_id = {member.id}'
+        query += f' AND member_id = {member.id}'
     db.GetDBCursor().execute(query)
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves

@@ -278,12 +278,16 @@ def CreateMultipleLeavesEmbed(leaves_group, include_reason):
     embed.set_thumbnail(url = os.getenv("Leave_Balance_Link"))
     embed.add_field(name = '\u200B', value = '\u200B', inline = False)
     for leaves_array in leaves_group:
-        embed.add_field(name = "Leave Type", value = leaves_array[0]["leave_type"], inline = True)
+        if (leaves_array[0]["leave_status"] != "Approved" and (not (include_reason))):
+            continue
+        
+        embed.add_field(name = "Type", value = leaves_array[0]["leave_type"], inline = True)
         embed.add_field(name = "Start Date", value = leaves_array[0]["date"].strftime('%d/%m/%Y'), inline = True)
         embed.add_field(name = "End Date", value = leaves_array[-1]["date"].strftime('%d/%m/%Y'), inline = True)
         if include_reason:
             reason = leaves_array[0]["reason"]
             embed.add_field(name = "Reason", value = "None" or reason, inline = False)
+            embed.add_field(name = "Status", value = leaves_array[0]["leave_status"] or reason, inline = False)
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
     embed.set_footer(text = datetime.date.today())
