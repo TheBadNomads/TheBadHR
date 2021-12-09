@@ -223,7 +223,8 @@ def ParseEmoji(emoji):
     emoji_str = str(emoji)
     reaction_emojis = {
         os.getenv("Approve_Emoji"): "Approved",
-        os.getenv("Reject_Emoji"): "Rejected"
+        os.getenv("Reject_Emoji"): "Rejected",
+        os.getenv("Revert_Emoji"): "Revert"
     }
     reaction_emojis = defaultdict(None, **reaction_emojis)
 
