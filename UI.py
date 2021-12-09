@@ -214,6 +214,7 @@ async def UpdateLeaveEmbed(member, message, embed, newStatus):
     await UpdateEmbedApprovedRejectedby(message, embed, member)
 
 def CreateCreditLeavesOptions():
+    ApplicationCommandOptionType_FLOAT = 10
     extra_balance_options = [
         create_option(
             name = "discorduser",
@@ -231,7 +232,7 @@ def CreateCreditLeavesOptions():
         create_option(
             name = "dayscount",
             description = "amount of extra credit (can be negative number)",
-            option_type = SlashCommandOptionType.INTEGER,
+            option_type = ApplicationCommandOptionType_FLOAT,
             required = False
         ),
         create_option(
