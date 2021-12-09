@@ -24,8 +24,7 @@ async def SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_typ
     embed = UI.CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason)
     channel = Channels.GetLeaveApprovalsChannel(client)
     message = await channel.send(embed = embed)
-    await message.add_reaction(os.getenv("Approve_Emoji"))
-    await message.add_reaction(os.getenv("Reject_Emoji"))
+    await AddEmojisToLeaveMessage(message)
     return message.id
 
 def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason):
@@ -148,3 +147,8 @@ def GetReasonOfLeaves(leaves_array):
         return None
 
     return leaves_array[0]["reason"]
+
+async def AddEmojisToLeaveMessage(message):
+    await message.add_reaction(os.getenv("Approve_Emoji"))
+    await message.add_reaction(os.getenv("Reject_Emoji"))
+    await message.add_reaction(os.getenv("Revert_Emoji"))
