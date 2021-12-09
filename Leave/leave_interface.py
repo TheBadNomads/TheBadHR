@@ -57,20 +57,24 @@ async def HandleLeaveReactions(client, payload):
     if status == None:
         return
 
-    if utils.isNotBot(payload.member) and utils.IsAdmin(payload.member) and leave_db.IsLeaveRequestPending(payload.message_id):
+    if not (utils.isNotBot(payload.member) and utils.IsAdmin(payload.member)):
+        return
+        
+    if status == "Reverted":
+        if not (leave_db.IsLeaveRequestPending(payload.message_id)):
+            leave_db.UpdateLeaveStatus(payload.message_id, "Pending")
+            await UI.UpdateLeaveEmbed(payload.member, message, embed, "Pending", True)
+    elif leave_db.IsLeaveRequestPending(payload.message_id):
         try:
-            await UpdateLeaveStatus(client, payload, status, embed)
+            leave_db.UpdateLeaveStatus(payload.message_id, status)
             await UI.UpdateLeaveEmbed(payload.member, message, embed, status)
+            await InformMemberAboutLeaveStatus(client, embed, status)
         except Exception as e:
             print(e)
 
-async def UpdateLeaveStatus(client, payload, status, embed):
-    try:
-        leave_db.UpdateLeaveStatus(payload.message_id, status)
-        member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
-        await member.send(content = "Your request was " + status)
-    except Exception as e:
-        print(e)
+async def InformMemberAboutLeaveStatus(client, embed, status):
+    member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
+    await member.send(content = "Your request was " + status)
 
 def GetRequestedLeavesBetween(member_id, start_date, end_date):
     work_days = utils.GetWorkDays(start_date, end_date)
