@@ -29,7 +29,8 @@ def CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason):
     embed.add_field(name = "End Date", value = end_date.date(), inline = True)
     embed.add_field(name = "No. of Days", value = len(utils.GetWorkDays(start_date, end_date)), inline = True)
     embed.add_field(name = "Reason", value = reason, inline = False)
-    embed.add_field(name = "Status", value = "Pending", inline = False)
+    embed.add_field(name = "Status", value = "Pending", inline = True)
+    embed.add_field(name = "Approved/Rejected by", value = "None", inline = True)
     embed.set_footer(text = footer_text)
     return embed
     
@@ -207,6 +208,10 @@ def CreateIsMemberWorkingOptions():
     ]
 
     return member_options
+    
+async def UpdateLeaveEmbed(member, message, embed, newStatus):
+    await UpdateEmbedLeaveStatus(message, embed, newStatus)
+    await UpdateEmbedApprovedRejectedby(message, embed, member)
 
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
@@ -214,6 +219,17 @@ async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     for field in embed_dict["fields"]:
         if field["name"].lower() == "status":
             field["value"] = newStatus
+
+    embed = discord.Embed.from_dict(embed_dict)
+
+    await message.edit(embed=embed)
+
+async def UpdateEmbedApprovedRejectedby(message, embed, member):
+    embed_dict = embed.to_dict()
+
+    for field in embed_dict["fields"]:
+        if field["name"].lower() == "approved/rejected by":
+            field["value"] = f'<@!{member.id}>'
 
     embed = discord.Embed.from_dict(embed_dict)
 
