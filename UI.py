@@ -261,7 +261,7 @@ def CreateGetLeavesAcrossRangeOptions():
         ),
         create_option(
             name = "discorduser",
-            description = "discord user",
+            description = "discord user (optional) leaving this empty will query for everyone",
             option_type = SlashCommandOptionType.USER,
             required = False
         )
