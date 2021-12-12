@@ -269,18 +269,32 @@ def CreateGetLeavesAcrossRangeOptions():
 
     return member_options
 
-def CreateMultipleLeavesEmbed(leaves_group, include_reason):
-    embed = discord.Embed(
-        title = f'Applied Leaves',
-        description = f'<@!{leaves_group[0][0]["member_id"]}> has requested:',
-        colour = 0x4682B4
-    )
-    embed.set_thumbnail(url = os.getenv("Leave_Balance_Link"))
-    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+def CreateMultipleLeavesEmbed(leaves, include_reason):
+    embeds_to_send = []
+    for leaves_group in leaves:
+        embed = discord.Embed(
+            title = f'Applied Leaves',
+            description = f'<@!{leaves_group[0][0]["member_id"]}> has requested:',
+            colour = 0x4682B4
+        )
+        embed.set_thumbnail(url = os.getenv("Leave_Balance_Link"))
+        embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+        embed = DesignMultipleLeavesEmbed(leaves_group, embed, include_reason)
+        if (embed == None):
+            continue
+
+        footer_text = (("\u200B " * 150) + datetime.date.today().strftime("%d/%m/%Y")) # magic number 150
+        embed.set_footer(text = footer_text)
+        embeds_to_send.append(embed)
+    return embeds_to_send
+
+def DesignMultipleLeavesEmbed(leaves_group, embed, include_reason):
+    empty_embed = True
     for leaves_array in leaves_group:
         if (leaves_array[0]["leave_status"] != "Approved" and (not (include_reason))):
             continue
-        
+
+        empty_embed = False
         embed.add_field(name = "Type", value = leaves_array[0]["leave_type"], inline = True)
         embed.add_field(name = "Start Date", value = leaves_array[0]["date"].strftime('%d/%m/%Y'), inline = True)
         embed.add_field(name = "End Date", value = leaves_array[-1]["date"].strftime('%d/%m/%Y'), inline = True)
@@ -289,8 +303,10 @@ def CreateMultipleLeavesEmbed(leaves_group, include_reason):
             embed.add_field(name = "Reason", value = "None" or reason, inline = False)
             embed.add_field(name = "Status", value = leaves_array[0]["leave_status"] or reason, inline = False)
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+        
+    if empty_embed:
+        return None
 
-    embed.set_footer(text = datetime.date.today())
     return embed
 
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):

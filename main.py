@@ -92,12 +92,13 @@ async def CreditLeaves(ctx, discorduser, leavetype, dayscount = 1, reason = ""):
 
 @slash.slash(name = "GetLeavesBetween", description = "Returns the leaves of one/all members in the provided dates range", options = UI.CreateGetLeavesAcrossRangeOptions(), guild_ids = guild_ids)
 async def GetLeavesBetween(ctx, startdate, enddate, discorduser = None):
-    leaves_embeds = leave_interface.GetLeavesAcrossRange(startdate, enddate, discorduser, Utilities.IsAdmin(ctx.author))
-    if len(leaves_embeds) <= 0:
+    leaves = leave_interface.GetLeavesAcrossRange(startdate, enddate, discorduser)
+    embeds_to_send = UI.CreateMultipleLeavesEmbed(leaves, False)
+    if len(embeds_to_send) <= 0:
         await ctx.author.send(content = "No applied leaves for the provided range")
         return
         
-    for embed in leaves_embeds:
+    for embed in embeds_to_send:
         await ctx.author.send(embed = embed)
     await ctx.send(content = "Done", delete_after = 0.1)
 

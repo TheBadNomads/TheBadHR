@@ -131,16 +131,15 @@ def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type
         leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
     return ("Retroactive leave was inserted successfully")
 
-def GetLeavesAcrossRange(start_date, end_date, member, include_reason):
+def GetLeavesAcrossRange(start_date, end_date, member):
     start_date = ConvertToISO8601(start_date)
     end_date = ConvertToISO8601(end_date)
-    embeds_to_send = []
-    leaves_group = []
     leaves_group = GroupLeavesBy(leave_db.GetLeavesBetween(start_date, end_date, member), 'member_id')
+    ordered_leaves = []
     for leaves_array in leaves_group:
         leaves_sub_group = GroupLeavesBy(leaves_array, 'request_id')
-        embeds_to_send.append(UI.CreateMultipleLeavesEmbed(leaves_sub_group, include_reason))
-    return embeds_to_send
+        ordered_leaves.append(leaves_sub_group)
+    return ordered_leaves
 
 def GroupLeavesBy(leaves, col_name):
     ordered_leaves = collections.defaultdict(list)
