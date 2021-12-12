@@ -209,9 +209,9 @@ def CreateIsMemberWorkingOptions():
 
     return member_options
     
-async def UpdateLeaveEmbed(member, message, embed, newStatus, is_reverted = False):
+async def UpdateLeaveEmbed(member, message, embed, newStatus):
     await UpdateEmbedLeaveStatus(message, embed, newStatus)
-    await UpdateEmbedApprovedRejectedby(message, embed, member, is_reverted)
+    await UpdateEmbedApprovedRejectedby(message, embed, member)
 
 def CreateCreditLeavesOptions():
     ApplicationCommandOptionType_FLOAT = 10

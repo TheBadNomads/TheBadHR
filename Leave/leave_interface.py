@@ -52,22 +52,25 @@ async def HandleLeaveReactions(client, payload):
     message = await channel.fetch_message(payload.message_id)
     embed = message.embeds[0]
     
-    status = UI.ParseEmoji(payload.emoji)
-    if status == None:
+    Action = UI.ParseEmoji(payload.emoji)
+    if Action == None:
         return
 
     if not (utils.isNotBot(payload.member) and utils.IsAdmin(payload.member)):
         return
         
-    if status == "Reverted":
+    if Action == "Reverted":
         if not (leave_db.IsLeaveRequestPending(payload.message_id)):
             leave_db.UpdateLeaveStatus(payload.message_id, "Pending")
-            await UI.UpdateLeaveEmbed(payload.member, message, embed, "Pending", True)
+            await UI.UpdateLeaveEmbed(payload.member, message, embed, "Pending")
+            await InformMemberAboutLeaveStatus(client, embed, Action)
+            await message.clear_reactions()
+            await AddEmojisToLeaveMessage(message)
     elif leave_db.IsLeaveRequestPending(payload.message_id):
         try:
-            leave_db.UpdateLeaveStatus(payload.message_id, status)
-            await UI.UpdateLeaveEmbed(payload.member, message, embed, status)
-            await InformMemberAboutLeaveStatus(client, embed, status)
+            leave_db.UpdateLeaveStatus(payload.message_id, Action)
+            await UI.UpdateLeaveEmbed(payload.member, message, embed, Action)
+            await InformMemberAboutLeaveStatus(client, embed, Action)
         except Exception as e:
             print(e)
 
