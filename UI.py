@@ -261,7 +261,7 @@ async def UpdateEmbedApprovedRejectedby(message, embed, member):
 
     for field in embed_dict["fields"]:
         if field["name"].lower() == "approved/rejected by":
-            field["value"] = f'<@!{member.id}>' 
+            field["value"] = f'<@!{member.id}>'
 
     embed = discord.Embed.from_dict(embed_dict)
 
