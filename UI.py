@@ -283,10 +283,7 @@ def CreateGetEndOfMonthCalculationsOptions():
 
     return EndOfMonthCalculations_options
     
-def CreateGetEndOfMonthCalculationsEmbed(leaves_array, month, year):
-    member_value = ""
-    days_count_value = ""
-    deduction_percentage_value = ""
+def CreateGetEndOfMonthCalculationsEmbed(month, year):
     embed = discord.Embed(
         title = f'End of Month Calculations',
         description = f'{month}/{year} Calculations:',
@@ -294,11 +291,21 @@ def CreateGetEndOfMonthCalculationsEmbed(leaves_array, month, year):
     )
     embed.set_thumbnail(url = os.getenv("Leave_Balance_Link"))
     embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+    embed = DesignGetEndOfMonthCalculationsEmbed(embed, month, year)
+    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+    footer_text = (("\u200B " * 150) + datetime.date.today().strftime("%d/%m/%Y")) # magic number 150
+    embed.set_footer(text = footer_text)
+    return embed
 
-    for index, leaves in enumerate(leaves_array):
-        member_value += f'<@!{leaves[0]["member_id"]}>\n'
-        days_count_value += f'{len(leaves)}\n'
-        precentage = utils.CalculatePercentage(utils.GetMonthDaysCount(month, year),len(leaves))
+def DesignGetEndOfMonthCalculationsEmbed(embed, month, year):
+    member_value = ""
+    days_count_value = ""
+    deduction_percentage_value = ""
+    for index, member in enumerate(member_db.GetMembers()):
+        unpaid_leaves = leave_db.GetUnpaidLeavesForYear(member["member_id"], month, year)
+        precentage = utils.CalculatePercentage(utils.GetMonthDaysCount(month, year),len(unpaid_leaves))
+        member_value += f'<@!{member["member_id"]}>\n'
+        days_count_value += f'{len(unpaid_leaves)}\n'
         deduction_percentage_value += f'{precentage} %\n'
         if (index+1) % 5 == 0:
             member_value += '\n'
@@ -308,11 +315,6 @@ def CreateGetEndOfMonthCalculationsEmbed(leaves_array, month, year):
     embed.add_field(name = "Member", value = member_value, inline = True)
     embed.add_field(name = "Unpaid Days Count", value = days_count_value, inline = True)
     embed.add_field(name = "Deduction Percentage", value = deduction_percentage_value, inline = True)
-
-    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
-    footer_text = (("\u200B " * 150) + datetime.date.today().strftime("%d/%m/%Y")) # magic number 150
-    embed.set_footer(text = footer_text)
-
     return embed
 
 async def UpdateLeaveEmbed(member, message, embed, newStatus):
