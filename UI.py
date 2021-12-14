@@ -236,6 +236,25 @@ def CreateGetEndOfMonthCalculationsOptions():
 
     return EndOfMonthCalculations_options
     
+def CreateGetEndOfMonthCalculationsEmbed(leaves_array, month, year):
+    embed = discord.Embed(
+        title = f'Applied Leaves',
+        description = f'{month}/{year} Calculations:',
+        colour = 0x4682B4
+    )
+    embed.set_thumbnail(url = os.getenv("Leave_Balance_Link"))
+    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+    for leaves in leaves_array:
+        embed.add_field(name = "Member", value = f'<@!{leaves[0]["member_id"]}>', inline = True)
+        embed.add_field(name = "Unpaid Days Count", value = len(leaves), inline = True)
+        precentage = utils.CalculatePercentage(utils.GetMonthDaysCount(month, year),len(leaves))
+        embed.add_field(name = "Deduction Percentage", value = precentage, inline = True)
+
+    footer_text = (("\u200B " * 150) + datetime.date.today().strftime("%d/%m/%Y")) # magic number 150
+    embed.set_footer(text = footer_text)
+    
+    return embed
+
 async def UpdateLeaveEmbed(member, message, embed, newStatus):
     await UpdateEmbedLeaveStatus(message, embed, newStatus)
     await UpdateEmbedApprovedRejectedby(message, embed, member)
