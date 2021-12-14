@@ -41,7 +41,6 @@ def GetUnpaidLeavesForYear(member, month, year):
     query = f"SELECT * FROM [leaves] WHERE is_unpaid = 'True' AND MONTH(date) = {month} AND YEAR(date) = {year}"
     if member != None:
         query += f" AND member_id = {member.id}"
-
     db.GetDBCursor().execute(query)
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
