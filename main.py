@@ -81,13 +81,9 @@ async def IsMemberWorking(ctx, discorduser, date = datetime.today().strftime('%d
 
 @slash.slash(name = "GetEndOfMonthCalculations", description = "Calculates the salary deduction percentage for the provided month", options = UI.CreateGetEndOfMonthCalculationsOptions(), guild_ids = guild_ids)
 async def GetEndOfMonthCalculations(ctx, month = datetime.now().month, year = datetime.now().year):
-    leaves_array = leave_interface.GetUnpaidLeaves(month, year)
     if Utilities.IsAdmin(ctx.author):
-        if len(leaves_array) <= 0:
-            await ctx.author.send(content = "No Unpaid Leaves were applied for the provided month")
-        else:
-            embed = UI.CreateGetEndOfMonthCalculationsEmbed(leaves_array, month, year)
-            await ctx.author.send(embed = embed)
+        embed = UI.CreateGetEndOfMonthCalculationsEmbed(month, year)
+        await ctx.author.send(embed = embed)
     else:
         await ctx.author.send(content = "This command is for Admins only")
 
