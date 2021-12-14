@@ -249,9 +249,9 @@ def DesignGetEndOfMonthCalculationsEmbed(embed, month, year):
     days_count_value = ""
     deduction_percentage_value = ""
     for index, member in enumerate(member_db.GetMembers()):
-        unpaid_leaves = leave_db.GetUnpaidLeavesForYear(member["member_id"], month, year)
+        unpaid_leaves = leave_db.GetUnpaidLeavesForYear(member["id"], month, year)
         precentage = utils.CalculatePercentage(utils.GetMonthDaysCount(month, year),len(unpaid_leaves))
-        member_value += f'<@!{member["member_id"]}>\n'
+        member_value += f'<@!{member["id"]}>\n'
         days_count_value += f'{len(unpaid_leaves)}\n'
         deduction_percentage_value += f'{precentage} %\n'
         if (index+1) % 5 == 0:
