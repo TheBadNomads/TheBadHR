@@ -151,8 +151,8 @@ def GetLeavesAcrossRange(start_date, end_date, member):
         ordered_leaves.append(leaves_sub_group)
     return ordered_leaves
 
-def GetUnpaidLeaves(member, month, year):
-    leaves = GroupLeavesBy(leave_db.GetUnpaidLeavesForYear(member, month, year), 'member_id')
+def GetUnpaidLeaves(month, year):
+    leaves = GroupLeavesBy(leave_db.GetUnpaidLeavesForYear(month, year), 'member_id')
     return leaves
 
 def GroupLeavesBy(leaves, col_name):

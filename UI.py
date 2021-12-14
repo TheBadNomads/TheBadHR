@@ -268,12 +268,6 @@ def CreateIsEveryoneHereEmbed(approved_dict, missing_members, isAdmin):
 def CreateGetEndOfMonthCalculationsOptions():
     EndOfMonthCalculations_options = [
         create_option(
-            name = "discorduser",
-            description = "discord user (optional) leave empty for all members",
-            option_type = SlashCommandOptionType.USER,
-            required = False
-        ),
-        create_option(
             name = "month",
             description = "number of the desired month (optional) leave empty for current month",
             option_type = SlashCommandOptionType.INTEGER,
