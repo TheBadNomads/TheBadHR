@@ -37,9 +37,8 @@ def GetEmergencyLeavesForYear(member_id, year):
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
 
-def GetUnpaidLeavesForYear(month, year):
-    query = f"SELECT * FROM [leaves] WHERE is_unpaid = 'True' AND MONTH(date) = {month} AND YEAR(date) = {year}"
-    db.GetDBCursor().execute(query)
+def GetUnpaidLeavesForYear(member_id, month, year):
+    db.GetDBCursor().execute(f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND is_unpaid = 'True' AND MONTH(date) = {month} AND YEAR(date) = {year}")
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
 
