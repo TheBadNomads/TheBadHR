@@ -237,19 +237,32 @@ def CreateGetEndOfMonthCalculationsOptions():
     return EndOfMonthCalculations_options
     
 def CreateGetEndOfMonthCalculationsEmbed(leaves_array, month, year):
+    member_value = ""
+    days_count_value = ""
+    deduction_percentage_value = ""
     embed = discord.Embed(
-        title = f'Applied Leaves',
+        title = f'End of Month Calculations',
         description = f'{month}/{year} Calculations:',
         colour = 0x4682B4
     )
     embed.set_thumbnail(url = os.getenv("Leave_Balance_Link"))
     embed.add_field(name = '\u200B', value = '\u200B', inline = False)
-    for leaves in leaves_array:
-        embed.add_field(name = "Member", value = f'<@!{leaves[0]["member_id"]}>', inline = True)
-        embed.add_field(name = "Unpaid Days Count", value = len(leaves), inline = True)
-        precentage = utils.CalculatePercentage(utils.GetMonthDaysCount(month, year),len(leaves))
-        embed.add_field(name = "Deduction Percentage", value = f'{precentage}%', inline = True)
 
+    for index, leaves in enumerate(leaves_array):
+        member_value += f'<@!{leaves[0]["member_id"]}>\n'
+        days_count_value += f'{len(leaves)}\n'
+        precentage = utils.CalculatePercentage(utils.GetMonthDaysCount(month, year),len(leaves))
+        deduction_percentage_value += f'{precentage} %\n'
+        if (index+1) % 5 == 0:
+            member_value += '\n'
+            days_count_value += '\n'
+            deduction_percentage_value += '\n'
+
+    embed.add_field(name = "Member", value = member_value, inline = True)
+    embed.add_field(name = "Unpaid Days Count", value = days_count_value, inline = True)
+    embed.add_field(name = "Deduction Percentage", value = deduction_percentage_value, inline = True)
+
+    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
     footer_text = (("\u200B " * 150) + datetime.date.today().strftime("%d/%m/%Y")) # magic number 150
     embed.set_footer(text = footer_text)
 
