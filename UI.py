@@ -301,11 +301,11 @@ def CreateGetEndOfMonthCalculationsEmbed(leaves_array, month, year):
         embed.add_field(name = "Member", value = f'<@!{leaves[0]["member_id"]}>', inline = True)
         embed.add_field(name = "Unpaid Days Count", value = len(leaves), inline = True)
         precentage = utils.CalculatePercentage(utils.GetMonthDaysCount(month, year),len(leaves))
-        embed.add_field(name = "Deduction Percentage", value = precentage, inline = True)
+        embed.add_field(name = "Deduction Percentage", value = f'{precentage}%', inline = True)
 
     footer_text = (("\u200B " * 150) + datetime.date.today().strftime("%d/%m/%Y")) # magic number 150
     embed.set_footer(text = footer_text)
-    
+
     return embed
 
 async def UpdateLeaveEmbed(member, message, embed, newStatus):

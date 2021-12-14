@@ -73,4 +73,4 @@ def GetMonthDaysCount(month, year):
     return monthrange(year, month)[1]
 
 def CalculatePercentage(total, acctual):
-    return ((acctual * 100) / total)
+    return "{:.2f}".format((acctual * 100) / total)
