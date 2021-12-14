@@ -264,6 +264,30 @@ def CreateIsEveryoneHereEmbed(approved_dict, missing_members, isAdmin):
     footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
     embed.set_footer(text = footer_text)
     return embed
+
+def CreateGetEndOfMonthCalculationsOptions():
+    EndOfMonthCalculations_options = [
+        create_option(
+            name = "discorduser",
+            description = "discord user (optional) leave empty for all members",
+            option_type = SlashCommandOptionType.USER,
+            required = False
+        ),
+        create_option(
+            name = "month",
+            description = "number of the desired month (optional) leave empty for current month",
+            option_type = SlashCommandOptionType.INTEGER,
+            required = False
+        ),
+        create_option(
+            name = "year",
+            description = "number of the desired year (optional) leave empty for current year",
+            option_type = SlashCommandOptionType.INTEGER,
+            required = False
+        )
+    ]
+
+    return EndOfMonthCalculations_options
     
 async def UpdateLeaveEmbed(member, message, embed, newStatus):
     await UpdateEmbedLeaveStatus(message, embed, newStatus)
