@@ -72,7 +72,17 @@ async def ShowLeavesBalance(ctx):
     await ctx.send(content = "Done", delete_after = 0.1)
 
 @slash.slash(name = "IsMemberWorking", description = "Checks if a member is working on a given day", options = UI.CreateIsMemberWorkingOptions(), guild_ids = guild_ids)
-async def IsMemberWorking(ctx, discorduser = None, month = datetime.now().month, year = datetime.now().year):
+async def IsMemberWorking(ctx, discorduser, date = datetime.today().strftime('%d/%m/%Y')):
+    is_working, reason = leave_interface.IsMemberWorking(discorduser.id, datetime.strptime(date, '%d/%m/%Y'))
+    if Utilities.IsAdmin(ctx.author):
+        await ctx.author.send(content = f"{is_working}, {reason}")
+    else:
+        await ctx.author.send(content = f"{is_working}")
+
+    await ctx.send(content = "Done", delete_after = 0.1)
+
+@slash.slash(name = "GetEndOfMonthCalculations", description = "Calculates the salary deduction percentage according to the unpaid leaves count for the provided month", options = UI.CreateGetEndOfMonthCalculationsOptions(), guild_ids = guild_ids)
+async def GetEndOfMonthCalculations(ctx, discorduser = None, month = datetime.now().month, year = datetime.now().year):
     message_content = ""
     if Utilities.IsAdmin(ctx.author):
         print()
@@ -81,16 +91,6 @@ async def IsMemberWorking(ctx, discorduser = None, month = datetime.now().month,
         message_content = "This command is for Admins only"
 
     await ctx.author.send(content = message_content)
-    await ctx.send(content = "Done", delete_after = 0.1)
-
-@slash.slash(name = "GetEndOfMonthCalculations", description = "Calculates the salary deduction percentage according to the unpaid leaves count for the provided month", options = UI.CreateGetEndOfMonthCalculationsOptions(), guild_ids = guild_ids)
-async def GetEndOfMonthCalculations(ctx, discorduser, date = datetime.today().strftime('%d/%m/%Y')):
-    is_working, reason = leave_interface.IsMemberWorking(discorduser.id, datetime.strptime(date, '%d/%m/%Y'))
-    if Utilities.IsAdmin(ctx.author):
-        await ctx.author.send(content = f"{is_working}, {reason}")
-    else:
-        await ctx.author.send(content = f"{is_working}")
-
     await ctx.send(content = "Done", delete_after = 0.1)
 
 @slash.slash(name="IsEveryoneHere", description = "Checks if all working 'Full Time' members are in the meeting channel", guild_ids = guild_ids)
