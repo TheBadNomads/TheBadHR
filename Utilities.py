@@ -1,7 +1,9 @@
 import discord
 import os
 import datetime
-import re 
+import re
+
+from calendar import monthrange
 
 def isNotBot(member):
     return not member.bot
@@ -66,3 +68,9 @@ def GetFieldFromEmbed(embed, field_name):
     for field in embed_dict["fields"]:
         if field["name"].lower() == field_name.lower():
             return field["value"]
+            
+def GetMonthDaysCount(month, year):
+    return monthrange(year, month)[1]
+
+def CalculatePercentage(total, acctual):
+    return ((acctual * 100) / total)
