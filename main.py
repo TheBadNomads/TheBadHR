@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 from discord.ext import commands
 from discord_slash import SlashCommand
 from discord_components import DiscordComponents, Button, Select, SelectOption, message
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 from Member import member_db 
 from Leave import leave_interface, leave_db
 
@@ -25,6 +27,7 @@ guild_ids = [int(os.getenv("TestServer_id"))]
 async def on_ready():
     DiscordComponents(client)
     print("the bot is ready")
+    SetupScheduler()
 
 @client.event
 async def on_raw_reaction_add(payload):
@@ -106,5 +109,15 @@ async def GetLeavesBetween(ctx, startdate, enddate, discorduser = None):
     embed = UI.CreateLeavesAcrossRangeEmbed(leaves, startdate, enddate, Utilities.IsAdmin(ctx.author))
     await ctx.author.send(embed = embed)
     await ctx.send(content = "Done", delete_after = 0.1)
+
+async def SendEndOfMonthCalculations():
+    embed = UI.CreateGetEndOfMonthCalculationsEmbed(datetime.now().month, datetime.now().year)
+    user = await client.fetch_user(int(os.getenv("Finance_Admin_id")))
+    await user.send(embed = embed)
+
+def SetupScheduler():
+    scheduler = AsyncIOScheduler(timezone = "est")
+    scheduler.add_job(SendEndOfMonthCalculations, CronTrigger(day = 20, hour = 11, minute = 5))
+    scheduler.start()
 
 client.run(os.getenv("Bot_token"))
