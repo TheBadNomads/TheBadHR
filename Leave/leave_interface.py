@@ -134,7 +134,7 @@ def IsMemberWorking(member_id, date):
     return (True, "Member is working on the selected date")
 
 def IsMemberOnLeave(member_id, date):
-    approved_leaves = list(filter(lambda leave: leave['date'] == date and leave['leave_status'] != "Approved", leave_db.GetLeavesByMemberID(member_id)))
+    approved_leaves = list(filter(lambda leave: leave['date'] == date and leave['leave_status'] == "Approved", leave_db.GetLeavesByMemberID(member_id)))
     if (len(approved_leaves) <= 0):
         return (False, "Member is working on the selected date")
     return (True, GetReasonOfLeaves(approved_leaves))   
