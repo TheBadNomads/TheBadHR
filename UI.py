@@ -175,7 +175,7 @@ def CreateLeavesBalancesEmbed(member_id):
             description = f'Your balances are:',
             colour = 0x4682B4
         )
-        embed.set_thumbnail(url = os.getenv("Leave_Balance_Link"))
+        embed.set_thumbnail(url = os.getenv("Leave_Balance_Image"))
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
         embed.add_field(name = "Annual", value = leave_db.GetAnnualLeaveBalance(member_id), inline = True)
@@ -277,7 +277,7 @@ def CreateLeavesAcrossRangeEmbed (leaves, include_reason):
             description = f'<@!{leaves_group[0][0]["member_id"]}> has requested:',
             colour = 0x4682B4
         )
-        embed.set_thumbnail(url = os.getenv("Leave_Balance_Link"))
+        embed.set_thumbnail(url = os.getenv("Leave_Balance_Image"))
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
         embed = FormatingLeavesAcrossRangeEmbed(leaves_group, embed, include_reason)
         if (embed == None):
