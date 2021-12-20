@@ -281,7 +281,7 @@ def CreateLeavesAcrossRangeEmbed(leaves, include_reason):
         )
         embed.set_thumbnail(url = os.getenv("Leave_Balance_Image"))
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
-        embed = FormatingLeavesAcrossRangeEmbed(leaves_group, embed, include_reason)
+        embed = FormatLeavesAcrossRangeEmbed(leaves_group, embed, include_reason)
         if (embed == None):
             continue
 
@@ -290,7 +290,7 @@ def CreateLeavesAcrossRangeEmbed(leaves, include_reason):
         output_embeds.append(embed)
     return output_embeds
 
-def FormatingLeavesAcrossRangeEmbed(leaves_group, embed, include_reason):
+def FormatLeavesAcrossRangeEmbed(leaves_group, embed, include_reason):
     empty_embed = True
     for leaves_array in leaves_group:
         if (leaves_array[0]["leave_status"] != "Approved" and (not (include_reason))):
