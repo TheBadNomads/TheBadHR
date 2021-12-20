@@ -269,7 +269,7 @@ def CreateGetLeavesAcrossRangeOptions():
 
     return member_options
 
-def CreateMultipleLeavesEmbed(leaves, include_reason):
+def CreateLeavesAcrossRangeEmbed (leaves, include_reason):
     embeds_to_send = []
     for leaves_group in leaves:
         embed = discord.Embed(
@@ -279,7 +279,7 @@ def CreateMultipleLeavesEmbed(leaves, include_reason):
         )
         embed.set_thumbnail(url = os.getenv("Leave_Balance_Link"))
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
-        embed = DesignMultipleLeavesEmbed(leaves_group, embed, include_reason)
+        embed = FormatingLeavesAcrossRangeEmbed(leaves_group, embed, include_reason)
         if (embed == None):
             continue
 
@@ -288,7 +288,7 @@ def CreateMultipleLeavesEmbed(leaves, include_reason):
         embeds_to_send.append(embed)
     return embeds_to_send
 
-def DesignMultipleLeavesEmbed(leaves_group, embed, include_reason):
+def FormatingLeavesAcrossRangeEmbed(leaves_group, embed, include_reason):
     empty_embed = True
     for leaves_array in leaves_group:
         if (leaves_array[0]["leave_status"] != "Approved" and (not (include_reason))):
