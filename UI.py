@@ -231,7 +231,7 @@ def CreateCreditLeavesOptions():
         ),
         create_option(
             name = "dayscount",
-            description = "amount of extra credit (can be negative number)",
+            description = "amount of extra credit (can be negative number) leave empty for 1 day",
             option_type = ApplicationCommandOptionType_FLOAT,
             required = False
         ),
