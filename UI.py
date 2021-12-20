@@ -271,7 +271,7 @@ def CreateGetLeavesAcrossRangeOptions():
 
     return member_options
 
-def CreateLeavesAcrossRangeEmbed (leaves, include_reason):
+def CreateLeavesAcrossRangeEmbed(leaves, include_reason):
     output_embeds = []
     for leaves_group in leaves:
         embed = discord.Embed(
