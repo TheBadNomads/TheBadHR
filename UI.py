@@ -9,6 +9,8 @@ from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option, create_choice
 from Leave import leave_db
 
+embed_footer_spaces_count = 150
+
 def CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason):
     leaveImages = {
         "Annual"   : os.getenv("Annual_Leave_Link"),
@@ -21,7 +23,7 @@ def CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason):
     )
     if reason == "":
         reason = "None"
-    footer_text = (("\u200B " * 150) + datetime.date.today().strftime("%d/%m/%Y")) # magic number 150
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
 
     embed.set_thumbnail(url = leaveImages[leave_type])
     embed.add_field(name = "Leave Type", value = leave_type, inline = False)
@@ -283,7 +285,7 @@ def CreateLeavesAcrossRangeEmbed (leaves, include_reason):
         if (embed == None):
             continue
 
-        footer_text = (("\u200B " * 150) + datetime.date.today().strftime("%d/%m/%Y")) # magic number 150
+        footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
         embed.set_footer(text = footer_text)
         embeds_to_send.append(embed)
     return embeds_to_send
