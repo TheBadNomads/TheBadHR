@@ -272,7 +272,7 @@ def CreateGetLeavesAcrossRangeOptions():
     return member_options
 
 def CreateLeavesAcrossRangeEmbed (leaves, include_reason):
-    embeds_to_send = []
+    output_embeds = []
     for leaves_group in leaves:
         embed = discord.Embed(
             title = f'Applied Leaves',
@@ -287,8 +287,8 @@ def CreateLeavesAcrossRangeEmbed (leaves, include_reason):
 
         footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
         embed.set_footer(text = footer_text)
-        embeds_to_send.append(embed)
-    return embeds_to_send
+        output_embeds.append(embed)
+    return output_embeds
 
 def FormatingLeavesAcrossRangeEmbed(leaves_group, embed, include_reason):
     empty_embed = True
