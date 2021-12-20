@@ -56,7 +56,7 @@ async def HandleLeaveReactions(client, payload):
     if action == None:
         return
 
-    if not (utils.isNotBot(payload.member)):
+    if payload.member.bot:
         return
     
     if not (utils.IsAdmin(payload.member)):
