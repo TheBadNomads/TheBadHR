@@ -8,6 +8,7 @@ from collections import defaultdict
 from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option, create_choice
 from Leave import leave_db
+from Member import member_db
 
 embed_footer_spaces_count = 150
 
@@ -271,45 +272,41 @@ def CreateGetLeavesAcrossRangeOptions():
 
     return member_options
 
-def CreateLeavesAcrossRangeEmbed(leaves, include_reason):
-    output_embeds = []
+def CreateLeavesAcrossRangeEmbed(leaves, startdate, enddate, include_reason):
+    embed = discord.Embed(
+        title = f'Applied Leaves',
+        description = f'Dates range: \u200B \u200B**{startdate}** - **{enddate}**',
+        colour = 0x4682B4
+    )
+    embed.set_thumbnail(url = os.getenv("Leave_Balance_Image"))
+    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+
     for leaves_group in leaves:
-        embed = discord.Embed(
-            title = f'Applied Leaves',
-            description = f'<@!{leaves_group[0][0]["member_id"]}> has requested:',
-            colour = 0x4682B4
-        )
-        embed.set_thumbnail(url = os.getenv("Leave_Balance_Image"))
-        embed.add_field(name = '\u200B', value = '\u200B', inline = False)
-        embed = FormatLeavesAcrossRangeEmbed(leaves_group, embed, include_reason)
-        if (embed == None):
+        leaves_value = FormatLeavesAcrossRangeEmbed(leaves_group, include_reason)
+        if leaves_value == "":
             continue
+        member_name = member_db.GetMemberByID(leaves_group[0][0]["member_id"])["name"]
+        embed.add_field(name = f'**{member_name.upper()}**', value = leaves_value, inline = False)
+        embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
-        footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
-        embed.set_footer(text = footer_text)
-        output_embeds.append(embed)
-    return output_embeds
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    embed.set_footer(text = footer_text)
+    return embed
 
-def FormatLeavesAcrossRangeEmbed(leaves_group, embed, include_reason):
-    empty_embed = True
+def FormatLeavesAcrossRangeEmbed(leaves_group, include_reason):
+    leaves_value = ""
     for leaves_array in leaves_group:
         if (leaves_array[0]["leave_status"] != "Approved" and (not (include_reason))):
             continue
-
-        empty_embed = False
-        embed.add_field(name = "Type", value = leaves_array[0]["leave_type"], inline = True)
-        embed.add_field(name = "Start Date", value = leaves_array[0]["date"].strftime('%d/%m/%Y'), inline = True)
-        embed.add_field(name = "End Date", value = leaves_array[-1]["date"].strftime('%d/%m/%Y'), inline = True)
+        leaves_value += f' \u200B \u200B ***Type:*** \u200B \u200B{leaves_array[0]["leave_type"]}\n'
+        leaves_value += f' \u200B \u200B ***From:*** \u200B \u200B{leaves_array[0]["date"].strftime("%d/%m/%Y")}  \u200B \u200B \u200B \u200B \u200B ***To:*** \u200B \u200B{leaves_array[-1]["date"].strftime("%d/%m/%Y")}\n'
         if include_reason:
             reason = leaves_array[0]["reason"]
-            embed.add_field(name = "Reason", value = "None" or reason, inline = False)
-            embed.add_field(name = "Status", value = leaves_array[0]["leave_status"] or reason, inline = False)
-        embed.add_field(name = '\u200B', value = '\u200B', inline = False)
-        
-    if empty_embed:
-        return None
+            leaves_value += f' \u200B \u200B ***Reason:*** \u200B \u200B{"None" or reason}\n'
+            leaves_value += f' \u200B \u200B ***Status:*** \u200B \u200B{leaves_array[0]["leave_status"]}\n'
+        leaves_value += '\n'
 
-    return embed
+    return leaves_value
 
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
