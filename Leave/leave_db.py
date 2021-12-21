@@ -58,6 +58,19 @@ def InsertLeave(member_id, request_id, leave_type, date, reason, remark, leave_s
         db.GetDBConnection().rollback()
         return "Failed"
 
+def InsertExtraBalance(date, creditor_id, recipient_id, leave_type, reason, days_count):
+    try:
+        db.GetDBCursor().execute(
+            "INSERT INTO [extraBalance] (date, creditor_id, recipient_id, leave_type, reason, days_count) VALUES (?, ?, ?, ?, ?, ?)",
+            (date, creditor_id, recipient_id, leave_type, reason, days_count)
+        )
+        db.GetDBConnection().commit()
+        return "Success"
+
+    except Exception as e:
+        db.GetDBConnection().rollback()
+        return "Failed"
+
 def UpdateLeaveStatus(request_id, leave_status):
     try:
         db.GetDBCursor().execute("UPDATE [leaves] SET leave_status = ? WHERE request_id = ?", leave_status, request_id)

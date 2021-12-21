@@ -12,11 +12,11 @@ from discord.ext import commands
 from discord_slash import SlashCommand
 from discord_components import DiscordComponents, Button, Select, SelectOption, message
 from Member import member_db 
-from Leave import leave_interface
+from Leave import leave_interface, leave_db
 
 load_dotenv()
 
-client = commands.Bot(command_prefix = "!", intents = discord.Intents.default())
+client = commands.Bot(command_prefix = "!", intents = discord.Intents.all())
 slash = SlashCommand(client, sync_commands = True)
 
 guild_ids = [int(os.getenv("TestServer_id"))]
@@ -88,7 +88,7 @@ async def IsEveryoneHere(ctx):
     fulltime_member_list = list(filter(lambda user: fulltime_role in user.roles, guild.members))
     fulltime_member_list_in_voicechannel = list(filter(lambda user : fulltime_role in user.roles, voice_channel.members))
 
-    not_here = list(set(fulltime_member_list) - set(voicechannel_fulltime_member_list))
+    not_here = list(set(fulltime_member_list) - set(fulltime_member_list_in_voicechannel))
     not_here = list(filter(lambda user : (leave_interface.IsMemberWorking(user.id, datetime.today()))[0], not_here))
     not_here = [user.display_name for user in not_here]
 
@@ -98,5 +98,16 @@ async def IsEveryoneHere(ctx):
         await ctx.author.send(content="Users not here: " + (', '.join(not_here)))
 
     await ctx.send(content="Done", delete_after=0.1)
+
+@slash.slash(name = "CreditLeaves", description = "Inserts an extra credit for the provided leave type", options = UI.CreateCreditLeavesOptions(), guild_ids = guild_ids)
+async def CreditLeaves(ctx, discorduser, leavetype, dayscount = 1, reason = ""):
+    message_content = ""
+    if Utilities.IsAdmin(ctx.author):
+        message_content = leave_db.InsertExtraBalance(datetime.today().strftime('%d/%m/%Y'), ctx.author.id, discorduser.id, leavetype, reason, dayscount)
+    else:
+        message_content = "This command is for Admins only"
+
+    await ctx.author.send(content = message_content)
+    await ctx.send(content = "Done", delete_after = 0.1)
 
 client.run(os.getenv("Bot_token"))
