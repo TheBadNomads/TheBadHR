@@ -208,6 +208,27 @@ def CreateIsMemberWorkingOptions():
     ]
 
     return member_options
+
+def CreateIsEveryoneHereEmbed(approved_list_names, approved_list_reasons, unapproved_list, isAdmin):
+    try:
+        embed = discord.Embed(
+            title = f'Is Everyone Here',
+            description = f'Members not in meeting channel',
+            colour = 0x4682B4
+        )
+
+        embed.add_field(name = "Names", value = '\n'.join(unapproved_list), inline = False)
+
+        embed.add_field(name = "People on leave", value = '\n'.join(approved_list_names), inline = True)
+        if(isAdmin):
+            embed.add_field(name = "Reasons", value = '\n'.join(approved_list_reasons), inline = True)
+
+        embed.set_footer(text = datetime.date.today())
+        return embed
+
+    except Exception as e:
+        print(e)
+        return None
     
 async def UpdateLeaveEmbed(member, message, embed, newStatus):
     await UpdateEmbedLeaveStatus(message, embed, newStatus)

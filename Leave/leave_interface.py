@@ -144,3 +144,20 @@ def GetReasonOfLeaves(leaves_array):
         return None
 
     return leaves_array[0]["reason"]
+
+def GetMissingMembersByRole(members_all, role, voice_channel_members):
+
+    date = datetime.datetime.strptime(datetime.datetime.today().strftime('%d/%m/%Y'), '%d/%m/%Y')
+
+    role_member_list = list(filter(lambda member: role in member.roles, members_all))
+    role_member_in_voicechannel_list = list(filter(lambda member : role in member.roles, voice_channel_members))
+    not_here_all = list(set(role_member_list) - set(role_member_in_voicechannel_list))
+
+    approved_leaves = list(filter(lambda member : (IsMemberOnLeave(member.id, date))[0], not_here_all))
+    approved_leaves_names = [member.display_name for member in approved_leaves]
+    approved_leaves_reasons = [IsMemberOnLeave(member.id, date)[1] for member in approved_leaves]
+
+    unapproved_leaves = list(filter(lambda member : not (IsMemberOnLeave(member.id, date)[0]), not_here_all))
+    unapproved_leaves = [member.display_name for member in unapproved_leaves]
+
+    return approved_leaves_names, approved_leaves_reasons, unapproved_leaves

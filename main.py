@@ -80,36 +80,21 @@ async def IsMemberWorking(ctx, discorduser, date = datetime.today().strftime('%d
     await ctx.send(content = "Done", delete_after = 0.1)
 
 @slash.slash(name="IsEveryoneHere", description="Checks if all working 'Full Time' members are in voice channel", guild_ids=guild_ids)
-async def IsEveryoneHere(ctx, date = datetime.today().strftime('%d/%m/%Y')):
+async def IsEveryoneHere(ctx):
 
     guild = client.guilds[0]
-    fulltime_role = discord.utils.get(guild.roles, name = "Full Time")
+    meeting_channel = client.get_channel(int(os.getenv("MeetingChannel_id")))
+    isAdmin = True if Utilities.IsAdmin(ctx.author) else False
+    approved_leaves_names, approved_leaves_reasons, unapproved_leaves = leave_interface.GetMissingMembersByRole(guild.members,
+                                                                                                                discord.utils.get(guild.roles, name = "Full Time"),
+                                                                                                                meeting_channel.members)
 
-    # Check if author is in a voice channel
-    if ctx.author.voice and ctx.author.voice.channel:
+    embed = UI.CreateIsEveryoneHereEmbed(approved_leaves_names, approved_leaves_reasons, unapproved_leaves, isAdmin)
 
-        # Get all users with 'Full Time' role
-        fulltime_member_list = list(filter(lambda user: fulltime_role in user.roles, guild.members))
-        
-        # Get all users with 'Full Time' role who are in the channel
-        vc_fulltime_member_list = list(filter(lambda user : fulltime_role in user.roles, ctx.author.voice.channel.members))
-
-        # Get all users with 'Full Time' role who are not in voice channel
-        not_here = list(set(fulltime_member_list) - set(vc_fulltime_member_list))
-
-        # Check if user is working today and removes them if they have leave
-        not_here = list(filter(lambda user : (leave_interface.IsMemberWorking(user.id, datetime.strptime(date, '%d/%m/%Y')))[0], not_here))
-
-        # Use display name
-        not_here = [user.display_name for user in not_here]
-        
-        if not not_here:
-            await ctx.author.send(content="Everyone's Here!")
-        else:
-            await ctx.author.send(content="Users not here: " + (', '.join(not_here)))
-        
+    if embed != None:
+        await ctx.author.send(embed = embed)
     else:
-        await ctx.author.send(content="You need to be in a voice channel to use this command")
+        await ctx.author.send(content = "your request failed, try again later")
 
     await ctx.send(content="Done", delete_after=0.1)
 
