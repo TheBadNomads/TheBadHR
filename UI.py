@@ -244,7 +244,7 @@ def CreateCreditLeavesOptions():
             required = False
         )
     ]
-    
+
     return extra_balance_options
 
 def CreateGetLeavesAcrossRangeOptions():
