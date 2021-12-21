@@ -305,7 +305,6 @@ def FormatLeavesAcrossRangeEmbed(leaves_group, include_reason):
             leaves_value += f' \u200B \u200B ***Reason:*** \u200B \u200B{"None" or reason}\n'
             leaves_value += f' \u200B \u200B ***Status:*** \u200B \u200B{leaves_array[0]["leave_status"]}\n'
         leaves_value += '\n'
-
     return leaves_value
 
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
