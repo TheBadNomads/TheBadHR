@@ -234,6 +234,38 @@ async def UpdateLeaveEmbed(member, message, embed, newStatus):
     await UpdateEmbedLeaveStatus(message, embed, newStatus)
     await UpdateEmbedApprovedRejectedby(message, embed, member)
 
+def CreateCreditLeavesOptions():
+    ApplicationCommandOptionType_FLOAT = 10
+    extra_balance_options = [
+        create_option(
+            name = "discorduser",
+            description = "discord user",
+            option_type = SlashCommandOptionType.USER,
+            required = True
+        ),
+        create_option(
+            name = "leavetype",
+            description = "leave type",
+            option_type = SlashCommandOptionType.STRING,
+            required = True,
+            choices = CreateLeaveTypeChoices()
+        ),
+        create_option(
+            name = "dayscount",
+            description = "amount of extra leaves to credit (can be a negative number). Defaults to 1",
+            option_type = ApplicationCommandOptionType_FLOAT,
+            required = False
+        ),
+        create_option(
+            name = "reason",
+            description = "reason behind the extra balance (optional)",
+            option_type = SlashCommandOptionType.STRING,
+            required = False
+        )
+    ]
+
+    return extra_balance_options
+
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
 
@@ -260,7 +292,8 @@ def ParseEmoji(emoji):
     emoji_str = str(emoji)
     reaction_emojis = {
         os.getenv("Approve_Emoji"): "Approved",
-        os.getenv("Reject_Emoji"): "Rejected"
+        os.getenv("Reject_Emoji"): "Rejected",
+        os.getenv("Revert_Emoji"): "Reverted"
     }
     reaction_emojis = defaultdict(None, **reaction_emojis)
 

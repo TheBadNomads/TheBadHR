@@ -24,8 +24,7 @@ async def SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_typ
     embed = UI.CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason)
     channel = Channels.GetLeaveApprovalsChannel(client)
     message = await channel.send(embed = embed)
-    await message.add_reaction(os.getenv("Approve_Emoji"))
-    await message.add_reaction(os.getenv("Reject_Emoji"))
+    await AddEmojisToLeaveMessage(message)
     return message.id
 
 def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason):
@@ -53,24 +52,34 @@ async def HandleLeaveReactions(client, payload):
     message = await channel.fetch_message(payload.message_id)
     embed = message.embeds[0]
     
-    status = UI.ParseEmoji(payload.emoji)
-    if status == None:
+    action = UI.ParseEmoji(payload.emoji)
+    if action == None:
         return
 
-    if utils.isNotBot(payload.member) and utils.IsAdmin(payload.member) and leave_db.IsLeaveRequestPending(payload.message_id):
+    if payload.member.bot:
+        return
+    
+    if not (utils.IsAdmin(payload.member)):
+        return
+        
+    if action == "Reverted":
+        if not (leave_db.IsLeaveRequestPending(payload.message_id)):
+            leave_db.UpdateLeaveStatus(payload.message_id, "Pending")
+            await UI.UpdateLeaveEmbed(payload.member, message, embed, "Pending")
+            await InformMemberAboutLeaveStatus(client, embed, action)
+            await message.clear_reactions()
+            await AddEmojisToLeaveMessage(message)
+    elif leave_db.IsLeaveRequestPending(payload.message_id):
         try:
-            await UpdateLeaveStatus(client, payload, status, embed)
-            await UI.UpdateLeaveEmbed(payload.member, message, embed, status)
+            leave_db.UpdateLeaveStatus(payload.message_id, action)
+            await UI.UpdateLeaveEmbed(payload.member, message, embed, action)
+            await InformMemberAboutLeaveStatus(client, embed, action)
         except Exception as e:
             print(e)
 
-async def UpdateLeaveStatus(client, payload, status, embed):
-    try:
-        leave_db.UpdateLeaveStatus(payload.message_id, status)
-        member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
-        await member.send(content = "Your request was " + status)
-    except Exception as e:
-        print(e)
+async def InformMemberAboutLeaveStatus(client, embed, status):
+    member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
+    await member.send(content = "Your request was " + status)
 
 def GetRequestedLeavesBetween(member_id, start_date, end_date):
     work_days = utils.GetWorkDays(start_date, end_date)
@@ -134,7 +143,7 @@ def IsMemberWorking(member_id, date):
     return (True, "Member is working on the selected date")
 
 def IsMemberOnLeave(member_id, date):
-    approved_leaves = list(filter(lambda leave: leave['date'] == date and leave['leave_status'] != "Approved", leave_db.GetLeavesByMemberID(member_id)))
+    approved_leaves = list(filter(lambda leave: leave['date'] == date and leave['leave_status'] == "Approved", leave_db.GetLeavesByMemberID(member_id)))
     if (len(approved_leaves) <= 0):
         return (False, "Member is working on the selected date")
     return (True, GetReasonOfLeaves(approved_leaves))   
@@ -161,3 +170,8 @@ def GetMissingMembersByRole(members_all, role, voice_channel_members):
     unapproved_leaves = [member.display_name for member in unapproved_leaves]
 
     return approved_leaves_names, approved_leaves_reasons, unapproved_leaves
+
+async def AddEmojisToLeaveMessage(message):
+    await message.add_reaction(os.getenv("Approve_Emoji"))
+    await message.add_reaction(os.getenv("Reject_Emoji"))
+    await message.add_reaction(os.getenv("Revert_Emoji"))
