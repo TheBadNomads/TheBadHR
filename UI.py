@@ -249,7 +249,7 @@ def CreateCreditLeavesOptions():
     return extra_balance_options
 
 def CreateGetLeavesAcrossRangeOptions():
-    member_options = [
+    get_leaves_across_range_options = [
         create_option(
             name = "startdate",
             description = "start date (inclusive) in DD/MM/YYYY format",
@@ -270,7 +270,7 @@ def CreateGetLeavesAcrossRangeOptions():
         )
     ]
 
-    return member_options
+    return get_leaves_across_range_options
 
 def CreateLeavesAcrossRangeEmbed(leaves, startdate, enddate, include_reason):
     embed = discord.Embed(
