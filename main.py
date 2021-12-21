@@ -83,11 +83,18 @@ async def IsMemberWorking(ctx, discorduser, date = datetime.today().strftime('%d
 async def CreditLeaves(ctx, discorduser, leavetype, dayscount = 1, reason = ""):
     message_content = ""
     if Utilities.IsAdmin(ctx.author):
-        message_content = leave_db.InsertExtraBalance(datetime.today().strftime('%d/%m/%Y'), ctx.author.id, discorduser.id, leavetype, reason, dayscount)
+        message_content = leave_db.InsertExtraBalance(datetime.today(), ctx.author.id, discorduser.id, leavetype, reason, dayscount)
     else:
         message_content = "This command is for Admins only"
 
     await ctx.author.send(content = message_content)
+    await ctx.send(content = "Done", delete_after = 0.1)
+
+@slash.slash(name = "GetLeavesBetween", description = "Returns the leaves of one/all members in the provided dates range", options = UI.CreateGetLeavesAcrossRangeOptions(), guild_ids = guild_ids)
+async def GetLeavesBetween(ctx, startdate, enddate, discorduser = None):
+    leaves = leave_interface.GetLeavesAcrossRange(startdate, enddate, discorduser)
+    embed = UI.CreateLeavesAcrossRangeEmbed(leaves, startdate, enddate, Utilities.IsAdmin(ctx.author))
+    await ctx.author.send(embed = embed)
     await ctx.send(content = "Done", delete_after = 0.1)
 
 client.run(os.getenv("Bot_token"))

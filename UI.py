@@ -8,6 +8,9 @@ from collections import defaultdict
 from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option, create_choice
 from Leave import leave_db
+from Member import member_db
+
+embed_footer_spaces_count = 150
 
 def CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason):
     leaveImages = {
@@ -21,7 +24,7 @@ def CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason):
     )
     if reason == "":
         reason = "None"
-    footer_text = (("\u200B " * 150) + datetime.date.today().strftime("%d/%m/%Y")) # magic number 150
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
 
     embed.set_thumbnail(url = leaveImages[leave_type])
     embed.add_field(name = "Leave Type", value = leave_type, inline = False)
@@ -175,7 +178,7 @@ def CreateLeavesBalancesEmbed(member_id):
             description = f'Your balances are:',
             colour = 0x4682B4
         )
-        embed.set_thumbnail(url = os.getenv("Leave_Balance_Link"))
+        embed.set_thumbnail(url = os.getenv("Leave_Balance_Image"))
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
         embed.add_field(name = "Annual", value = leave_db.GetAnnualLeaveBalance(member_id), inline = True)
@@ -244,6 +247,65 @@ def CreateCreditLeavesOptions():
     ]
 
     return extra_balance_options
+
+def CreateGetLeavesAcrossRangeOptions():
+    get_leaves_across_range_options = [
+        create_option(
+            name = "startdate",
+            description = "start date (inclusive) in DD/MM/YYYY format",
+            option_type = SlashCommandOptionType.STRING,
+            required = True
+        ),
+        create_option(
+            name = "enddate",
+            description = "end date (inclusive) in DD/MM/YYYY format",
+            option_type = SlashCommandOptionType.STRING,
+            required = True
+        ),
+        create_option(
+            name = "discorduser",
+            description = "discord user (optional) leaving this empty will query for everyone",
+            option_type = SlashCommandOptionType.USER,
+            required = False
+        )
+    ]
+
+    return get_leaves_across_range_options
+
+def CreateLeavesAcrossRangeEmbed(leaves, startdate, enddate, include_reason):
+    embed = discord.Embed(
+        title = f'Applied Leaves',
+        description = f'Dates range: \u200B \u200B**{startdate}** - **{enddate}**',
+        colour = 0x4682B4
+    )
+    embed.set_thumbnail(url = os.getenv("Leave_Balance_Image"))
+    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+
+    for leaves_group in leaves:
+        leaves_value = FormatLeavesAcrossRangeEmbed(leaves_group, include_reason)
+        if leaves_value == "":
+            continue
+        member_name = member_db.GetMemberByID(leaves_group[0][0]["member_id"])["name"]
+        embed.add_field(name = f'**{member_name.upper()}**', value = leaves_value, inline = False)
+        embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    embed.set_footer(text = footer_text)
+    return embed
+
+def FormatLeavesAcrossRangeEmbed(leaves_group, include_reason):
+    leaves_value = ""
+    for leaves_array in leaves_group:
+        if (leaves_array[0]["leave_status"] != "Approved" and (not (include_reason))):
+            continue
+        leaves_value += f' \u200B \u200B ***Type:*** \u200B \u200B{leaves_array[0]["leave_type"]}\n'
+        leaves_value += f' \u200B \u200B ***From:*** \u200B \u200B{leaves_array[0]["date"].strftime("%d/%m/%Y")}  \u200B \u200B \u200B \u200B \u200B ***To:*** \u200B \u200B{leaves_array[-1]["date"].strftime("%d/%m/%Y")}\n'
+        if include_reason:
+            reason = leaves_array[0]["reason"]
+            leaves_value += f' \u200B \u200B ***Reason:*** \u200B \u200B{"None" or reason}\n'
+            leaves_value += f' \u200B \u200B ***Status:*** \u200B \u200B{leaves_array[0]["leave_status"]}\n'
+        leaves_value += '\n'
+    return leaves_value
 
 async def UpdateEmbedLeaveStatus(message, embed, newStatus):
     embed_dict = embed.to_dict()
