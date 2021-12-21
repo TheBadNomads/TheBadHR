@@ -86,7 +86,7 @@ async def IsEveryoneHere(ctx):
     voice_channel = client.get_channel(int(os.getenv("MeetingChannel_id")))
     fulltime_role = discord.utils.get(guild.roles, name = "Full Time")
     fulltime_member_list = list(filter(lambda user: fulltime_role in user.roles, guild.members))
-    voicechannel_fulltime_member_list = list(filter(lambda user : fulltime_role in user.roles, voice_channel.members))
+    fulltime_member_list_in_voicechannel = list(filter(lambda user : fulltime_role in user.roles, voice_channel.members))
 
     not_here = list(set(fulltime_member_list) - set(voicechannel_fulltime_member_list))
     not_here = list(filter(lambda user : (leave_interface.IsMemberWorking(user.id, datetime.today()))[0], not_here))
