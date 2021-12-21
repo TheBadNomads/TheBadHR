@@ -83,7 +83,7 @@ async def IsMemberWorking(ctx, discorduser, date = datetime.today().strftime('%d
 async def CreditLeaves(ctx, discorduser, leavetype, dayscount = 1, reason = ""):
     message_content = ""
     if Utilities.IsAdmin(ctx.author):
-        message_content = leave_db.InsertExtraBalance(datetime.today().strftime('%d/%m/%Y'), ctx.author.id, discorduser.id, leavetype, reason, dayscount)
+        message_content = leave_db.InsertExtraBalance(datetime.today(), ctx.author.id, discorduser.id, leavetype, reason, dayscount)
     else:
         message_content = "This command is for Admins only"
 
