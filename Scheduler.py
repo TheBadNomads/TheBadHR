@@ -13,8 +13,13 @@ def Setup(client):
     scheduler.start()
 
 def AddSchedulerJobs(scheduler):
+<<<<<<< HEAD
     scheduler.add_job(SendEndofMonthReport, "cron", day = int(os.getenv("End_of_Month_Report_Day")), hour = int(os.getenv("End_of_Month_Report_Hour")), minute = int(os.getenv("End_of_Month_Report_Minute")))
     scheduler.add_job(SendEndofYearReport, "cron", month = int(os.getenv("End_of_Year_Report_Month")), day = int(os.getenv("End_of_Year_Report_Day")), hour = int(os.getenv("End_of_Year_Report_Hour")), minute = int(os.getenv("End_of_Year_Report_Minute")))
+=======
+    scheduler.add_job(SendEndOfMonthCalculations, CronTrigger(day = 20, hour = 11, minute = 5))
+    # add more jobs here
+>>>>>>> c62b5f0 (replacing dumy values)
 
 <<<<<<< HEAD
 async def SendEndofMonthReport():
