@@ -213,7 +213,7 @@ def CreateIsMemberWorkingOptions():
     return member_options
 
 def CreateGetEndOfMonthCalculationsOptions():
-    EndOfMonthCalculations_options = [
+    end_of_month_calculations_options = [
         create_option(
             name = "month",
             description = "number of the desired month (optional) leave empty for current month",
@@ -228,7 +228,7 @@ def CreateGetEndOfMonthCalculationsOptions():
         )
     ]
 
-    return EndOfMonthCalculations_options
+    return end_of_month_calculations_options
     
 def CreateGetEndOfMonthCalculationsEmbed(month, year):
     embed = discord.Embed(
@@ -236,15 +236,15 @@ def CreateGetEndOfMonthCalculationsEmbed(month, year):
         description = f'{month}/{year} Calculations:',
         colour = 0x4682B4
     )
-    embed.set_thumbnail(url = os.getenv("Leave_Balance_Link"))
+    embed.set_thumbnail(url = os.getenv("Salary_Image"))
     embed.add_field(name = '\u200B', value = '\u200B', inline = False)
-    embed = DesignGetEndOfMonthCalculationsEmbed(embed, month, year)
+    embed = FormatGetEndOfMonthCalculationsEmbed(embed, month, year)
     embed.add_field(name = '\u200B', value = '\u200B', inline = False)
-    footer_text = (("\u200B " * 150) + datetime.date.today().strftime("%d/%m/%Y")) # magic number 150
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
     embed.set_footer(text = footer_text)
     return embed
 
-def DesignGetEndOfMonthCalculationsEmbed(embed, month, year):
+def FormatGetEndOfMonthCalculationsEmbed(embed, month, year):
     member_value = ""
     days_count_value = ""
     deduction_percentage_value = ""
