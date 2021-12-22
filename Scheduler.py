@@ -22,3 +22,4 @@ async def SendEndOfMonthCalculations(finance_admin = None, month = None, year = 
     finance_admin = finance_admin or await bot.fetch_user(int(os.getenv("Finance_Admin_id")))
     embed = UI.CreateGetEndOfMonthCalculationsEmbed(month, year)
     await finance_admin.send(embed = embed)
+    
