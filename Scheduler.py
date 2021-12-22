@@ -16,6 +16,7 @@ def AddSchedulerJobs(scheduler):
     scheduler.add_job(SendEndofMonthReport, "cron", day = int(os.getenv("End_of_Month_Report_Day")), hour = int(os.getenv("End_of_Month_Report_Hour")), minute = int(os.getenv("End_of_Month_Report_Minute")))
     scheduler.add_job(SendEndofYearReport, "cron", month = int(os.getenv("End_of_Year_Report_Month")), day = int(os.getenv("End_of_Year_Report_Day")), hour = int(os.getenv("End_of_Year_Report_Hour")), minute = int(os.getenv("End_of_Year_Report_Minute")))
 
+<<<<<<< HEAD
 async def SendEndofMonthReport():
     finance_admins_ids = os.getenv("Finance_Admins_ids").split(", ")
     embed = UI.CreateGetEndOfMonthReportEmbed(member_db.GetMembers())
@@ -29,3 +30,11 @@ async def SendEndofYearReport():
     for id in finance_admins_ids:
         admin = await bot.fetch_user(int(id))
         await admin.send(embed = embed)
+=======
+async def SendEndOfMonthCalculations(finance_admin = None, month = None, year = None):
+    month = month or datetime.now().month
+    year = year or datetime.now().year
+    finance_admin = finance_admin or await bot.fetch_user(int(os.getenv("Finance_Admin_id")))
+    embed = UI.CreateGetEndOfMonthCalculationsEmbed(month, year)
+    await finance_admin.send(embed = embed)
+>>>>>>> 7ecd732 (adding newline)
