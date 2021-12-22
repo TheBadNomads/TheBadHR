@@ -8,12 +8,12 @@ from apscheduler.triggers.cron import CronTrigger
 def Setup(client):
     global bot
     bot = client
-    scheduler = AsyncIOScheduler(timezone = "est")
+    scheduler = AsyncIOScheduler(timezone = "Africa/Cairo")
     AddSchedulerJobs(scheduler)
     scheduler.start()
 
 def AddSchedulerJobs(scheduler):
-    scheduler.add_job(SendEndOfMonthCalculations, CronTrigger(day = 20, hour = 11, minute = 5))
+    scheduler.add_job(SendEndOfMonthCalculations, "cron", day = 20, hour = 11, minute = 5)
     # add more jobs here
 
 async def SendEndOfMonthCalculations(finance_admin = None, month = None, year = None):
