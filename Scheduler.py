@@ -13,7 +13,7 @@ def Setup(client):
     scheduler.start()
 
 def AddSchedulerJobs(scheduler):
-    scheduler.add_job(SendEndOfMonthCalculations, CronTrigger(day = 22, hour = 12, minute = 24))
+    scheduler.add_job(SendEndOfMonthCalculations, CronTrigger(day = 20, hour = 11, minute = 5))
     # add more jobs here
 
 async def SendEndOfMonthCalculations(finance_admin = None, month = None, year = None):
