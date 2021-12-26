@@ -13,7 +13,7 @@ def Setup(client):
     scheduler.start()
 
 def AddSchedulerJobs(scheduler):
-    scheduler.add_job(SendEndOfMonthCalculations, "cron", day = 20, hour = 11, minute = 5)
+    scheduler.add_job(SendEndOfMonthCalculations, "cron", day = int(os.getenv("End_of_Month_Report_Day")), hour = int(os.getenv("End_of_Month_Report_hour")), minute = int(os.getenv("End_of_Month_Report_minute")))
     # add more jobs here
 
 async def SendEndOfMonthCalculations(finance_admin = None, month = None, year = None):
