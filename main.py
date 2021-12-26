@@ -83,19 +83,27 @@ async def IsMemberWorking(ctx, discorduser, date = datetime.today().strftime('%d
 async def IsEveryoneHere(ctx):
 
     guild = client.guilds[0]
-    voice_channel = client.get_channel(int(os.getenv("MeetingChannel_id")))
+    meeting_channel = client.get_channel(int(os.getenv("MeetingChannel_id")))
     fulltime_role = discord.utils.get(guild.roles, name = "Full Time")
-    fulltime_member_list = list(filter(lambda user: fulltime_role in user.roles, guild.members))
-    fulltime_member_list_in_voicechannel = list(filter(lambda user : fulltime_role in user.roles, voice_channel.members))
+    
+    fulltime_members = list(filter(lambda member: fulltime_role in member.roles, guild.members))
+    fulltime_members_in_voicechannel = list(filter(lambda member : fulltime_role in member.roles, meeting_channel.members))
+    not_here = list(set(fulltime_members) - set(fulltime_members_in_voicechannel))
 
-    not_here = list(set(fulltime_member_list) - set(fulltime_member_list_in_voicechannel))
-    not_here = list(filter(lambda user : (leave_interface.IsMemberWorking(user.id, datetime.today()))[0], not_here))
-    not_here = [user.display_name for user in not_here]
+    approved_leaves = list(filter(lambda member : (leave_interface.IsMemberOnLeave(member.id, datetime.today()))[0], not_here))
+    approved_leaves_names = [member.display_name for member in approved_leaves]
+    approved_leaves_reasons = [leave_interface.IsMemberOnLeave(member.id, datetime.today())[1] for member in approved_leaves]
+    approved_leaves_dict = dict(zip(approved_leaves_names, approved_leaves_reasons))
 
-    if not not_here:
-        await ctx.author.send(content="Everyone's Here!")
+    missing_members = list(filter(lambda member : not (leave_interface.IsMemberOnLeave(member.id, datetime.today())[0]), not_here))
+    missing_members = [member.display_name for member in missing_members]
+
+    embed = UI.CreateIsEveryoneHereEmbed(approved_leaves_dict, missing_members, Utilities.IsAdmin(ctx.author))
+
+    if embed != None:
+        await ctx.author.send(embed = embed)
     else:
-        await ctx.author.send(content="Users not here: " + (', '.join(not_here)))
+        await ctx.author.send(content = "your request failed, try again later")
 
     await ctx.send(content="Done", delete_after=0.1)
 
