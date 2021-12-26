@@ -84,12 +84,21 @@ async def IsEveryoneHere(ctx):
 
     guild = client.guilds[0]
     meeting_channel = client.get_channel(int(os.getenv("MeetingChannel_id")))
-    isAdmin = True if Utilities.IsAdmin(ctx.author) else False
-    approved_leaves_names, approved_leaves_reasons, unapproved_leaves = leave_interface.GetMissingMembersByRole(guild.members,
-                                                                                                                discord.utils.get(guild.roles, name = "Full Time"),
-                                                                                                                meeting_channel.members)
+    fulltime_role = discord.utils.get(guild.roles, name = "Full Time")
+    
+    fulltime_members = list(filter(lambda member: fulltime_role in member.roles, guild.members))
+    fulltime_members_in_voicechannel = list(filter(lambda member : fulltime_role in member.roles, meeting_channel.members))
+    not_here = list(set(fulltime_members) - set(fulltime_members_in_voicechannel))
 
-    embed = UI.CreateIsEveryoneHereEmbed(approved_leaves_names, approved_leaves_reasons, unapproved_leaves, isAdmin)
+    approved_leaves = list(filter(lambda member : (leave_interface.IsMemberOnLeave(member.id, datetime.today()))[0], not_here))
+    approved_leaves_names = [member.display_name for member in approved_leaves]
+    approved_leaves_reasons = [leave_interface.IsMemberOnLeave(member.id, datetime.today())[1] for member in approved_leaves]
+    approved_leaves_dict = dict(zip(approved_leaves_names, approved_leaves_reasons))
+
+    missing_members = list(filter(lambda member : not (leave_interface.IsMemberOnLeave(member.id, datetime.today())[0]), not_here))
+    missing_members = [member.display_name for member in missing_members]
+
+    embed = UI.CreateIsEveryoneHereEmbed(approved_leaves_dict, missing_members, Utilities.IsAdmin(ctx.author))
 
     if embed != None:
         await ctx.author.send(embed = embed)
