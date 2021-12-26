@@ -33,7 +33,7 @@ def GetLeaveStatus(request_id):
     return leave["leave_status"]
 
 def GetPaidLeavesForYear(member_id, year, month = None):
-    query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND YEAR(date) = {year}"
+    query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND is_unpaid = 'False' AND YEAR(date) = {year}"
     if month != None:
         query += f' AND MONTH(date) = {month}'
     db.GetDBCursor().execute(query)
