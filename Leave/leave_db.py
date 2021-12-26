@@ -32,13 +32,35 @@ def GetLeaveStatus(request_id):
     leave = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
     return leave["leave_status"]
 
-def GetEmergencyLeavesForYear(member_id, year):
-    db.GetDBCursor().execute(f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND is_emergency = 'True' AND YEAR(date) = {year}")
+def GetPaidLeavesForYear(member_id, year, month = None):
+    query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND YEAR(date) = {year}"
+    if month != None:
+        query += f' AND MONTH(date) = {month}'
+    db.GetDBCursor().execute(query)
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
 
-def GetUnpaidLeavesForYear(member_id, month, year):
-    db.GetDBCursor().execute(f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND is_unpaid = 'True' AND MONTH(date) = {month} AND YEAR(date) = {year}")
+def GetEmergencyLeavesForYear(member_id, year, month = None):
+    query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND is_emergency = 'True' AND YEAR(date) = {year}"
+    if month != None:
+        query += f' AND MONTH(date) = {month}'
+    db.GetDBCursor().execute(query)
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
+    return leaves
+
+def GetUnpaidLeavesForYear(member_id, year, month = None):
+    query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND is_unpaid = 'True' AND YEAR(date) = {year}"
+    if month != None:
+        query += f' AND MONTH(date) = {month}'
+    db.GetDBCursor().execute(query)
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
+    return leaves
+
+def GetSickLeavesForYear(member_id, year, month = None):
+    query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND leave_type = 'Sick' AND YEAR(date) = {year}"
+    if month != None:
+        query += f' AND MONTH(date) = {month}'
+    db.GetDBCursor().execute(query)
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
 
