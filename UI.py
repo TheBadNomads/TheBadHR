@@ -291,31 +291,33 @@ def CreateGetEndOfMonthCalculationsEmbed(month, year):
     )
     embed.set_thumbnail(url = os.getenv("Salary_Image"))
     embed.add_field(name = '\u200B', value = '\u200B', inline = False)
-    embed = FormatGetEndOfMonthCalculationsEmbed(embed, month, year)
-    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+
+    for member in member_db.GetMembers():
+        member_data = FormatGetEndOfMonthCalculationsEmbed(member, month, year)
+        if member_data == "":
+            continue
+        member_name = member_db.GetMemberByID(member["id"])["name"]
+        embed.add_field(name = f'**{member_name.upper()}**', value = member_data, inline = False)
+        embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+
     footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
     embed.set_footer(text = footer_text)
     return embed
 
-def FormatGetEndOfMonthCalculationsEmbed(embed, month, year):
-    member_value = ""
-    days_count_value = ""
-    deduction_percentage_value = ""
-    for index, member in enumerate(member_db.GetMembers()):
-        unpaid_leaves = leave_db.GetUnpaidLeavesForYear(member["id"], month, year)
-        precentage = utils.CalculatePercentage(utils.GetMonthDaysCount(month, year),len(unpaid_leaves))
-        member_value += f'{member["name"]}\n'
-        days_count_value += f'{len(unpaid_leaves)}\n'
-        deduction_percentage_value += f'{precentage} %\n'
-        if (index + 1) % 5 == 0:
-            member_value += '\n'
-            days_count_value += '\n'
-            deduction_percentage_value += '\n'
-
-    embed.add_field(name = "Member", value = member_value, inline = True)
-    embed.add_field(name = "Unpaid Days Count", value = days_count_value, inline = True)
-    embed.add_field(name = "Deduction Percentage", value = deduction_percentage_value, inline = True)
-    return embed
+def FormatGetEndOfMonthCalculationsEmbed(member, month, year):
+    member_data = ""
+    avg_working_days_count = 20.5
+    paid_leaves = leave_db.GetPaidLeavesForYear(member["id"], year, month)
+    unpaid_leaves = leave_db.GetUnpaidLeavesForYear(member["id"], year, month)
+    sick_leaves = leave_db.GetSickLeavesForYear(member["id"], year, month)
+    emergency_leaves = leave_db.GetEmergencyLeavesForYear(member["id"], year, month)
+    deduction_precentage_of_unpaid = utils.CalculatePercentage(avg_working_days_count, len(unpaid_leaves))
+    paid_count = len(paid_leaves) - len(unpaid_leaves)
+    member_data += f' \u200B \u200B ***Paid Leaves Taken:*** \u200B \u200B{paid_count} \u200B \u200B ***Sick:*** {len(sick_leaves)} \u200B \u200B ***Emergency:*** {len(emergency_leaves)}\n'
+    member_data += f' \u200B \u200B ***Unpaid Leaves Taken:*** \u200B \u200B{len(unpaid_leaves)}\n'
+    member_data += f' \u200B \u200B ***Unpaid Deduction Percentage:*** \u200B \u200B{deduction_precentage_of_unpaid}%\n'
+        
+    return member_data
 
 async def UpdateLeaveEmbed(member, message, embed, newStatus):
     await UpdateEmbedLeaveStatus(message, embed, newStatus)
