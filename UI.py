@@ -312,8 +312,8 @@ def FormatGetEndOfMonthCalculationsEmbed(member, month, year):
     sick_leaves = leave_db.GetSickLeavesForYear(member["id"], year, month)
     emergency_leaves = leave_db.GetEmergencyLeavesForYear(member["id"], year, month)
     deduction_precentage_of_unpaid = utils.CalculatePercentage(avg_working_days_count, len(unpaid_leaves))
-    paid_count = len(paid_leaves) - len(unpaid_leaves)
-    member_data += f' \u200B \u200B ***Paid Leaves Taken:*** \u200B \u200B{paid_count} \u200B \u200B ***Sick:*** {len(sick_leaves)} \u200B \u200B ***Emergency:*** {len(emergency_leaves)}\n'
+
+    member_data += f' \u200B \u200B ***Paid Leaves Taken:*** \u200B \u200B{len(paid_leaves)} \u200B \u200B ***Sick:*** {len(sick_leaves)} \u200B \u200B ***Emergency:*** {len(emergency_leaves)}\n'
     member_data += f' \u200B \u200B ***Unpaid Leaves Taken:*** \u200B \u200B{len(unpaid_leaves)}\n'
     member_data += f' \u200B \u200B ***Unpaid Deduction Percentage:*** \u200B \u200B{deduction_precentage_of_unpaid}%\n'
         
