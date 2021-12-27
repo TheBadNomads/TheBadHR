@@ -15,4 +15,3 @@ def Setup(client):
 def AddSchedulerJobs(scheduler):
     print("add jobs here")
     # add more jobs here
-    
