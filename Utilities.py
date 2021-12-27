@@ -3,8 +3,6 @@ import os
 import datetime
 import re
 
-from calendar import monthrange
-
 def isNotBot(member):
     return not member.bot
 
