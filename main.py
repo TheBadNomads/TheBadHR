@@ -7,7 +7,6 @@ import Scheduler
 from discord import utils
 import UI
 import db
-import Scheduler
 
 from dotenv import load_dotenv
 from discord.ext import commands
@@ -26,7 +25,6 @@ guild_ids = [int(os.getenv("TestServer_id"))]
 @client.event
 async def on_ready():
     DiscordComponents(client)
-    Scheduler.Setup(client)
     print("the bot is ready")
 
 @client.event
@@ -85,7 +83,8 @@ async def IsMemberWorking(ctx, discorduser, date = datetime.today().strftime('%d
 @slash.slash(name = "GetEndOfMonthCalculations", description = "Calculates the salary deduction percentage for the provided month", options = UI.CreateGetEndOfMonthCalculationsOptions(), guild_ids = guild_ids)
 async def GetEndOfMonthCalculations(ctx, month = datetime.now().month, year = datetime.now().year):
     if Utilities.IsAdmin(ctx.author):
-        await Scheduler.SendEndOfMonthCalculations(ctx.author, month, year)
+        embed = UI.CreateGetEndOfMonthCalculationsEmbed(month, year)
+        await ctx.author.send(embed = embed)
     else:
         await ctx.author.send(content = "This command is for Admins only")
 
@@ -134,6 +133,6 @@ async def GetLeavesBetween(ctx, startdate, enddate, discorduser = None):
     leaves = leave_interface.GetLeavesAcrossRange(startdate, enddate, discorduser)
     embed = UI.CreateLeavesAcrossRangeEmbed(leaves, startdate, enddate, Utilities.IsAdmin(ctx.author))
     await ctx.author.send(embed = embed)
-    await ctx.send(content = "Done", delete_after = 0.1)
+    await ctx.send(content = "Done", delete_after = 0.1)    
 
 client.run(os.getenv("Bot_token"))
