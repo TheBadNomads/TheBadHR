@@ -89,6 +89,16 @@ async def GetEndOfMonthReport(ctx, month = None, year = None):
 
     await ctx.send(content = "Done", delete_after = 0.1)
 
+@slash.slash(name = "GetEndOfYearCalculations", description = "Calculates the salary bonus percentage for the provided year", options = UI.CreateGetEndOfYearCalculationsOptions(), guild_ids = guild_ids)
+async def GetEndOfYearCalculations(ctx, year = datetime.now().year):
+    if Utilities.IsAdmin(ctx.author):
+        embed = UI.CreateGetEndOfYearCalculationsEmbed(year)
+        await ctx.author.send(embed = embed)
+    else:
+        await ctx.author.send(content = "This command is for Admins only")
+
+    await ctx.send(content = "Done", delete_after = 0.1)
+
 @slash.slash(name = "CreditLeaves", description = "Inserts an extra credit for the provided leave type", options = UI.CreateCreditLeavesOptions(), guild_ids = guild_ids)
 async def CreditLeaves(ctx, discorduser, leavetype, dayscount = 1, reason = ""):
     message_content = ""
