@@ -323,18 +323,14 @@ def FormatGetEndOfYearCalculationsEmbed(member, year):
     member_data = ""
     avg_working_days_count = 20.5
     paid_leaves = leave_db.GetPaidLeavesForYear(member["id"], year)
-    unpaid_leaves = leave_db.GetUnpaidLeavesForYear(member["id"], year)
     sick_leaves = leave_db.GetSickLeavesForYear(member["id"], year)
     emergency_leaves = leave_db.GetEmergencyLeavesForYear(member["id"], year)
-    deduction_precentage_of_unpaid = utils.CalculatePercentage(avg_working_days_count, len(unpaid_leaves))
     remaining_leaves_balance = leave_db.GetAnnualLeaveBalance(member["id"])
     bonus_precentage = utils.CalculatePercentage(avg_working_days_count, remaining_leaves_balance)
 
     member_data += f' \u200B \u200B ***Remaining Leaves Balance:*** \u200B \u200B{remaining_leaves_balance}\n'
     member_data += f' \u200B \u200B ***Bonus Percentage:*** \u200B \u200B{bonus_precentage}%\n'
     member_data += f' \u200B \u200B ***Paid Leaves Taken:*** \u200B \u200B{len(paid_leaves)} \u200B \u200B ***Sick:*** {len(sick_leaves)} \u200B \u200B ***Emergency:*** {len(emergency_leaves)}\n'
-    member_data += f' \u200B \u200B ***Unpaid Leaves Taken:*** \u200B \u200B{len(unpaid_leaves)}\n'
-    member_data += f' \u200B \u200B ***Unpaid Deduction Percentage:*** \u200B \u200B{deduction_precentage_of_unpaid}%\n'
         
     return member_data
 
