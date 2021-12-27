@@ -246,8 +246,19 @@ def CreateGetEndOfMonthReportOptions():
             choices = CreateYearChoices()
         )
     ]
-
     return end_of_month_Report_options
+
+def CreateGetEndOfYearCalculationsOptions():
+    end_of_year_calculations_options = [
+        create_option(
+            name = "year",
+            description = "number of the desired year (optional) leave empty for current year",
+            option_type = SlashCommandOptionType.INTEGER,
+            required = False
+        )
+    ]
+
+    return end_of_year_calculations_options
     
 def CreateGetEndOfMonthReportEmbed(members_list, month = None, year = None):
     month = month or datetime.datetime.now().month
@@ -285,6 +296,48 @@ def FormatGetEndOfMonthReportEmbed(member, start_date, end_date):
     member_data += f' \u200B \u200B ***Unpaid Deduction Percentage:*** \u200B \u200B{deduction_precentage_of_unpaid}%\n'
         
     return member_data
+
+def CreateGetEndOfYearCalculationsEmbed(year = None):
+    year = year or datetime.datetime.now().year
+    embed = discord.Embed(
+        title = f'End of Month Calculations',
+        description = f'{year} Calculations:',
+        colour = 0x4682B4
+    )
+    embed.set_thumbnail(url = os.getenv("Salary_Image"))
+    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+
+    for member in member_db.GetMembers():
+        member_data = FormatGetEndOfMonthCalculationsEmbed(member, year)
+        if member_data == "":
+            continue
+        member_name = member_db.GetMemberByID(member["id"])["name"]
+        embed.add_field(name = f'**{member_name.upper()}**', value = member_data, inline = False)
+        embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    embed.set_footer(text = footer_text)
+    return embed
+
+def FormatGetEndOfYearCalculationsEmbed(member, year):
+    member_data = ""
+    avg_working_days_count = 20.5
+    paid_leaves = leave_db.GetPaidLeavesForYear(member["id"], year)
+    unpaid_leaves = leave_db.GetUnpaidLeavesForYear(member["id"], year)
+    sick_leaves = leave_db.GetSickLeavesForYear(member["id"], year)
+    emergency_leaves = leave_db.GetEmergencyLeavesForYear(member["id"], year)
+    deduction_precentage_of_unpaid = utils.CalculatePercentage(avg_working_days_count, len(unpaid_leaves))
+    remaining_leaves_balance = leave_db.GetAnnualLeaveBalance(member.id)
+    bonus_precentage = utils.CalculatePercentage(avg_working_days_count, remaining_leaves_balance)
+
+    member_data += f' \u200B \u200B ***Remaining Leaves Balance:*** \u200B \u200B{len(remaining_leaves_balance)}\n'
+    member_data += f' \u200B \u200B ***Bonus Percentage:*** \u200B \u200B{len(bonus_precentage)}\n'
+    member_data += f' \u200B \u200B ***Paid Leaves Taken:*** \u200B \u200B{len(paid_leaves)} \u200B \u200B ***Sick:*** {len(sick_leaves)} \u200B \u200B ***Emergency:*** {len(emergency_leaves)}\n'
+    member_data += f' \u200B \u200B ***Unpaid Leaves Taken:*** \u200B \u200B{len(unpaid_leaves)}\n'
+    member_data += f' \u200B \u200B ***Unpaid Deduction Percentage:*** \u200B \u200B{deduction_precentage_of_unpaid}%\n'
+        
+    return member_data
+
 
 async def UpdateLeaveEmbed(member, message, embed, newStatus):
     await UpdateEmbedLeaveStatus(message, embed, newStatus)
