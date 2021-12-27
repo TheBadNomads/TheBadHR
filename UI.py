@@ -308,7 +308,7 @@ def CreateGetEndOfYearCalculationsEmbed(year = None):
     embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
     for member in member_db.GetMembers():
-        member_data = FormatGetEndOfMonthCalculationsEmbed(member, year)
+        member_data = FormatGetEndOfYearCalculationsEmbed(member, year)
         if member_data == "":
             continue
         member_name = member_db.GetMemberByID(member["id"])["name"]
@@ -327,7 +327,7 @@ def FormatGetEndOfYearCalculationsEmbed(member, year):
     sick_leaves = leave_db.GetSickLeavesForYear(member["id"], year)
     emergency_leaves = leave_db.GetEmergencyLeavesForYear(member["id"], year)
     deduction_precentage_of_unpaid = utils.CalculatePercentage(avg_working_days_count, len(unpaid_leaves))
-    remaining_leaves_balance = leave_db.GetAnnualLeaveBalance(member.id)
+    remaining_leaves_balance = leave_db.GetAnnualLeaveBalance(member["id"])
     bonus_precentage = utils.CalculatePercentage(avg_working_days_count, remaining_leaves_balance)
 
     member_data += f' \u200B \u200B ***Remaining Leaves Balance:*** \u200B \u200B{len(remaining_leaves_balance)}\n'
