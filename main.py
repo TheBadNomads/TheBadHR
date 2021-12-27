@@ -133,6 +133,6 @@ async def GetLeavesBetween(ctx, startdate, enddate, discorduser = None):
     leaves = leave_interface.GetLeavesAcrossRange(startdate, enddate, discorduser)
     embed = UI.CreateLeavesAcrossRangeEmbed(leaves, startdate, enddate, Utilities.IsAdmin(ctx.author))
     await ctx.author.send(embed = embed)
-    await ctx.send(content = "Done", delete_after = 0.1)    
+    await ctx.send(content = "Done", delete_after = 0.1)
 
 client.run(os.getenv("Bot_token"))
