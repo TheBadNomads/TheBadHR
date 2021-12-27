@@ -230,7 +230,9 @@ def CreateGetEndOfMonthCalculationsOptions():
 
     return end_of_month_calculations_options
     
-def CreateGetEndOfMonthCalculationsEmbed(month, year):
+def CreateGetEndOfMonthCalculationsEmbed(month = None, year = None):
+    month = month or datetime.datetime.now().month
+    year = year or datetime.datetime.now().year
     embed = discord.Embed(
         title = f'End of Month Calculations',
         description = f'{month}/{year} Calculations:',
