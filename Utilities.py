@@ -1,7 +1,7 @@
 import discord
 import os
 import datetime
-import re
+import re 
 
 def isNotBot(member):
     return not member.bot
