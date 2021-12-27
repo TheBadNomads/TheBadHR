@@ -100,11 +100,7 @@ async def IsEveryoneHere(ctx):
 
     embed = UI.CreateIsEveryoneHereEmbed(approved_leaves_dict, missing_members, Utilities.IsAdmin(ctx.author))
 
-    if embed != None:
-        await ctx.author.send(embed = embed)
-    else:
-        await ctx.author.send(content = "your request failed, try again later")
-
+    await ctx.author.send(embed = embed)
     await ctx.send(content="Done", delete_after=0.1)
 
 @slash.slash(name = "CreditLeaves", description = "Inserts an extra credit for the provided leave type", options = UI.CreateCreditLeavesOptions(), guild_ids = guild_ids)
