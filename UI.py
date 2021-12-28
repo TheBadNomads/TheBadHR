@@ -306,10 +306,10 @@ def CreateGetEndOfMonthReportEmbed(month = None, year = None):
 
 def FormatGetEndOfMonthReportEmbed(member, month, year):
     member_data = ""
-    paid_leaves = leave_db.GetPaidLeavesForYear(member["id"], year, month)
-    unpaid_leaves = leave_db.GetUnpaidLeavesForYear(member["id"], year, month)
-    sick_leaves = leave_db.GetSickLeavesForYear(member["id"], year, month)
-    emergency_leaves = leave_db.GetEmergencyLeavesForYear(member["id"], year, month)
+    paid_leaves = leave_db.GetPaidLeaves(member["id"], year, month)
+    unpaid_leaves = leave_db.GetUnpaidLeaves(member["id"], year, month)
+    sick_leaves = leave_db.GetSickLeaves(member["id"], year, month)
+    emergency_leaves = leave_db.GetEmergencyLeaves(member["id"], year, month)
     deduction_precentage_of_unpaid = utils.CalculatePercentage(int(os.getenv("Average_Working_Days_Count")), len(unpaid_leaves))
 
     member_data += f' \u200B \u200B ***Paid Leaves Taken:*** \u200B \u200B{len(paid_leaves)} \u200B \u200B ***Sick:*** {len(sick_leaves)} \u200B \u200B ***Emergency:*** {len(emergency_leaves)}\n'
@@ -447,6 +447,6 @@ def ParseEmoji(emoji):
     return reaction_emojis[emoji_str]
 
 def GetEmergencyBalance(member_id):
-    requested_emergency_count = len(leave_db.GetEmergencyLeavesForYear(member_id, datetime.date.today().year))
+    requested_emergency_count = len(leave_db.GetEmergencyLeaves(member_id, datetime.date.today().year))
     max_emergency_count = int(os.getenv("Emergency_Leaves_Max_Count"))
     return (max_emergency_count - requested_emergency_count)
