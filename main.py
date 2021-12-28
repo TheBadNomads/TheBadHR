@@ -82,6 +82,9 @@ async def IsMemberWorking(ctx, discorduser, date = datetime.today().strftime('%d
 @slash.slash(name="IsEveryoneHere", description="Checks if all working 'Full Time' members are in voice channel", guild_ids=guild_ids)
 async def IsEveryoneHere(ctx):
 
+    today = datetime.today().date()
+    today = datetime(today.year, today.month, today.day)
+
     guild = client.guilds[0]
     meeting_channel = client.get_channel(int(os.getenv("MeetingChannel_id")))
     fulltime_role = discord.utils.get(guild.roles, name = "Full Time")
@@ -90,14 +93,14 @@ async def IsEveryoneHere(ctx):
     fulltime_members_in_voicechannel = list(filter(lambda member : fulltime_role in member.roles, meeting_channel.members))
     not_here = list(set(fulltime_members) - set(fulltime_members_in_voicechannel))
 
-    approved_leaves = list(filter(lambda member : (leave_interface.IsMemberOnLeave(member.id, datetime.today()))[0], not_here))
+    approved_leaves = list(filter(lambda member : (leave_interface.IsMemberOnLeave(member.id, today))[0], not_here))
     approved_leaves_names = [member.display_name for member in approved_leaves]
-    approved_leaves_reasons = [leave_interface.IsMemberOnLeave(member.id, datetime.today())[1] for member in approved_leaves]
+    approved_leaves_reasons = [leave_interface.IsMemberOnLeave(member.id, today)[1] for member in approved_leaves]
     approved_leaves_dict = dict(zip(approved_leaves_names, approved_leaves_reasons))
 
-    missing_members = list(filter(lambda member : not (leave_interface.IsMemberOnLeave(member.id, datetime.today())[0]), not_here))
+    missing_members = list(set(not_here) - set(approved_leaves))
     missing_members = [member.display_name for member in missing_members]
-
+    
     embed = UI.CreateIsEveryoneHereEmbed(approved_leaves_dict, missing_members, Utilities.IsAdmin(ctx.author))
 
     await ctx.author.send(embed = embed)
