@@ -309,8 +309,8 @@ def CreateGetEndOfYearReportEmbed(members_list, year = None):
     embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
     for member in members_list:
-        start_date = datetime.datetime(year)
-        end_date = datetime.datetime(year + 1)
+        start_date = datetime.datetime(year, 1, 1)
+        end_date = datetime.datetime(year + 1, 1, 1)
         member_data = FormatGetEndOfYearReportEmbed(member, start_date, end_date)
         if member_data == "":
             continue
