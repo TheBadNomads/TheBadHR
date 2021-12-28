@@ -257,7 +257,7 @@ def FormatGetEndOfMonthReportEmbed(member, month, year):
     unpaid_leaves = leave_db.GetUnpaidLeaves(member["id"], year, month)
     sick_leaves = leave_db.GetSickLeaves(member["id"], year, month)
     emergency_leaves = leave_db.GetEmergencyLeaves(member["id"], year, month)
-    deduction_precentage_of_unpaid = utils.CalculatePercentage(int(os.getenv("Average_Working_Days_Count")), len(unpaid_leaves))
+    deduction_precentage_of_unpaid = utils.CalculatePercentage(float(os.getenv("Average_Working_Days_Count")), len(unpaid_leaves))
 
     member_data += f' \u200B \u200B ***Paid Leaves Taken:*** \u200B \u200B{len(paid_leaves)} \u200B \u200B ***Sick:*** {len(sick_leaves)} \u200B \u200B ***Emergency:*** {len(emergency_leaves)}\n'
     member_data += f' \u200B \u200B ***Unpaid Leaves Taken:*** \u200B \u200B{len(unpaid_leaves)}\n'
