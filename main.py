@@ -89,10 +89,10 @@ async def GetEndOfMonthReport(ctx, month = None, year = None):
 
     await ctx.send(content = "Done", delete_after = 0.1)
 
-@slash.slash(name = "GetEndOfYearCalculations", description = "Calculates the salary bonus percentage for the provided year", options = UI.CreateGetEndOfYearCalculationsOptions(), guild_ids = guild_ids)
+@slash.slash(name = "GetEndOfYearCalculations", description = "Calculates the salary bonus percentage for the provided year", options = UI.CreateGetEndOfYearReportOptions(), guild_ids = guild_ids)
 async def GetEndOfYearCalculations(ctx, year = datetime.now().year):
     if Utilities.IsAdmin(ctx.author):
-        embed = UI.CreateGetEndOfYearCalculationsEmbed(year)
+        embed = UI.CreateGetEndOfYearReportEmbed(year)
         await ctx.author.send(embed = embed)
     else:
         await ctx.author.send(content = "This command is for Admins only")
