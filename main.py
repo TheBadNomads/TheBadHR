@@ -81,9 +81,9 @@ async def IsMemberWorking(ctx, discorduser, date = datetime.today().strftime('%d
     await ctx.send(content = "Done", delete_after = 0.1)
 
 @slash.slash(name = "GetEndOfMonthReport", description = "Calculates the salary deduction percentage for the provided month", options = UI.CreateGetEndOfMonthReportOptions(), guild_ids = guild_ids)
-async def GetEndOfMonthReport(ctx, month = datetime.now().month, year = datetime.now().year):
+async def GetEndOfMonthReport(ctx, month = None, year = None):
     if Utilities.IsAdmin(ctx.author):
-        embed = UI.CreateGetEndOfMonthReportEmbed(month, year)
+        embed = UI.CreateGetEndOfMonthReportEmbed(member_db.GetMembers(), month, year)
         await ctx.author.send(embed = embed)
     else:
         await ctx.author.send(content = "This command is for Admins only")
