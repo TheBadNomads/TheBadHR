@@ -1,7 +1,8 @@
 import discord
 import os
 import datetime
-import re 
+import re
+from calendar import monthrange 
 
 def isNotBot(member):
     return not member.bot
@@ -60,6 +61,9 @@ def IsUnpaidLeave(leave_type, leave_balance, is_emergency, remaining_emergency_c
 
 def GetDatesOfLeaves(leaves_array):
     return ([d['date'] for d in leaves_array])
+
+def GetMonthDaysCount(month, year):
+    return monthrange(year, month)[1]
 
 def CalculatePercentage(total, actual):
     return "{:.2f}".format((actual * 100) / total)
