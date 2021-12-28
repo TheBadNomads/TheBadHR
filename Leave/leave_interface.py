@@ -66,20 +66,33 @@ async def HandleLeaveReactions(client, payload):
         if not (leave_db.IsLeaveRequestPending(payload.message_id)):
             leave_db.UpdateLeaveStatus(payload.message_id, "Pending")
             await UI.UpdateLeaveEmbed(payload.member, message, embed, "Pending")
-            await InformMemberAboutLeaveStatus(client, embed, action)
+            await InformMemberAboutLeaveStatus(client, embed, payload.member, action)
             await message.clear_reactions()
             await AddEmojisToLeaveMessage(message)
     elif leave_db.IsLeaveRequestPending(payload.message_id):
         try:
             leave_db.UpdateLeaveStatus(payload.message_id, action)
             await UI.UpdateLeaveEmbed(payload.member, message, embed, action)
-            await InformMemberAboutLeaveStatus(client, embed, action)
+            await InformMemberAboutLeaveStatus(client, embed, payload.member, action)
         except Exception as e:
             print(e)
 
-async def InformMemberAboutLeaveStatus(client, embed, status):
+async def InformMemberAboutLeaveStatus(client, embed, admin, status):
     member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
-    await member.send(content = "Your request was " + status)
+
+    embed_dict = embed.to_dict()
+    for field in embed_dict["fields"]:
+        if field["name"].lower() == "reason":
+            reason = field["value"]
+        if field["name"].lower() == "leave type":
+            leave_type = field["value"]
+        if field["name"].lower() == "start date":
+            start_date = datetime.datetime.strptime(field["value"], '%Y-%m-%d')
+        if field["name"].lower() == "end date":
+            end_date = datetime.datetime.strptime(field["value"], '%Y-%m-%d')
+
+    replyembed = UI.CreateInformMemberOfLeaveStatusEmbed(status, admin.display_name, reason, leave_type, start_date, end_date)
+    await member.send(embed = replyembed)
 
 def GetRequestedLeavesBetween(member_id, start_date, end_date):
     work_days = utils.GetWorkDays(start_date, end_date)

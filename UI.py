@@ -193,6 +193,33 @@ def CreateLeavesBalancesEmbed(member_id):
         print(e)
         return None
 
+def CreateInformMemberOfLeaveStatusEmbed(status, admin_name, reason, leave_type, start_date, end_date):
+    leaveImages = {
+    "Annual"   : os.getenv("Annual_Leave_Link"),
+    "Sick"     : os.getenv("Sick_Leave_Link"),
+    }
+    embed = discord.Embed(
+        title = f'Leave Request Status',
+        description = f'Your request was ' + status.lower(),
+        colour = 0x4682B4
+    )
+    if reason == "":
+        reason = "None"
+        
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+
+    embed.set_thumbnail(url = leaveImages[leave_type])
+    embed.add_field(name = "Leave Type", value = leave_type, inline = False)
+    embed.add_field(name = "Start Date", value = start_date.date(), inline = True)
+    embed.add_field(name = "End Date", value = end_date.date(), inline = True)
+    embed.add_field(name = "No. of Days", value = len(utils.GetWorkDays(start_date, end_date)), inline = True)
+    embed.add_field(name = "Reason", value = reason, inline = False)
+    embed.add_field(name = "Status", value = status, inline = True)
+    embed.add_field(name = "Approved/Rejected by", value = admin_name, inline = True)
+    embed.set_footer(text = footer_text)
+    
+    return embed
+
 def CreateIsMemberWorkingOptions():
     member_options = [
         create_option(
