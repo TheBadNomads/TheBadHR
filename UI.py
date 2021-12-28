@@ -212,8 +212,8 @@ def CreateIsMemberWorkingOptions():
 
     return member_options
 
-def CreateGetEndOfMonthCalculationsOptions():
-    end_of_month_calculations_options = [
+def CreateGetEndOfMonthReportOptions():
+    end_of_month_Report_options = [
         create_option(
             name = "month",
             description = "number of the desired month (optional) leave empty for current month",
@@ -228,21 +228,21 @@ def CreateGetEndOfMonthCalculationsOptions():
         )
     ]
 
-    return end_of_month_calculations_options
+    return end_of_month_Report_options
     
-def CreateGetEndOfMonthCalculationsEmbed(month = None, year = None):
+def CreateGetEndOfMonthReportEmbed(month = None, year = None):
     month = month or datetime.datetime.now().month
     year = year or datetime.datetime.now().year
     embed = discord.Embed(
-        title = f'End of Month Calculations',
-        description = f'{month}/{year} Calculations:',
+        title = f'End of Month Report',
+        description = f'{month}/{year} Report:',
         colour = 0x4682B4
     )
     embed.set_thumbnail(url = os.getenv("Salary_Image"))
     embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
     for member in member_db.GetMembers():
-        member_data = FormatGetEndOfMonthCalculationsEmbed(member, month, year)
+        member_data = FormatGetEndOfMonthReportEmbed(member, month, year)
         if member_data == "":
             continue
         member_name = member_db.GetMemberByID(member["id"])["name"]
@@ -253,7 +253,7 @@ def CreateGetEndOfMonthCalculationsEmbed(month = None, year = None):
     embed.set_footer(text = footer_text)
     return embed
 
-def FormatGetEndOfMonthCalculationsEmbed(member, month, year):
+def FormatGetEndOfMonthReportEmbed(member, month, year):
     member_data = ""
     avg_working_days_count = 20.5
     paid_leaves = leave_db.GetPaidLeavesForYear(member["id"], year, month)
