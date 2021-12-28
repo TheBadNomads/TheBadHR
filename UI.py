@@ -243,8 +243,6 @@ def CreateGetEndOfMonthReportEmbed(month = None, year = None):
 
     for member in member_db.GetMembers():
         member_data = FormatGetEndOfMonthReportEmbed(member, month, year)
-        if member_data == "":
-            continue
         member_name = member_db.GetMemberByID(member["id"])["name"]
         embed.add_field(name = f'**{member_name.upper()}**', value = member_data, inline = False)
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
@@ -255,12 +253,11 @@ def CreateGetEndOfMonthReportEmbed(month = None, year = None):
 
 def FormatGetEndOfMonthReportEmbed(member, month, year):
     member_data = ""
-    avg_working_days_count = 20.5
     paid_leaves = leave_db.GetPaidLeavesForYear(member["id"], year, month)
     unpaid_leaves = leave_db.GetUnpaidLeavesForYear(member["id"], year, month)
     sick_leaves = leave_db.GetSickLeavesForYear(member["id"], year, month)
     emergency_leaves = leave_db.GetEmergencyLeavesForYear(member["id"], year, month)
-    deduction_precentage_of_unpaid = utils.CalculatePercentage(avg_working_days_count, len(unpaid_leaves))
+    deduction_precentage_of_unpaid = utils.CalculatePercentage(int(os.getenv("Average_Working_Days_Count")), len(unpaid_leaves))
 
     member_data += f' \u200B \u200B ***Paid Leaves Taken:*** \u200B \u200B{len(paid_leaves)} \u200B \u200B ***Sick:*** {len(sick_leaves)} \u200B \u200B ***Emergency:*** {len(emergency_leaves)}\n'
     member_data += f' \u200B \u200B ***Unpaid Leaves Taken:*** \u200B \u200B{len(unpaid_leaves)}\n'
