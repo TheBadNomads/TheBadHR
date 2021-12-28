@@ -252,9 +252,10 @@ def CreateGetEndOfYearReportOptions():
     end_of_year_Report_options = [
         create_option(
             name = "year",
-            description = "number of the desired year (optional) leave empty for current year",
+            description = "(optional) leave empty for current year",
             option_type = SlashCommandOptionType.INTEGER,
-            required = False
+            required = False,
+            choices = CreateYearChoices()
         )
     ]
 
@@ -297,7 +298,7 @@ def FormatGetEndOfMonthReportEmbed(member, start_date, end_date):
         
     return member_data
 
-def CreateGetEndOfYearReportEmbed(year = None):
+def CreateGetEndOfYearReportEmbed(members_list, year = None):
     year = year or datetime.datetime.now().year
     embed = discord.Embed(
         title = f'End of Year Report',
@@ -307,8 +308,10 @@ def CreateGetEndOfYearReportEmbed(year = None):
     embed.set_thumbnail(url = os.getenv("Salary_Image"))
     embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
-    for member in member_db.GetMembers():
-        member_data = FormatGetEndOfYearReportEmbed(member, year)
+    for member in members_list:
+        start_date = datetime.datetime(year)
+        end_date = datetime.datetime(year + 1)
+        member_data = FormatGetEndOfYearReportEmbed(member, start_date, end_date)
         if member_data == "":
             continue
         member_name = member_db.GetMemberByID(member["id"])["name"]
@@ -319,11 +322,11 @@ def CreateGetEndOfYearReportEmbed(year = None):
     embed.set_footer(text = footer_text)
     return embed
 
-def FormatGetEndOfYearReportEmbed(member, year):
+def FormatGetEndOfYearReportEmbed(member, start_date, end_date):
     member_data = ""
-    paid_leaves = leave_db.GetPaidLeaves(member["id"], year)
-    sick_leaves = leave_db.GetSickLeaves(member["id"], year)
-    emergency_leaves = leave_db.GetEmergencyLeaves(member["id"], year)
+    paid_leaves = leave_db.GetPaidLeaves(member["id"], start_date, end_date)
+    sick_leaves = leave_db.GetSickLeaves(member["id"], start_date, end_date)
+    emergency_leaves = leave_db.GetEmergencyLeaves(member["id"], start_date, end_date)
     remaining_leaves_balance = leave_db.GetAnnualLeaveBalance(member["id"])
     bonus_precentage = utils.CalculatePercentage(float(os.getenv("Average_Working_Days_Count")), remaining_leaves_balance)
 
