@@ -1,5 +1,6 @@
 import Utilities as utils
 import datetime
+import os
 
 from db import db
 from Member import member_db
@@ -115,4 +116,11 @@ def IsLeaveRequestPending(message_id):
     if IsLeaveRequest(message_id):
         return GetLeaveStatus(message_id).lower() == "pending"
     
-    return False    
+    return False
+
+def GetRemainingEmergencyLeavesCount(member_id):
+    start_date = datetime.datetime(datetime.date.today().year)
+    end_date = datetime.datetime(datetime.date.today().year + 1)
+    requested_emergency_count = len(GetEmergencyLeaves(member_id, start_date, end_date))
+    max_emergency_count = int(os.getenv("Emergency_Leaves_Max_Count"))
+    return (max_emergency_count - requested_emergency_count)

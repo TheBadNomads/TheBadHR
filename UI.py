@@ -204,7 +204,7 @@ def CreateLeavesBalancesEmbed(member, author_id):
 
         embed.add_field(name = "Annual", value = leave_db.GetAnnualLeaveBalance(member.id, inline = True))
         embed.add_field(name = '\u200B', value = '\u200B', inline = True)
-        embed.add_field(name = "Emergency", value = max(GetEmergencyBalance(member.id), 0), inline = True)
+        embed.add_field(name = "Emergency", value = max(leave_db.GetRemainingEmergencyLeavesCount(member.id), 0), inline = True)
 
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
         embed.set_footer(text = datetime.date.today())
@@ -314,9 +314,7 @@ def CreateGetEndOfMonthReportEmbed(members_list, month = None, year = None):
     embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
     for member in members_list:
-        start_date = datetime.datetime(year, month, 1)
-        end_date = datetime.datetime(year, month, utils.GetMonthDaysCount(month, year))
-        member_data = FormatGetEndOfMonthReportEmbed(member, start_date, end_date)
+        member_data = FormatGetEndOfMonthReportEmbed(member, month, year)
         member_name = member_db.GetMemberByID(member["id"])["name"]
         embed.add_field(name = f'**{member_name.upper()}**', value = member_data, inline = False)
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
@@ -325,8 +323,10 @@ def CreateGetEndOfMonthReportEmbed(members_list, month = None, year = None):
     embed.set_footer(text = footer_text)
     return embed
 
-def FormatGetEndOfMonthReportEmbed(member, start_date, end_date):
+def FormatGetEndOfMonthReportEmbed(member, month, year):
     member_data = ""
+    start_date = datetime.datetime(year, month, 1)
+    end_date = datetime.datetime(year, month, utils.GetMonthDaysCount(month, year))
     paid_leaves = leave_db.GetPaidLeaves(member["id"], start_date, end_date)
     unpaid_leaves = leave_db.GetUnpaidLeaves(member["id"], start_date, end_date)
     sick_leaves = leave_db.GetSickLeaves(member["id"], start_date, end_date)
@@ -466,10 +466,3 @@ def ParseEmoji(emoji):
     reaction_emojis = defaultdict(None, **reaction_emojis)
 
     return reaction_emojis[emoji_str]
-
-def GetEmergencyBalance(member_id):
-    start_date = datetime.datetime(datetime.date.today().year)
-    end_date = datetime.datetime(datetime.date.today().year + 1)
-    requested_emergency_count = len(leave_db.GetEmergencyLeaves(member_id, start_date, end_date))
-    max_emergency_count = int(os.getenv("Emergency_Leaves_Max_Count"))
-    return (max_emergency_count - requested_emergency_count)
