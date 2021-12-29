@@ -79,7 +79,7 @@ async def IsMemberWorking(ctx, discorduser, date = datetime.today().strftime('%d
 
     await ctx.send(content = "Done", delete_after = 0.1)
 
-@slash.slash(name="IsEveryoneHere", description="Checks if all working 'Full Time' members are in voice channel", guild_ids=guild_ids)
+@slash.slash(name="IsEveryoneHere", description = "Checks if all working 'Full Time' members are in the meeting channel", guild_ids = guild_ids)
 async def IsEveryoneHere(ctx):
 
     today = datetime.today().date()
