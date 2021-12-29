@@ -16,7 +16,6 @@ def Setup(client):
 def AddSchedulerJobs(scheduler):
     scheduler.add_job(GetEndofMonthReport, "cron", day = int(os.getenv("End_of_Month_Report_Day")), hour = int(os.getenv("End_of_Month_Report_Hour")), minute = int(os.getenv("End_of_Month_Report_Minute")))
     scheduler.add_job(GetEndofYearReport, "cron", month = int(os.getenv("End_of_Year_Report_Month")), day = int(os.getenv("End_of_Year_Report_Day")), hour = int(os.getenv("End_of_Year_Report_Hour")), minute = int(os.getenv("End_of_Year_Report_Minute")))
-    # add more jobs here
 
 async def GetEndofMonthReport():
     finance_admins_ids = os.getenv("Finance_Admins_ids").split(",")
