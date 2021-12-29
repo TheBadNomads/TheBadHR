@@ -66,20 +66,30 @@ async def HandleLeaveReactions(client, payload):
         if not (leave_db.IsLeaveRequestPending(payload.message_id)):
             leave_db.UpdateLeaveStatus(payload.message_id, "Pending")
             await UI.UpdateLeaveEmbed(payload.member, message, embed, "Pending")
-            await InformMemberAboutLeaveStatus(client, embed, action)
+            await InformMemberAboutLeaveStatus(client, payload.message_id, embed, payload.member, action)
             await message.clear_reactions()
             await AddEmojisToLeaveMessage(message)
     elif leave_db.IsLeaveRequestPending(payload.message_id):
         try:
             leave_db.UpdateLeaveStatus(payload.message_id, action)
             await UI.UpdateLeaveEmbed(payload.member, message, embed, action)
-            await InformMemberAboutLeaveStatus(client, embed, action)
+            await InformMemberAboutLeaveStatus(client, payload.message_id, embed, payload.member, action)
         except Exception as e:
             print(e)
 
-async def InformMemberAboutLeaveStatus(client, embed, status):
+async def InformMemberAboutLeaveStatus(client, request_id, embed, admin, status):
     member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
-    await member.send(content = "Your request was " + status)
+
+    reason = utils.GetFieldFromEmbed(embed, "reason")
+    leave_type = utils.GetFieldFromEmbed(embed, "leave type")
+    start_date = utils.GetFieldFromEmbed(embed, "start date")
+    end_date = utils.GetFieldFromEmbed(embed, "end date")
+
+    start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+    end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')
+
+    reply_embed = UI.CreateInformMemberOfLeaveStatusEmbed(request_id, status, admin.display_name, reason, leave_type, start_date, end_date)
+    await member.send(embed = reply_embed)
 
 def GetRequestedLeavesBetween(member_id, start_date, end_date):
     work_days = utils.GetWorkDays(start_date, end_date)

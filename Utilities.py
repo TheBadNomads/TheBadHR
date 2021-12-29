@@ -60,3 +60,9 @@ def IsUnpaidLeave(leave_type, leave_balance, is_emergency, remaining_emergency_c
 
 def GetDatesOfLeaves(leaves_array):
     return ([d['date'] for d in leaves_array])
+
+def GetFieldFromEmbed(embed, field_name):
+    embed_dict = embed.to_dict()
+    for field in embed_dict["fields"]:
+        if field["name"].lower() == field_name.lower():
+            return field["value"]
