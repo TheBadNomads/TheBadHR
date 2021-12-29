@@ -3,7 +3,6 @@ import UI
 
 from datetime import datetime
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.cron import CronTrigger
 from Member import member_db 
 
 def Setup(client):
