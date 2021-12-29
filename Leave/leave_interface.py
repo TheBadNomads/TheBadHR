@@ -80,16 +80,13 @@ async def HandleLeaveReactions(client, payload):
 async def InformMemberAboutLeaveStatus(client, embed, admin, status):
     member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
 
-    embed_dict = embed.to_dict()
-    for field in embed_dict["fields"]:
-        if field["name"].lower() == "reason":
-            reason = field["value"]
-        if field["name"].lower() == "leave type":
-            leave_type = field["value"]
-        if field["name"].lower() == "start date":
-            start_date = datetime.datetime.strptime(field["value"], '%Y-%m-%d')
-        if field["name"].lower() == "end date":
-            end_date = datetime.datetime.strptime(field["value"], '%Y-%m-%d')
+    reason = utils.GetFieldFromEmbed(embed, "reason")
+    leave_type = utils.GetFieldFromEmbed(embed, "leave type")
+    start_date = utils.GetFieldFromEmbed(embed, "start date")
+    end_date = utils.GetFieldFromEmbed(embed, "end date")
+
+    start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+    end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')
 
     reply_embed = UI.CreateInformMemberOfLeaveStatusEmbed(status, admin.display_name, reason, leave_type, start_date, end_date)
     await member.send(embed = reply_embed)
