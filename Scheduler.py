@@ -17,15 +17,15 @@ def AddSchedulerJobs(scheduler):
     scheduler.add_job(GetEndofYearReport, "cron", month = int(os.getenv("End_of_Year_Report_Month")), day = int(os.getenv("End_of_Year_Report_Day")), hour = int(os.getenv("End_of_Year_Report_Hour")), minute = int(os.getenv("End_of_Year_Report_Minute")))
 
 async def GetEndofMonthReport():
-    finance_admins_ids = os.getenv("Finance_Admins_ids").split(",")
+    finance_admins_ids = os.getenv("Finance_Admins_ids").split(", ")
+    embed = UI.CreateGetEndOfMonthReportEmbed(member_db.GetMembers())
     for id in finance_admins_ids:
         admin = await bot.fetch_user(int(id))
-        embed = UI.CreateGetEndOfMonthReportEmbed(member_db.GetMembers())
         await admin.send(embed = embed)
 
 async def GetEndofYearReport():
-    finance_admins_ids = os.getenv("Finance_Admins_ids").split(",")
+    finance_admins_ids = os.getenv("Finance_Admins_ids").split(", ")
+    embed = UI.CreateGetEndOfYearReportEmbed(member_db.GetMembers())
     for id in finance_admins_ids:
         admin = await bot.fetch_user(int(id))
-        embed = UI.CreateGetEndOfYearReportEmbed(member_db.GetMembers())
         await admin.send(embed = embed)
