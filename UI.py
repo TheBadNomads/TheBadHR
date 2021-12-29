@@ -227,7 +227,8 @@ def CreateIsEveryoneHereEmbed(approved_dict, missing_members, isAdmin):
         if isAdmin:
             embed.add_field(name = "Reasons", value = '\n'.join(approved_dict.values()), inline = True)
 
-    embed.set_footer(text = datetime.date.today())
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    embed.set_footer(text = footer_text)
     return embed
     
 async def UpdateLeaveEmbed(member, message, embed, newStatus):
