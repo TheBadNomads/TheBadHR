@@ -19,9 +19,11 @@ def AddSchedulerJobs(scheduler):
     # add more jobs here
 
 async def GetEndofMonthReport():
-    finance_admin = await bot.fetch_user(int(os.getenv("Finance_Admin_id")))
-    embed = UI.CreateGetEndOfMonthReportEmbed(member_db.GetMembers())
-    await finance_admin.send(embed = embed)
+    finance_admins_ids = os.getenv("Finance_Admins_ids").split(",")
+    for id in finance_admins_ids:
+        admin = await bot.fetch_user(int(id))
+        embed = UI.CreateGetEndOfMonthReportEmbed(member_db.GetMembers())
+        await admin.send(embed = embed)
 
 async def GetEndofYearReport():
     finance_admin = await bot.fetch_user(int(os.getenv("Finance_Admin_id")))
