@@ -330,7 +330,7 @@ def FormatGetEndOfYearReportEmbed(member, start_date, end_date):
     remaining_leaves_balance = leave_db.GetAnnualLeaveBalance(member["id"])
     bonus_precentage = utils.CalculatePercentage(float(os.getenv("Average_Working_Days_Count")), remaining_leaves_balance)
 
-    member_data += f' \u200B \u200B ***Paid Leaves Taken:*** \u200B \u200B{len(paid_leaves)} \u200B \u200B ***Sick:*** {len(sick_leaves)} \u200B \u200B ***Emergency:*** {len(emergency_leaves)}\n'
+    member_data += f' \u200B \u200B ***Yearly Paid Leaves Taken:*** \u200B \u200B{len(paid_leaves)} \u200B \u200B ***Sick:*** {len(sick_leaves)} \u200B \u200B ***Emergency:*** {len(emergency_leaves)}\n'
     member_data += f' \u200B \u200B ***Remaining Leaves Balance:*** \u200B \u200B{remaining_leaves_balance}\n'
     member_data += f' \u200B \u200B ***Bonus Percentage:*** \u200B \u200B{bonus_precentage}%\n'
         
