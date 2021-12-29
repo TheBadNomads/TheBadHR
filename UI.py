@@ -193,14 +193,14 @@ def CreateLeavesBalancesEmbed(member_id):
         print(e)
         return None
 
-def CreateInformMemberOfLeaveStatusEmbed(status, admin_name, reason, leave_type, start_date, end_date):
+def CreateInformMemberOfLeaveStatusEmbed(request_id, status, admin_name, reason, leave_type, start_date, end_date):
     leaveImages = {
     "Annual"   : os.getenv("Annual_Leave_Link"),
     "Sick"     : os.getenv("Sick_Leave_Link"),
     }
     embed = discord.Embed(
         title = f'Leave Request Status',
-        description = f'Your request was ' + status.lower(),
+        description = f'Request ID: ' + str(request_id),
         colour = 0x4682B4
     )
     if reason == "":

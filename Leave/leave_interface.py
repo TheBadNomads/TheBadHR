@@ -66,18 +66,18 @@ async def HandleLeaveReactions(client, payload):
         if not (leave_db.IsLeaveRequestPending(payload.message_id)):
             leave_db.UpdateLeaveStatus(payload.message_id, "Pending")
             await UI.UpdateLeaveEmbed(payload.member, message, embed, "Pending")
-            await InformMemberAboutLeaveStatus(client, embed, payload.member, action)
+            await InformMemberAboutLeaveStatus(client, payload.message_id, embed, payload.member, action)
             await message.clear_reactions()
             await AddEmojisToLeaveMessage(message)
     elif leave_db.IsLeaveRequestPending(payload.message_id):
         try:
             leave_db.UpdateLeaveStatus(payload.message_id, action)
             await UI.UpdateLeaveEmbed(payload.member, message, embed, action)
-            await InformMemberAboutLeaveStatus(client, embed, payload.member, action)
+            await InformMemberAboutLeaveStatus(client, payload.message_id, embed, payload.member, action)
         except Exception as e:
             print(e)
 
-async def InformMemberAboutLeaveStatus(client, embed, admin, status):
+async def InformMemberAboutLeaveStatus(client, request_id, embed, admin, status):
     member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
 
     reason = utils.GetFieldFromEmbed(embed, "reason")
@@ -88,7 +88,7 @@ async def InformMemberAboutLeaveStatus(client, embed, admin, status):
     start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
     end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')
 
-    reply_embed = UI.CreateInformMemberOfLeaveStatusEmbed(status, admin.display_name, reason, leave_type, start_date, end_date)
+    reply_embed = UI.CreateInformMemberOfLeaveStatusEmbed(request_id, status, admin.display_name, reason, leave_type, start_date, end_date)
     await member.send(embed = reply_embed)
 
 def GetRequestedLeavesBetween(member_id, start_date, end_date):
