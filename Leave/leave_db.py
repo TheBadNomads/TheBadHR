@@ -119,8 +119,8 @@ def IsLeaveRequestPending(message_id):
     return False
 
 def GetRemainingEmergencyLeavesCount(member_id):
-    start_date = datetime.datetime(datetime.date.today().year)
-    end_date = datetime.datetime(datetime.date.today().year + 1)
+    start_date = datetime.datetime(datetime.date.today().year, 1, 1)
+    end_date = datetime.datetime(datetime.date.today().year + 1, 1, 1)
     requested_emergency_count = len(GetEmergencyLeaves(member_id, start_date, end_date))
     max_emergency_count = int(os.getenv("Emergency_Leaves_Max_Count"))
     return (max_emergency_count - requested_emergency_count)

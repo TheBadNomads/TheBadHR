@@ -327,6 +327,7 @@ def FormatGetEndOfMonthReportEmbed(member, month, year):
     member_data = ""
     start_date = datetime.datetime(year, month, 1)
     end_date = datetime.datetime(year, month, utils.GetMonthDaysCount(month, year))
+    
     paid_leaves = leave_db.GetPaidLeaves(member["id"], start_date, end_date)
     unpaid_leaves = leave_db.GetUnpaidLeaves(member["id"], start_date, end_date)
     sick_leaves = leave_db.GetSickLeaves(member["id"], start_date, end_date)
