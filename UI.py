@@ -325,7 +325,7 @@ def CreateGetEndOfMonthReportEmbed(members_list, month = None, year = None):
 
 def FormatGetEndOfMonthReportEmbed(member, month, year):
     member_data = ""
-    previous_month = 12 if month == 12 else month - 1
+    previous_month = 12 if month == 1 else month - 1
     start_date = datetime.datetime(year, previous_month, int(os.getenv("End_of_Month_Report_Day")))
     end_date = datetime.datetime(year, month, int(os.getenv("End_of_Month_Report_Day")))
     
