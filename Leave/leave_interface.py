@@ -92,7 +92,7 @@ async def InformMemberAboutLeaveStatus(client, embed, admin, status):
             end_date = datetime.datetime.strptime(field["value"], '%Y-%m-%d')
 
     reply_embed = UI.CreateInformMemberOfLeaveStatusEmbed(status, admin.display_name, reason, leave_type, start_date, end_date)
-    await member.send(embed = replyembed)
+    await member.send(embed = reply_embed)
 
 def GetRequestedLeavesBetween(member_id, start_date, end_date):
     work_days = utils.GetWorkDays(start_date, end_date)
