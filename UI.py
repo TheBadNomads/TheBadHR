@@ -237,6 +237,7 @@ def CreateMemberInfoEmbed(member, member_db_info):
     embed.add_field(name = "Roles", value = " - ".join([role.name for role in member.roles[1:]]), inline = False)
     embed.add_field(name = "Start Date", value = (member_db_info["start_date"]).strftime('%d/%m/%Y'), inline = True)
     embed.add_field(name = "Leave Date", value =  leave_date, inline = True)
+    embed.add_field(name = "Starting Leaves Balance", value =  member_db.CalculateProratedAnnualLeaves(member.id), inline = False)
 
     footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
     embed.set_footer(text = footer_text)
