@@ -381,7 +381,7 @@ def FormatGetEndOfMonthReportEmbed(member, month, year):
     unpaid_leaves = leave_db.GetApprovedUnpaidLeaves(member["id"], start_date, end_date)
     sick_leaves = leave_db.GetApprovedSickLeaves(member["id"], start_date, end_date)
     emergency_leaves = leave_db.GetApprovedEmergencyLeaves(member["id"], start_date, end_date)
-    deduction_precentage_of_unpaid = utils.CalculatePercentage(float(os.getenv("Average_Working_Days_Count")), len(unpaid_leaves))
+    deduction_precentage_of_unpaid = utils.CalculatePercentage(len(unpaid_leaves), float(os.getenv("Average_Working_Days_Count")))
 
     member_data += f' \u200B \u200B ***Paid Leaves Taken:*** \u200B \u200B{len(paid_leaves)} \u200B \u200B ***Sick:*** {len(sick_leaves)} \u200B \u200B ***Emergency:*** {len(emergency_leaves)}\n'
     member_data += f' \u200B \u200B ***Unpaid Leaves Taken:*** \u200B \u200B{len(unpaid_leaves)}\n'
@@ -416,7 +416,7 @@ def FormatGetEndOfYearReportEmbed(member, year):
     sick_leaves = leave_db.GetApprovedSickLeaves(member["id"], start_date, end_date)
     emergency_leaves = leave_db.GetApprovedEmergencyLeaves(member["id"], start_date, end_date)
     remaining_leaves_balance = leave_db.GetAnnualLeaveBalance(member["id"])
-    bonus_precentage = utils.CalculatePercentage(float(os.getenv("Average_Working_Days_Count")), remaining_leaves_balance)
+    bonus_precentage = utils.CalculatePercentage(remaining_leaves_balance, float(os.getenv("Average_Working_Days_Count")))
 
     member_data += f' \u200B \u200B ***Yearly Paid Leaves Taken:*** \u200B \u200B{len(paid_leaves)} \u200B \u200B ***Sick:*** {len(sick_leaves)} \u200B \u200B ***Emergency:*** {len(emergency_leaves)}\n'
     member_data += f' \u200B \u200B ***Remaining Leaves Balance:*** \u200B \u200B{remaining_leaves_balance}\n'
