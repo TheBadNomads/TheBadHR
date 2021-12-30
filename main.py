@@ -40,13 +40,14 @@ async def RequestLeave(ctx, leavetype, startdate, enddate, reason = ""):
 
 @slash.slash(name = "InsertMember", description = "Inserts a new member into the database", options = UI.CreateMemberInsertionOptions(), guild_ids = guild_ids)
 async def InsertMember(ctx, discorduser, name, email, startdate):
-    message_content = ""
     if Utilities.IsAdmin(ctx.author):
-        message_content = member_db.InsertMember(discorduser.id, name, email, datetime.strptime(startdate, '%d/%m/%Y'))
+        member_db.InsertMember(discorduser.id, name, email, datetime.strptime(startdate, '%d/%m/%Y'))
+        member_db_info = member_db.GetMemberByID(discorduser.id)
+        embed = UI.CreateMemberInfoEmbed(discorduser, member_db_info)
+        await ctx.author.send(embed = embed)
     else:
-        message_content = "This command is for Admins only"
-
-    await ctx.author.send(content = message_content)
+        await ctx.author.send(content = "This command is for Admins only")
+    
     await ctx.send(content = "Done", delete_after = 0.1)
 
 @slash.slash(name = "InsertRetroactiveLeave", description = "Inserts a late leave (Admins Only)", options = UI.CreateRetroactiveLeaveInsertionOptions(), guild_ids = guild_ids)
