@@ -390,6 +390,44 @@ def FormatGetEndOfMonthReportEmbed(member, month, year):
         
     return member_data
 
+def CreateGetEndOfYearReportEmbed(members_list, year = None):
+    year = year or datetime.datetime.now().year
+    embed = discord.Embed(
+        title = f'End of Year Report',
+        description = f'{year} Report:',
+        colour = 0x4682B4
+    )
+    embed.set_thumbnail(url = os.getenv("Salary_Image"))
+    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+
+    for member in members_list:
+        member_data = FormatGetEndOfYearReportEmbed(member, year)
+        if member_data == "":
+            continue
+        member_name = member_db.GetMemberByID(member["id"])["name"]
+        embed.add_field(name = f'**{member_name.upper()}**', value = member_data, inline = False)
+        embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    embed.set_footer(text = footer_text)
+    return embed
+
+def FormatGetEndOfYearReportEmbed(member, year):
+    member_data = ""
+    start_date = datetime.datetime(year, 1, 1)
+    end_date = datetime.datetime(year, 12, utils.GetMonthDaysCount(12, year))
+    paid_leaves = leave_db.GetApprovedPaidLeaves(member["id"], start_date, end_date)
+    sick_leaves = leave_db.GetApprovedSickLeaves(member["id"], start_date, end_date)
+    emergency_leaves = leave_db.GetApprovedEmergencyLeaves(member["id"], start_date, end_date)
+    remaining_leaves_balance = leave_db.GetAnnualLeaveBalance(member["id"])
+    bonus_precentage = utils.CalculatePercentage(float(os.getenv("Average_Working_Days_Count")), remaining_leaves_balance)
+
+    member_data += f' \u200B \u200B ***Yearly Paid Leaves Taken:*** \u200B \u200B{len(paid_leaves)} \u200B \u200B ***Sick:*** {len(sick_leaves)} \u200B \u200B ***Emergency:*** {len(emergency_leaves)}\n'
+    member_data += f' \u200B \u200B ***Remaining Leaves Balance:*** \u200B \u200B{remaining_leaves_balance}\n'
+    member_data += f' \u200B \u200B ***Bonus Percentage:*** \u200B \u200B{bonus_precentage}%\n'
+
+    return member_data
+
 async def UpdateLeaveEmbed(member, message, embed, newStatus):
     await UpdateEmbedLeaveStatus(message, embed, newStatus)
     await UpdateEmbedApprovedRejectedby(message, embed, member)
