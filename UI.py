@@ -5,6 +5,7 @@ import Utilities as utils
 import calendar
 
 from db import db
+from dateutil.relativedelta import relativedelta
 from collections import defaultdict
 from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option, create_choice
@@ -411,7 +412,7 @@ def CreateGetEndOfYearReportEmbed(members_list, year = None):
 def FormatGetEndOfYearReportEmbed(member, year):
     member_data = ""
     start_date = datetime.datetime(year - 1, 12, int(os.getenv("End_of_Year_Report_Day")))
-    end_date = start_date + datetime.timedelta(days = 365)
+    end_date = start_date + relativedelta(years = 1)
     paid_leaves = leave_db.GetApprovedPaidLeaves(member["id"], start_date, end_date)
     sick_leaves = leave_db.GetApprovedSickLeaves(member["id"], start_date, end_date)
     emergency_leaves = leave_db.GetApprovedEmergencyLeaves(member["id"], start_date, end_date)
