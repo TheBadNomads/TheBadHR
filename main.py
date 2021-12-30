@@ -2,6 +2,7 @@ from datetime import datetime
 import discord
 import os
 import Utilities
+import Scheduler
 
 from discord import utils
 import UI
@@ -24,6 +25,7 @@ guild_ids = [int(os.getenv("TestServer_id"))]
 @client.event
 async def on_ready():
     DiscordComponents(client)
+    Scheduler.Setup(client)
     print("the bot is ready")
 
 @client.event
