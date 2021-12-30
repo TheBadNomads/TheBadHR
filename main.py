@@ -11,7 +11,7 @@ import db
 from dotenv import load_dotenv
 from discord.ext import commands
 from discord_slash import SlashCommand
-from discord_components import DiscordComponents, Button, Select, SelectOption, message
+from discord_components import DiscordComponents
 from Member import member_db 
 from Leave import leave_interface, leave_db
 
@@ -52,14 +52,14 @@ async def InsertMember(ctx, discorduser, name, email, startdate):
 
 @slash.slash(name = "InsertRetroactiveLeave", description = "Inserts a late leave (Admins Only)", options = UI.CreateRetroactiveLeaveInsertionOptions(), guild_ids = guild_ids)
 async def InsertRetroactiveLeave(ctx, discorduser, leavetype, startdate, enddate, isemergency, isunpaid, reason = ""):
-    message_content = ""
     await ctx.send(content = "Processing")
     if Utilities.IsAdmin(ctx.author):
-        message_content = await leave_interface.InsertRetroactiveLeave(discorduser, ctx.message.id, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), leavetype, isemergency, isunpaid, reason)
+        await leave_interface.InsertRetroactiveLeave(discorduser, ctx.message.id, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), leavetype, isemergency, isunpaid, reason)
+        embed = UI.CreateLeavesBalancesEmbed(discorduser, ctx.author.id)
+        await ctx.author.send(embed = embed)
     else:
-        message_content = "This command is for Admins only"
-        
-    await ctx.author.send(content = message_content)
+        await ctx.author.send(content = "This command is for Admins only")
+
     await ctx.message.delete()
 
 @slash.slash(name = "ShowLeavesBalance", description = "Shows your leaves balance", guild_ids = guild_ids)
