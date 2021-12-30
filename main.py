@@ -26,6 +26,7 @@ guild_ids = [int(os.getenv("TestServer_id"))]
 @client.event
 async def on_ready():
     DiscordComponents(client)
+    Scheduler.Setup(client)
     print("the bot is ready")
 
 @client.event
