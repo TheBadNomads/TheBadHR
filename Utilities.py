@@ -73,10 +73,10 @@ def CalculatePercentage(total, actual):
     return "{:.2f}".format((actual * 100) / total)
 
 def GetMembersFromMention(mention_string):
-    members_mentions_list = [mention + ">" for mention in mention_string.split(">") if mention]
     members_list = []
-    for member_mention in members_mentions_list:
-        member = member_db.GetMemberByID(int(re.match(r'<@!?(\d+)>', member_mention).group(1)))
+    members_ids = re.findall(r'<@!?(\d+)>', mention_string)
+    for member_id in members_ids:
+        member = member_db.GetMemberByID(int(member_id))
         if member != None:
             members_list.append(member)
     return members_list
