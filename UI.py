@@ -331,6 +331,25 @@ def CreateGetEndOfMonthReportOptions():
     ]
 
     return end_of_month_Report_options
+
+def CreateGetEndOfYearReportOptions():
+    end_of_year_Report_options = [
+        create_option(
+            name = "members",
+            description = "@Member1 @Member2... (optional) leave empty for all members",
+            option_type = SlashCommandOptionType.STRING,
+            required = False
+        ),
+        create_option(
+            name = "year",
+            description = "(optional) leave empty for current year",
+            option_type = SlashCommandOptionType.INTEGER,
+            required = False,
+            choices = CreateYearChoices()
+        )
+    ]
+
+    return end_of_year_Report_options
     
 def CreateGetEndOfMonthReportEmbed(members_list, month = None, year = None):
     month = month or datetime.datetime.now().month
