@@ -10,7 +10,7 @@ import db
 from dotenv import load_dotenv
 from discord.ext import commands
 from discord_slash import SlashCommand
-from discord_components import DiscordComponents, Button, Select, SelectOption, message
+from discord_components import DiscordComponents#, Button, Select, SelectOption, message
 from Member import member_db 
 from Leave import leave_interface, leave_db
 
@@ -81,13 +81,13 @@ async def IsMemberWorking(ctx, discorduser, date = datetime.today().strftime('%d
 
 @slash.slash(name = "CreditLeaves", description = "Inserts an extra credit for the provided leave type", options = UI.CreateCreditLeavesOptions(), guild_ids = guild_ids)
 async def CreditLeaves(ctx, discorduser, leavetype, dayscount = 1, reason = ""):
-    message_content = ""
     if Utilities.IsAdmin(ctx.author):
-        message_content = leave_db.InsertExtraBalance(datetime.today(), ctx.author.id, discorduser.id, leavetype, reason, dayscount)
+        leave_db.InsertExtraBalance(datetime.today(), ctx.author.id, discorduser.id, leavetype, reason, dayscount)
+        embed = UI.CreateLeavesBalancesEmbed(discorduser, ctx.author.id)
+        await ctx.author.send(embed = embed)
     else:
-        message_content = "This command is for Admins only"
+        await ctx.author.send(content = "This command is for Admins only")
 
-    await ctx.author.send(content = message_content)
     await ctx.send(content = "Done", delete_after = 0.1)
 
 @slash.slash(name = "GetLeavesBetween", description = "Returns the leaves of one/all members in the provided dates range", options = UI.CreateGetLeavesAcrossRangeOptions(), guild_ids = guild_ids)
