@@ -1,7 +1,7 @@
 import discord
 import os
 import datetime
-import re 
+import re
 
 from Member import member_db
 
