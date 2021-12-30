@@ -335,10 +335,10 @@ def FormatGetEndOfMonthReportEmbed(member, month, year):
     start_date = datetime.datetime(year, previous_month, int(os.getenv("End_of_Month_Report_Day")))
     end_date = datetime.datetime(year, month, int(os.getenv("End_of_Month_Report_Day")) - 1)
     
-    paid_leaves = leave_db.GetPaidLeaves(member["id"], start_date, end_date)
-    unpaid_leaves = leave_db.GetUnpaidLeaves(member["id"], start_date, end_date)
-    sick_leaves = leave_db.GetSickLeaves(member["id"], start_date, end_date)
-    emergency_leaves = leave_db.GetEmergencyLeaves(member["id"], start_date, end_date)
+    paid_leaves = leave_db.GetApprovedPaidLeaves(member["id"], start_date, end_date)
+    unpaid_leaves = leave_db.GetApprovedUnpaidLeaves(member["id"], start_date, end_date)
+    sick_leaves = leave_db.GetApprovedSickLeaves(member["id"], start_date, end_date)
+    emergency_leaves = leave_db.GetApprovedEmergencyLeaves(member["id"], start_date, end_date)
     deduction_precentage_of_unpaid = utils.CalculatePercentage(float(os.getenv("Average_Working_Days_Count")), len(unpaid_leaves))
 
     member_data += f' \u200B \u200B ***Paid Leaves Taken:*** \u200B \u200B{len(paid_leaves)} \u200B \u200B ***Sick:*** {len(sick_leaves)} \u200B \u200B ***Emergency:*** {len(emergency_leaves)}\n'
