@@ -171,19 +171,23 @@ def CreateRetroactiveLeaveInsertionOptions():
     ]
     return retroactive_application_options
 
-def CreateLeavesBalancesEmbed(member_id):
+def CreateLeavesBalancesEmbed(member, author_id):
     try:
+        if(author_id == member.id):
+            description_text = "Your balances are:"
+        else:
+            description_text = f"{member.display_name}'s balances are:"
         embed = discord.Embed(
             title = f'Leave Balances',
-            description = f'Your balances are:',
+            description = description_text,
             colour = 0x4682B4
         )
         embed.set_thumbnail(url = os.getenv("Leave_Balance_Image"))
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
-        embed.add_field(name = "Annual", value = leave_db.GetAnnualLeaveBalance(member_id), inline = True)
+        embed.add_field(name = "Annual", value = leave_db.GetAnnualLeaveBalance(member.id, inline = True))
         embed.add_field(name = '\u200B', value = '\u200B', inline = True)
-        embed.add_field(name = "Emergency", value = max(GetEmergencyBalance(member_id), 0), inline = True)
+        embed.add_field(name = "Emergency", value = max(GetEmergencyBalance(member.id), 0), inline = True)
 
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
         embed.set_footer(text = datetime.date.today())
