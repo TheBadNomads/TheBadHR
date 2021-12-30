@@ -7,7 +7,6 @@ import Scheduler
 from discord import utils
 import UI
 import db
-import re
 
 from dotenv import load_dotenv
 from discord.ext import commands
