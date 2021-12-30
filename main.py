@@ -7,6 +7,7 @@ import Scheduler
 from discord import utils
 import UI
 import db
+import re
 
 from dotenv import load_dotenv
 from discord.ext import commands
@@ -81,9 +82,10 @@ async def IsMemberWorking(ctx, discorduser, date = datetime.today().strftime('%d
     await ctx.send(content = "Done", delete_after = 0.1)
 
 @slash.slash(name = "GetEndOfMonthReport", description = "Returns a report of the selected users for the provided month", options = UI.CreateGetEndOfMonthReportOptions(), guild_ids = guild_ids)
-async def GetEndOfMonthReport(ctx, month = None, year = None):
+async def GetEndOfMonthReport(ctx, members = "", month = None, year = None):
     if Utilities.IsAdmin(ctx.author):
-        embed = UI.CreateGetEndOfMonthReportEmbed(member_db.GetMembers(), month, year)
+        members_list = Utilities.GetMembersFromMention(members) or member_db.GetMembers()
+        embed = UI.CreateGetEndOfMonthReportEmbed(members_list, month, year)
         await ctx.author.send(embed = embed)
     else:
         await ctx.author.send(content = "This command is for Admins only")
