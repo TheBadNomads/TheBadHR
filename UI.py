@@ -220,6 +220,29 @@ def CreateInformMemberOfLeaveStatusEmbed(request_id, status, admin_name, reason,
     
     return embed
 
+def CreateMemberInfoEmbed(member, member_db_info):
+    embed = discord.Embed(
+        title = f'Member Information',
+        description = "",
+        colour = 0x4682B4
+    )
+
+    if(member_db_info["leave_date"]):
+        leave_date = (member_db_info["leave_date"]).strftime('%d/%m/%Y')
+    else:
+        leave_date = "Still Employed"
+    
+    embed.add_field(name = "Name", value = member.display_name, inline = True)
+    embed.add_field(name = "Email", value = member_db_info["email"], inline = True)
+    embed.add_field(name = "Roles", value = " - ".join([role.name for role in member.roles[1:]]), inline = False)
+    embed.add_field(name = "Start Date", value = (member_db_info["start_date"]).strftime('%d/%m/%Y'), inline = True)
+    embed.add_field(name = "Leave Date", value =  leave_date, inline = True)
+
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    embed.set_footer(text = footer_text)
+
+    return embed
+
 def CreateIsMemberWorkingOptions():
     member_options = [
         create_option(
