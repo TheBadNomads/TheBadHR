@@ -2,6 +2,7 @@ import discord
 import os
 import datetime
 import Utilities as utils
+import calendar
 
 from db import db
 from collections import defaultdict
@@ -59,6 +60,22 @@ def CreateDateChoices():
         dateChoices.append(create_choice(name = weekDay +": "+ tmpDate.strftime('%d/%m/%Y'), value = tmpDate.strftime('%d/%m/%Y')))
     
     return dateChoices
+
+def CreateMonthChoices():
+    month_choices = []
+    for index in range(1, 13):
+        month_choices.append(create_choice(name = calendar.month_name[index], value = index))
+
+    return month_choices
+
+def CreateYearChoices():
+    year_choices = []
+    max_range = (datetime.datetime.now().year - int(os.getenv("Company_Starting_Year"))) + 1
+    for index in range(0, max_range):
+        value = int(os.getenv("Company_Starting_Year")) + index
+        year_choices.append(create_choice(name = value, value = value))
+
+    return year_choices
 
 def CreateLeaveRequestOptions():
     requestLeave_options = [
@@ -187,7 +204,7 @@ def CreateLeavesBalancesEmbed(member, author_id):
 
         embed.add_field(name = "Annual", value = leave_db.GetAnnualLeaveBalance(member.id, inline = True))
         embed.add_field(name = '\u200B', value = '\u200B', inline = True)
-        embed.add_field(name = "Emergency", value = max(GetEmergencyBalance(member.id), 0), inline = True)
+        embed.add_field(name = "Emergency", value = max(leave_db.GetRemainingEmergencyLeavesCount(member.id), 0), inline = True)
 
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
         embed.set_footer(text = datetime.date.today())
@@ -264,7 +281,72 @@ def CreateIsEveryoneHereEmbed(approved_dict, missing_members, isAdmin):
     footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
     embed.set_footer(text = footer_text)
     return embed
+
+def CreateGetEndOfMonthReportOptions():
+    end_of_month_Report_options = [
+        create_option(
+            name = "members",
+            description = "@Member1 @Member2... (optional) leave empty for all members",
+            option_type = SlashCommandOptionType.STRING,
+            required = False
+        ),
+        create_option(
+            name = "month",
+            description = "(optional) leave empty for current month",
+            option_type = SlashCommandOptionType.INTEGER,
+            required = False,
+            choices = CreateMonthChoices()
+        ),
+        create_option(
+            name = "year",
+            description = "(optional) leave empty for current year",
+            option_type = SlashCommandOptionType.INTEGER,
+            required = False,
+            choices = CreateYearChoices()
+        )
+    ]
+
+    return end_of_month_Report_options
     
+def CreateGetEndOfMonthReportEmbed(members_list, month = None, year = None):
+    month = month or datetime.datetime.now().month
+    year = year or datetime.datetime.now().year
+    embed = discord.Embed(
+        title = f'End of Month Report',
+        description = f'{month}/{year} Report:',
+        colour = 0x4682B4
+    )
+    embed.set_thumbnail(url = os.getenv("Salary_Image"))
+    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+
+    for member in members_list:
+        member_data = FormatGetEndOfMonthReportEmbed(member, month, year)
+        member_name = member_db.GetMemberByID(member["id"])["name"]
+        embed.add_field(name = f'**{member_name.upper()}**', value = member_data, inline = False)
+        embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    embed.set_footer(text = footer_text)
+    return embed
+
+def FormatGetEndOfMonthReportEmbed(member, month, year):
+    member_data = ""
+    previous_month = 12 if month == 1 else month - 1
+    start_date = datetime.datetime(year, previous_month, int(os.getenv("End_of_Month_Report_Day")))
+    end_date = datetime.datetime(year, month, int(os.getenv("End_of_Month_Report_Day")) - 1)
+    
+    paid_leaves = leave_db.GetApprovedPaidLeaves(member["id"], start_date, end_date)
+    unpaid_leaves = leave_db.GetApprovedUnpaidLeaves(member["id"], start_date, end_date)
+    sick_leaves = leave_db.GetApprovedSickLeaves(member["id"], start_date, end_date)
+    emergency_leaves = leave_db.GetApprovedEmergencyLeaves(member["id"], start_date, end_date)
+    deduction_precentage_of_unpaid = utils.CalculatePercentage(float(os.getenv("Average_Working_Days_Count")), len(unpaid_leaves))
+
+    member_data += f' \u200B \u200B ***Paid Leaves Taken:*** \u200B \u200B{len(paid_leaves)} \u200B \u200B ***Sick:*** {len(sick_leaves)} \u200B \u200B ***Emergency:*** {len(emergency_leaves)}\n'
+    member_data += f' \u200B \u200B ***Unpaid Leaves Taken:*** \u200B \u200B{len(unpaid_leaves)}\n'
+    member_data += f' \u200B \u200B ***Unpaid Deduction Percentage:*** \u200B \u200B{deduction_precentage_of_unpaid}%\n'
+        
+    return member_data
+
 async def UpdateLeaveEmbed(member, message, embed, newStatus):
     await UpdateEmbedLeaveStatus(message, embed, newStatus)
     await UpdateEmbedApprovedRejectedby(message, embed, member)
@@ -392,8 +474,3 @@ def ParseEmoji(emoji):
     reaction_emojis = defaultdict(None, **reaction_emojis)
 
     return reaction_emojis[emoji_str]
-
-def GetEmergencyBalance(member_id):
-    requested_emergency_count = len(leave_db.GetEmergencyLeavesForYear(member_id, datetime.date.today().year))
-    max_emergency_count = int(os.getenv("Emergency_Leaves_Max_Count"))
-    return (max_emergency_count - requested_emergency_count)

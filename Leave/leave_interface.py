@@ -33,7 +33,7 @@ def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, le
 
     try:
         work_days = utils.GetWorkDays(start_date, end_date)
-        remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
+        remaining_emergency_count = leave_db.GetRemainingEmergencyLeavesCount(member.id)
         annual_leave_balance = leave_db.GetAnnualLeaveBalance(member.id)
         for day in work_days:
             is_emergency = utils.IsEmergencyLeave(day, leave_type)
@@ -100,11 +100,6 @@ def GetRequestedLeavesBetween(member_id, start_date, end_date):
            requested_leaves.append(leave)
     return requested_leaves
 
-def GetRemainingEmergencyLeavesCount(member_id):
-    requested_emergency_count = len(leave_db.GetEmergencyLeavesForYear(member_id, datetime.date.today().year))
-    max_emergency_count = int(os.getenv("Emergency_Leaves_Max_Count"))
-    return (max_emergency_count - requested_emergency_count)
-
 def IsLeaveRequestValid(member_id, start_date, end_date):
     if end_date < start_date:
         return (False, (db.GetCaption(3)))
@@ -132,7 +127,7 @@ async def InsertRetroactiveLeave(member, message_id, start_date, end_date, leave
 
 def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason, is_emergency, is_unpaid):
     work_days = utils.GetWorkDays(start_date, end_date)
-    remaining_emergency_count = GetRemainingEmergencyLeavesCount(member.id)
+    remaining_emergency_count = leave_db.GetRemainingEmergencyLeavesCount(member.id)
     annual_leave_balance = leave_db.GetAnnualLeaveBalance(member.id)
     for day in work_days:
         is_unpaid = ((is_unpaid) or (utils.IsUnpaidLeave(leave_type, annual_leave_balance, is_emergency, remaining_emergency_count)))

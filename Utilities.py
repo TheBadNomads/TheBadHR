@@ -1,7 +1,9 @@
 import discord
 import os
 import datetime
-import re 
+import re
+
+from Member import member_db
 
 def isNotBot(member):
     return not member.bot
@@ -66,3 +68,15 @@ def GetFieldFromEmbed(embed, field_name):
     for field in embed_dict["fields"]:
         if field["name"].lower() == field_name.lower():
             return field["value"]
+
+def CalculatePercentage(total, actual):
+    return "{:.2f}".format((actual * 100) / total)
+
+def GetMembersFromMention(mention_string):
+    members_list = []
+    members_ids = re.findall(r'<@!?(\d+)>', mention_string)
+    for member_id in members_ids:
+        member = member_db.GetMemberByID(int(member_id))
+        if member != None:
+            members_list.append(member)
+    return members_list

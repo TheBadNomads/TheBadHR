@@ -1,5 +1,6 @@
 import Utilities as utils
 import datetime
+import os
 
 from db import db
 from Member import member_db
@@ -32,8 +33,27 @@ def GetLeaveStatus(request_id):
     leave = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
     return leave["leave_status"]
 
-def GetEmergencyLeavesForYear(member_id, year):
-    db.GetDBCursor().execute(f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND is_emergency = 'True' AND YEAR(date) = {year}")
+def GetApprovedPaidLeaves(member_id, start_date, end_date):
+    query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND is_unpaid = 'False' AND date >= '{start_date}' AND date <= '{end_date}'"
+    db.GetDBCursor().execute(query)
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
+    return leaves
+
+def GetApprovedEmergencyLeaves(member_id, start_date, end_date):
+    query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND is_emergency = 'True' AND date >= '{start_date}' AND date <= '{end_date}'"
+    db.GetDBCursor().execute(query)
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
+    return leaves
+
+def GetApprovedUnpaidLeaves(member_id, start_date, end_date):
+    query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND is_unpaid = 'True' AND date >= '{start_date}' AND date <= '{end_date}'"
+    db.GetDBCursor().execute(query)
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
+    return leaves
+
+def GetApprovedSickLeaves(member_id, start_date, end_date):
+    query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND leave_type = 'Sick' AND date >= '{start_date}' AND date <= '{end_date}'"
+    db.GetDBCursor().execute(query)
     leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
 
@@ -96,4 +116,11 @@ def IsLeaveRequestPending(message_id):
     if IsLeaveRequest(message_id):
         return GetLeaveStatus(message_id).lower() == "pending"
     
-    return False    
+    return False
+
+def GetRemainingEmergencyLeavesCount(member_id):
+    start_date = datetime.datetime(datetime.date.today().year, 1, 1)
+    end_date = datetime.datetime(datetime.date.today().year + 1, 1, 1)
+    requested_emergency_count = len(GetApprovedEmergencyLeaves(member_id, start_date, end_date))
+    max_emergency_count = int(os.getenv("Emergency_Leaves_Max_Count"))
+    return (max_emergency_count - requested_emergency_count)
