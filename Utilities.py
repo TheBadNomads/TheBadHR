@@ -2,6 +2,7 @@ import discord
 import os
 import datetime
 import re
+from calendar import monthrange 
 
 from Member import member_db
 
@@ -80,3 +81,6 @@ def GetMembersFromMention(mention_string):
         if member != None:
             members_list.append(member)
     return members_list
+
+def GetMonthDaysCount(month, year):
+    return monthrange(year, month)[1]
