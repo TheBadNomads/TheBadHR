@@ -93,6 +93,17 @@ async def GetEndOfMonthReport(ctx, members = "", month = None, year = None):
 
     await ctx.send(content = "Done", delete_after = 0.1)
 
+@slash.slash(name = "GetEndOfYearReport", description = "Returns a report of the selected users for the provided year", options = UI.CreateGetEndOfYearReportOptions(), guild_ids = guild_ids)
+async def GetEndOfYearReport(ctx, members = "", year = None):
+    if Utilities.IsAdmin(ctx.author):
+        members_list = Utilities.GetMembersFromMention(members) or member_db.GetMembers()
+        embed = UI.CreateGetEndOfYearReportEmbed(members_list, year)
+        await ctx.author.send(embed = embed)
+    else:
+        await ctx.author.send(content = "This command is for Admins only")
+
+    await ctx.send(content = "Done", delete_after = 0.1)
+
 @slash.slash(name="IsEveryoneHere", description = "Checks if all working 'Full Time' members are in the meeting channel", guild_ids = guild_ids)
 async def IsEveryoneHere(ctx):
 
