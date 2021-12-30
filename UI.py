@@ -374,7 +374,7 @@ def CreateGetEndOfMonthReportEmbed(members_list, month = None, year = None):
 
 def FormatGetEndOfMonthReportEmbed(member, month, year):
     member_data = ""
-    start_date = datetime.datetime(year, month, int(os.getenv("End_of_Month_Report_Day"))) - datetime.timedelta(days = utils.GetMonthDaysCount(month, year))
+    start_date = datetime.datetime(year, month, int(os.getenv("End_of_Month_Report_Day"))) - relativedelta(months = 1)
     end_date = datetime.datetime(year, month, int(os.getenv("End_of_Month_Report_Day"))) - datetime.timedelta(days = 1)
     
     paid_leaves = leave_db.GetApprovedPaidLeaves(member["id"], start_date, end_date)
