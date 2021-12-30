@@ -64,7 +64,7 @@ async def InsertRetroactiveLeave(ctx, discorduser, leavetype, startdate, enddate
 
 @slash.slash(name = "ShowLeavesBalance", description = "Shows your leaves balance", guild_ids = guild_ids)
 async def ShowLeavesBalance(ctx):
-    embed = UI.CreateLeavesBalancesEmbed(ctx.author.id)
+    embed = UI.CreateLeavesBalancesEmbed(ctx.author)
     if embed != None:
         await ctx.author.send(embed = embed)
     else:
