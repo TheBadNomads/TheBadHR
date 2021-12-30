@@ -364,8 +364,7 @@ def CreateGetEndOfMonthReportEmbed(members_list, month = None, year = None):
 
     for member in members_list:
         member_data = FormatGetEndOfMonthReportEmbed(member, month, year)
-        member_name = member_db.GetMemberByID(member["id"])["name"]
-        embed.add_field(name = f'**{member_name.upper()}**', value = member_data, inline = False)
+        embed.add_field(name = f'**{member["name"].upper()}**', value = member_data, inline = False)
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
     footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
@@ -402,10 +401,7 @@ def CreateGetEndOfYearReportEmbed(members_list, year = None):
 
     for member in members_list:
         member_data = FormatGetEndOfYearReportEmbed(member, year)
-        if member_data == "":
-            continue
-        member_name = member_db.GetMemberByID(member["id"])["name"]
-        embed.add_field(name = f'**{member_name.upper()}**', value = member_data, inline = False)
+        embed.add_field(name = f'**{member["name"].upper()}**', value = member_data, inline = False)
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
     footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
