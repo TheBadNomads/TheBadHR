@@ -171,9 +171,9 @@ def CreateRetroactiveLeaveInsertionOptions():
     ]
     return retroactive_application_options
 
-def CreateLeavesBalancesEmbed(member, author_id):
+def CreateLeavesBalancesEmbed(member, author_id = None):
     try:
-        if(author_id == member.id):
+        if(author_id == member.id or author_id == None):
             description_text = "Your balances are:"
         else:
             description_text = f"{member.display_name}'s balances are:"
@@ -185,7 +185,7 @@ def CreateLeavesBalancesEmbed(member, author_id):
         embed.set_thumbnail(url = os.getenv("Leave_Balance_Image"))
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
-        embed.add_field(name = "Annual", value = leave_db.GetAnnualLeaveBalance(member.id, inline = True))
+        embed.add_field(name = "Annual", value = leave_db.GetAnnualLeaveBalance(member.id), inline = True)
         embed.add_field(name = '\u200B', value = '\u200B', inline = True)
         embed.add_field(name = "Emergency", value = max(GetEmergencyBalance(member.id), 0), inline = True)
 
