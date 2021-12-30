@@ -11,7 +11,7 @@ import db
 from dotenv import load_dotenv
 from discord.ext import commands
 from discord_slash import SlashCommand
-from discord_components import DiscordComponents#, Button, Select, SelectOption, message
+from discord_components import DiscordComponents
 from Member import member_db 
 from Leave import leave_interface, leave_db
 
