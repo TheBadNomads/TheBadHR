@@ -67,5 +67,5 @@ def GetFieldFromEmbed(embed, field_name):
         if field["name"].lower() == field_name.lower():
             return field["value"]
 
-def CalculatePercentage(total, acctual):
-    return "{:.2f}".format((acctual * 100) / total)
+def CalculatePercentage(total, actual):
+    return "{:.2f}".format((actual * 100) / total)
