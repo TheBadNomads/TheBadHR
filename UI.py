@@ -222,7 +222,7 @@ def CreateInformMemberOfLeaveStatusEmbed(request_id, status, admin_name, reason,
 
 def CreateMemberInfoEmbed(member, member_db_info):
     embed = discord.Embed(
-        title = f'Member Information',
+        title = f"{member.display_name}'s Information",
         description = "",
         colour = 0x4682B4
     )
@@ -232,7 +232,7 @@ def CreateMemberInfoEmbed(member, member_db_info):
     else:
         leave_date = "Still Employed"
     
-    embed.add_field(name = "Name", value = member.display_name, inline = True)
+    embed.add_field(name = "Full Name", value = member_db_info["name"], inline = True)
     embed.add_field(name = "Email", value = member_db_info["email"], inline = True)
     embed.add_field(name = "Roles", value = " - ".join([role.name for role in member.roles[1:]]), inline = False)
     embed.add_field(name = "Start Date", value = (member_db_info["start_date"]).strftime('%d/%m/%Y'), inline = True)
