@@ -41,7 +41,7 @@ async def RequestLeave(ctx, leavetype, startdate, enddate, reason = ""):
 @slash.slash(name = "InsertMember", description = "Inserts a new member into the database", options = UI.CreateMemberInsertionOptions(), guild_ids = guild_ids)
 async def InsertMember(ctx, discorduser, name, email, startdate):
     if Utilities.IsAdmin(ctx.author):
-        member_db.InsertMember(discorduser.id, name, email, datetime.strptime(startdate, '%d/%m/%Y'))
+        member_db.InsertMember(discorduser.id, name, email, datetime.strptime(startdate, '%Y-%m-%d'))
         member_db_info = member_db.GetMemberByID(discorduser.id)
         embed = UI.CreateMemberInfoEmbed(discorduser, member_db_info)
         await ctx.author.send(embed = embed)

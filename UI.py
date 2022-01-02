@@ -133,7 +133,7 @@ def CreateMemberInsertionOptions():
         ),
         create_option(
             name = "startdate",
-            description = "working start date format: DD/MM/YYYY",
+            description = "working start date format: YYYY-MM-DD",
             option_type = SlashCommandOptionType.STRING,
             required = True
         )
@@ -250,18 +250,18 @@ def CreateMemberInfoEmbed(member, member_db_info):
     )
 
     if(member_db_info["leave_date"]):
-        leave_date = (member_db_info["leave_date"]).strftime('%d/%m/%Y')
+        leave_date = (member_db_info["leave_date"]).strftime('%Y-%m-%d')
     else:
         leave_date = "Still Employed"
     
     embed.add_field(name = "Full Name", value = member_db_info["name"], inline = True)
     embed.add_field(name = "Email", value = member_db_info["email"], inline = True)
     embed.add_field(name = "Roles", value = " - ".join([role.name for role in member.roles[1:]]), inline = False)
-    embed.add_field(name = "Start Date", value = (member_db_info["start_date"]).strftime('%d/%m/%Y'), inline = True)
+    embed.add_field(name = "Start Date", value = (member_db_info["start_date"]).strftime('%Y-%m-%d'), inline = True)
     embed.add_field(name = "Leave Date", value =  leave_date, inline = True)
     embed.add_field(name = "Starting Leaves Balance", value =  member_db.CalculateProratedAnnualLeaves(member.id), inline = False)
 
-    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
     embed.set_footer(text = footer_text)
 
     return embed
