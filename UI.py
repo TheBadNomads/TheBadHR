@@ -358,7 +358,7 @@ def CreateGetEndOfMonthReportEmbed(members_list, month = None, year = None):
     year = year or datetime.datetime.now().year
     embed = discord.Embed(
         title = f'End of Month Report',
-        description = f'{month}/{year} Report:',
+        description = f'{year}-{month} Report:',
         colour = 0x4682B4
     )
     embed.set_thumbnail(url = os.getenv("Salary_Image"))
