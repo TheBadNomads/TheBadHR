@@ -208,7 +208,8 @@ def CreateLeavesBalancesEmbed(member, author_id = None):
         embed.add_field(name = "Emergency", value = max(leave_db.GetRemainingEmergencyLeavesCount(member.id), 0), inline = True)
 
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
-        embed.set_footer(text = datetime.date.today())
+        footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
+        embed.set_footer(text = footer_text)
         return embed
 
     except Exception as e:
