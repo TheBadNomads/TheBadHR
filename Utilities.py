@@ -42,7 +42,7 @@ def IsLateToApplyForLeave(leave_date):
     return  False 
 
 def ConvertDatesToStrings(dates_array):
-    return [day.strftime('%d/%m/%Y') for day in dates_array]
+    return [day.strftime('%Y-%m-%d') for day in dates_array]
 
 def FilterOutLeavesByStatus(leaves_array, leave_status):
     filtered_leaves = []
