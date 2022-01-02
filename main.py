@@ -54,7 +54,7 @@ async def InsertMember(ctx, discorduser, name, email, startdate):
 async def InsertRetroactiveLeave(ctx, discorduser, leavetype, startdate, enddate, isemergency, isunpaid, reason = ""):
     await ctx.send(content = "Processing")
     if Utilities.IsAdmin(ctx.author):
-        await leave_interface.InsertRetroactiveLeave(discorduser, ctx.message.id, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), leavetype, isemergency, isunpaid, reason)
+        await leave_interface.InsertRetroactiveLeave(discorduser, ctx.message.id, datetime.strptime(startdate, '%Y-%m-%d'), datetime.strptime(enddate, '%Y-%m-%d'), leavetype, isemergency, isunpaid, reason)
         embed = UI.CreateLeavesBalancesEmbed(discorduser, ctx.author.id)
         await ctx.author.send(embed = embed)
     else:

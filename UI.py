@@ -158,13 +158,13 @@ def CreateRetroactiveLeaveInsertionOptions():
         ),
          create_option(
             name = "startdate",
-            description = "starting date of the leave in DD/MM/YYYY format",
+            description = "starting date of the leave in YYYY-MM-DD format",
             option_type = SlashCommandOptionType.STRING,
             required = True
         ),
         create_option(
             name = "enddate",
-            description = "ending date of the leave in DD/MM/YYYY format",
+            description = "ending date of the leave in YYYY-MM-DD format",
             option_type = SlashCommandOptionType.STRING,
             required = True
         ),
