@@ -465,13 +465,13 @@ def CreateGetLeavesAcrossRangeOptions():
     get_leaves_across_range_options = [
         create_option(
             name = "startdate",
-            description = "start date (inclusive) in DD/MM/YYYY format",
+            description = "start date (inclusive) in YYYY-MM-DD format",
             option_type = SlashCommandOptionType.STRING,
             required = True
         ),
         create_option(
             name = "enddate",
-            description = "end date (inclusive) in DD/MM/YYYY format",
+            description = "end date (inclusive) in YYYY-MM-DD format",
             option_type = SlashCommandOptionType.STRING,
             required = True
         ),
