@@ -137,8 +137,6 @@ def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type
     return ("Retroactive leave was inserted successfully")
 
 def GetLeavesAcrossRange(start_date, end_date, member):
-    start_date = ConvertToISO8601(start_date)
-    end_date = ConvertToISO8601(end_date)
     leaves_group = GroupLeavesBy(leave_db.GetLeavesBetween(start_date, end_date, member), 'member_id')
     ordered_leaves = []
     for leaves_array in leaves_group:
@@ -151,10 +149,6 @@ def GroupLeavesBy(leaves, col_name):
     for leave in leaves:
         ordered_leaves[leave[col_name]].append(leave)
     return list(ordered_leaves.values())
-
-def ConvertToISO8601(date_string):
-    date = datetime.datetime.strptime(date_string, '%d/%m/%Y')
-    return date.strftime("%Y-%m-%d")
 
 def IsMemberWorking(member_id, date):
     work_days = utils.GetWorkDays(date, date)
