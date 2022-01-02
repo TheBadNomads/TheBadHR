@@ -34,7 +34,7 @@ async def on_raw_reaction_add(payload):
 
 @slash.slash(name = "RequestLeave", description = "Requests an annual leave", options = UI.CreateLeaveRequestOptions(), guild_ids = guild_ids)
 async def RequestLeave(ctx, leavetype, startdate, enddate, reason = ""):
-    message_content = await leave_interface.ProcessLeaveRequest(ctx, ctx.author, client, leavetype, datetime.strptime(startdate, '%d/%m/%Y'), datetime.strptime(enddate, '%d/%m/%Y'), reason)
+    message_content = await leave_interface.ProcessLeaveRequest(ctx, ctx.author, client, leavetype, datetime.strptime(startdate, "%Y-%m-%d"), datetime.strptime(enddate, "%Y-%m-%d"), reason)
     await ctx.author.send(content = message_content)
     await ctx.send(content = "Done", delete_after = 0.1)
 

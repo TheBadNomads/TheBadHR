@@ -89,14 +89,14 @@ def CreateLeaveRequestOptions():
         ),
         create_option(
             name = "startdate",
-            description = "starting date of your leave",
+            description = "starting date of your leave format: YYYY-MM-DD",
             option_type = SlashCommandOptionType.STRING,
             required = True,
             choices = CreateDateChoices()
         ),
         create_option(
             name = "enddate",
-            description = "ending date of your leave",
+            description = "ending date of your leave format: YYYY-MM-DD",
             option_type = SlashCommandOptionType.STRING,
             required = True,
             choices = CreateDateChoices()
