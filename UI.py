@@ -58,7 +58,7 @@ def CreateDateChoices():
     for i in range(25):
         tmpDate = firstDate + datetime.timedelta(i)
         weekDay = tmpDate.strftime("%A")
-        dateChoices.append(create_choice(name = weekDay +": "+ tmpDate.strftime('%d/%m/%Y'), value = tmpDate.strftime('%d/%m/%Y')))
+        dateChoices.append(create_choice(name = weekDay +": "+ tmpDate.strftime('%Y-%m-%d'), value = tmpDate.strftime('%Y-%m-%d')))
     
     return dateChoices
 
@@ -89,14 +89,14 @@ def CreateLeaveRequestOptions():
         ),
         create_option(
             name = "startdate",
-            description = "starting date of your leave format: YYYY-MM-DD",
+            description = "starting date of your leave",
             option_type = SlashCommandOptionType.STRING,
             required = True,
             choices = CreateDateChoices()
         ),
         create_option(
             name = "enddate",
-            description = "ending date of your leave format: YYYY-MM-DD",
+            description = "ending date of your leave",
             option_type = SlashCommandOptionType.STRING,
             required = True,
             choices = CreateDateChoices()
