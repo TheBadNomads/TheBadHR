@@ -488,7 +488,7 @@ def CreateGetLeavesAcrossRangeOptions():
 def CreateLeavesAcrossRangeEmbed(leaves, startdate, enddate, include_reason):
     embed = discord.Embed(
         title = f'Applied Leaves',
-        description = f'Dates range: \u200B \u200B**{startdate}** - **{enddate}**',
+        description = f'Dates range: \u200B \u200B**{startdate}** \u200B \u200B \u200B \u200B - \u200B \u200B \u200B \u200B **{enddate}**',
         colour = 0x4682B4
     )
     embed.set_thumbnail(url = os.getenv("Leave_Balance_Image"))
@@ -515,7 +515,7 @@ def FormatLeavesAcrossRangeEmbed(leaves_group, include_reason):
         leaves_value += f' \u200B \u200B ***From:*** \u200B \u200B{leaves_array[0]["date"].strftime("%Y-%m-%d")}  \u200B \u200B \u200B \u200B \u200B ***To:*** \u200B \u200B{leaves_array[-1]["date"].strftime("%Y-%m-%d")}\n'
         if include_reason:
             reason = leaves_array[0]["reason"]
-            leaves_value += f' \u200B \u200B ***Reason:*** \u200B \u200B{"None" or reason}\n'
+            leaves_value += f' \u200B \u200B ***Reason:*** \u200B \u200B{reason or "None"}\n'
             leaves_value += f' \u200B \u200B ***Status:*** \u200B \u200B{leaves_array[0]["leave_status"]}\n'
         leaves_value += '\n'
     return leaves_value
