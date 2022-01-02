@@ -26,7 +26,7 @@ def CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason):
     )
     if reason == "":
         reason = "None"
-    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
 
     embed.set_thumbnail(url = leaveImages[leave_type])
     embed.add_field(name = "Leave Type", value = leave_type, inline = False)
@@ -228,7 +228,7 @@ def CreateInformMemberOfLeaveStatusEmbed(request_id, status, admin_name, reason,
     if reason == "":
         reason = "None"
         
-    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
 
     embed.set_thumbnail(url = leaveImages[leave_type])
     embed.add_field(name = "Leave Type", value = leave_type, inline = False)
@@ -303,7 +303,7 @@ def CreateIsEveryoneHereEmbed(approved_dict, missing_members, isAdmin):
         if isAdmin:
             embed.add_field(name = "Reasons", value = '\n'.join(approved_dict.values()), inline = True)
 
-    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
     embed.set_footer(text = footer_text)
     return embed
 
@@ -368,7 +368,7 @@ def CreateGetEndOfMonthReportEmbed(members_list, month = None, year = None):
         embed.add_field(name = f'**{member["name"].upper()}**', value = member_data, inline = False)
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
-    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
     embed.set_footer(text = footer_text)
     return embed
 
@@ -404,7 +404,7 @@ def CreateGetEndOfYearReportEmbed(members_list, year = None):
         embed.add_field(name = f'**{member["name"].upper()}**', value = member_data, inline = False)
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
-    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
     embed.set_footer(text = footer_text)
     return embed
 
@@ -501,7 +501,7 @@ def CreateLeavesAcrossRangeEmbed(leaves, startdate, enddate, include_reason):
         embed.add_field(name = f'**{member_name.upper()}**', value = leaves_value, inline = False)
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
-    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
     embed.set_footer(text = footer_text)
     return embed
 
@@ -511,7 +511,7 @@ def FormatLeavesAcrossRangeEmbed(leaves_group, include_reason):
         if (leaves_array[0]["leave_status"] != "Approved" and (not (include_reason))):
             continue
         leaves_value += f' \u200B \u200B ***Type:*** \u200B \u200B{leaves_array[0]["leave_type"]}\n'
-        leaves_value += f' \u200B \u200B ***From:*** \u200B \u200B{leaves_array[0]["date"].strftime("%d/%m/%Y")}  \u200B \u200B \u200B \u200B \u200B ***To:*** \u200B \u200B{leaves_array[-1]["date"].strftime("%d/%m/%Y")}\n'
+        leaves_value += f' \u200B \u200B ***From:*** \u200B \u200B{leaves_array[0]["date"].strftime("%Y-%m-%d")}  \u200B \u200B \u200B \u200B \u200B ***To:*** \u200B \u200B{leaves_array[-1]["date"].strftime("%Y-%m-%d")}\n'
         if include_reason:
             reason = leaves_array[0]["reason"]
             leaves_value += f' \u200B \u200B ***Reason:*** \u200B \u200B{"None" or reason}\n'
