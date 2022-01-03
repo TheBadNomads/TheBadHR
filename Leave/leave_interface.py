@@ -28,9 +28,6 @@ async def SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_typ
     return message.id
 
 def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason):
-    if message_id == None:
-        return ("Failed")
-
     work_days = utils.GetWorkDays(start_date, end_date)
     remaining_emergency_count = leave_db.GetRemainingEmergencyLeavesCount(member.id)
     annual_leave_balance = leave_db.GetAnnualLeaveBalance(member.id)
