@@ -21,6 +21,7 @@ client = commands.Bot(command_prefix = "!", intents = discord.Intents.all())
 slash = SlashCommand(client, sync_commands = True)
 
 guild_ids = [int(os.getenv("TestServer_id"))]
+deletion_timer = float(os.getenv("Command_Deletion_Timer"))
 
 @client.event
 async def on_ready():
@@ -36,7 +37,7 @@ async def on_raw_reaction_add(payload):
 async def RequestLeave(ctx, leavetype, startdate, enddate, reason = ""):
     message_content = await leave_interface.ProcessLeaveRequest(ctx, ctx.author, client, leavetype, datetime.strptime(startdate, "%Y-%m-%d"), datetime.strptime(enddate, "%Y-%m-%d"), reason)
     await ctx.author.send(content = message_content)
-    await ctx.send(content = "Done", delete_after = 0.1)
+    await ctx.send(content = "Done", delete_after = deletion_timer)
 
 @slash.slash(name = "InsertMember", description = "Inserts a new member into the database", options = UI.CreateMemberInsertionOptions(), guild_ids = guild_ids)
 async def InsertMember(ctx, discorduser, name, email, startdate):
@@ -48,7 +49,7 @@ async def InsertMember(ctx, discorduser, name, email, startdate):
     else:
         await ctx.author.send(content = "This command is for Admins only")
     
-    await ctx.send(content = "Done", delete_after = 0.1)
+    await ctx.send(content = "Done", delete_after = deletion_timer)
 
 @slash.slash(name = "InsertRetroactiveLeave", description = "Inserts a late leave (Admins Only)", options = UI.CreateRetroactiveLeaveInsertionOptions(), guild_ids = guild_ids)
 async def InsertRetroactiveLeave(ctx, discorduser, leavetype, startdate, enddate, isemergency, isunpaid, reason = ""):
@@ -70,7 +71,7 @@ async def ShowLeavesBalance(ctx):
     else:
         await ctx.author.send(content = "your request failed, try again later")
 
-    await ctx.send(content = "Done", delete_after = 0.1)
+    await ctx.send(content = "Done", delete_after = deletion_timer)
 
 @slash.slash(name = "IsMemberWorking", description = "Checks if a member is working on a given day", options = UI.CreateIsMemberWorkingOptions(), guild_ids = guild_ids)
 async def IsMemberWorking(ctx, discorduser, date = datetime.today().strftime('%Y-%m-%d')):
@@ -80,7 +81,7 @@ async def IsMemberWorking(ctx, discorduser, date = datetime.today().strftime('%Y
     else:
         await ctx.author.send(content = f"{is_working}")
 
-    await ctx.send(content = "Done", delete_after = 0.1)
+    await ctx.send(content = "Done", delete_after = deletion_timer)
 
 @slash.slash(name = "GetEndOfMonthReport", description = "Returns a report of the selected users for the provided month", options = UI.CreateGetEndOfMonthReportOptions(), guild_ids = guild_ids)
 async def GetEndOfMonthReport(ctx, members = "", month = None, year = None):
@@ -91,7 +92,7 @@ async def GetEndOfMonthReport(ctx, members = "", month = None, year = None):
     else:
         await ctx.author.send(content = "This command is for Admins only")
 
-    await ctx.send(content = "Done", delete_after = 0.1)
+    await ctx.send(content = "Done", delete_after = deletion_timer)
 
 @slash.slash(name = "GetEndOfYearReport", description = "Returns a report of the selected users for the provided year", options = UI.CreateGetEndOfYearReportOptions(), guild_ids = guild_ids)
 async def GetEndOfYearReport(ctx, members = "", year = None):
@@ -102,7 +103,7 @@ async def GetEndOfYearReport(ctx, members = "", year = None):
     else:
         await ctx.author.send(content = "This command is for Admins only")
 
-    await ctx.send(content = "Done", delete_after = 0.1)
+    await ctx.send(content = "Done", delete_after = deletion_timer)
 
 @slash.slash(name="IsEveryoneHere", description = "Checks if all working 'Full Time' members are in the meeting channel", guild_ids = guild_ids)
 async def IsEveryoneHere(ctx):
@@ -129,7 +130,7 @@ async def IsEveryoneHere(ctx):
     embed = UI.CreateIsEveryoneHereEmbed(approved_leaves_dict, missing_members, Utilities.IsAdmin(ctx.author))
 
     await ctx.author.send(embed = embed)
-    await ctx.send(content="Done", delete_after=0.1)
+    await ctx.send(content="Done", delete_after = deletion_timer)
 
 @slash.slash(name = "CreditLeaves", description = "Inserts an extra credit for the provided leave type", options = UI.CreateCreditLeavesOptions(), guild_ids = guild_ids)
 async def CreditLeaves(ctx, discorduser, leavetype, dayscount = 1, reason = ""):
@@ -140,13 +141,13 @@ async def CreditLeaves(ctx, discorduser, leavetype, dayscount = 1, reason = ""):
     else:
         await ctx.author.send(content = "This command is for Admins only")
 
-    await ctx.send(content = "Done", delete_after = 0.1)
+    await ctx.send(content = "Done", delete_after = deletion_timer)
 
 @slash.slash(name = "GetLeavesBetween", description = "Returns the leaves of one/all members in the provided dates range", options = UI.CreateGetLeavesAcrossRangeOptions(), guild_ids = guild_ids)
 async def GetLeavesBetween(ctx, startdate, enddate, discorduser = None):
     leaves = leave_interface.GetLeavesAcrossRange(startdate, enddate, discorduser)
     embed = UI.CreateLeavesAcrossRangeEmbed(leaves, startdate, enddate, Utilities.IsAdmin(ctx.author))
     await ctx.author.send(embed = embed)
-    await ctx.send(content = "Done", delete_after = 0.1)
+    await ctx.send(content = "Done", delete_after = deletion_timer)
 
 client.run(os.getenv("Bot_token"))
