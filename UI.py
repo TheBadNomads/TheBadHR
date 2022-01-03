@@ -26,7 +26,7 @@ def CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason):
     )
     if reason == "":
         reason = "None"
-    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
 
     embed.set_thumbnail(url = leaveImages[leave_type])
     embed.add_field(name = "Leave Type", value = leave_type, inline = False)
@@ -58,7 +58,7 @@ def CreateDateChoices():
     for i in range(25):
         tmpDate = firstDate + datetime.timedelta(i)
         weekDay = tmpDate.strftime("%A")
-        dateChoices.append(create_choice(name = weekDay +": "+ tmpDate.strftime('%d/%m/%Y'), value = tmpDate.strftime('%d/%m/%Y')))
+        dateChoices.append(create_choice(name = weekDay +": "+ tmpDate.strftime('%Y-%m-%d'), value = tmpDate.strftime('%Y-%m-%d')))
     
     return dateChoices
 
@@ -133,7 +133,7 @@ def CreateMemberInsertionOptions():
         ),
         create_option(
             name = "startdate",
-            description = "working start date format: DD/MM/YYYY",
+            description = "working start date format: YYYY-MM-DD",
             option_type = SlashCommandOptionType.STRING,
             required = True
         )
@@ -158,13 +158,13 @@ def CreateRetroactiveLeaveInsertionOptions():
         ),
          create_option(
             name = "startdate",
-            description = "starting date of the leave in DD/MM/YYYY format",
+            description = "starting date of the leave in YYYY-MM-DD format",
             option_type = SlashCommandOptionType.STRING,
             required = True
         ),
         create_option(
             name = "enddate",
-            description = "ending date of the leave in DD/MM/YYYY format",
+            description = "ending date of the leave in YYYY-MM-DD format",
             option_type = SlashCommandOptionType.STRING,
             required = True
         ),
@@ -208,7 +208,8 @@ def CreateLeavesBalancesEmbed(member, author_id = None):
         embed.add_field(name = "Emergency", value = max(leave_db.GetRemainingEmergencyLeavesCount(member.id), 0), inline = True)
 
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
-        embed.set_footer(text = datetime.date.today())
+        footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
+        embed.set_footer(text = footer_text)
         return embed
 
     except Exception as e:
@@ -228,7 +229,7 @@ def CreateInformMemberOfLeaveStatusEmbed(request_id, status, admin_name, reason,
     if reason == "":
         reason = "None"
         
-    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
 
     embed.set_thumbnail(url = leaveImages[leave_type])
     embed.add_field(name = "Leave Type", value = leave_type, inline = False)
@@ -250,18 +251,18 @@ def CreateMemberInfoEmbed(member, member_db_info):
     )
 
     if(member_db_info["leave_date"]):
-        leave_date = (member_db_info["leave_date"]).strftime('%d/%m/%Y')
+        leave_date = (member_db_info["leave_date"]).strftime('%Y-%m-%d')
     else:
         leave_date = "Still Employed"
     
     embed.add_field(name = "Full Name", value = member_db_info["name"], inline = True)
     embed.add_field(name = "Email", value = member_db_info["email"], inline = True)
     embed.add_field(name = "Roles", value = " - ".join([role.name for role in member.roles[1:]]), inline = False)
-    embed.add_field(name = "Start Date", value = (member_db_info["start_date"]).strftime('%d/%m/%Y'), inline = True)
+    embed.add_field(name = "Start Date", value = (member_db_info["start_date"]).strftime('%Y-%m-%d'), inline = True)
     embed.add_field(name = "Leave Date", value =  leave_date, inline = True)
     embed.add_field(name = "Starting Leaves Balance", value =  member_db.CalculateProratedAnnualLeaves(member.id), inline = False)
 
-    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
     embed.set_footer(text = footer_text)
 
     return embed
@@ -303,7 +304,7 @@ def CreateIsEveryoneHereEmbed(approved_dict, missing_members, isAdmin):
         if isAdmin:
             embed.add_field(name = "Reasons", value = '\n'.join(approved_dict.values()), inline = True)
 
-    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
     embed.set_footer(text = footer_text)
     return embed
 
@@ -357,7 +358,7 @@ def CreateGetEndOfMonthReportEmbed(members_list, month = None, year = None):
     year = year or datetime.datetime.now().year
     embed = discord.Embed(
         title = f'End of Month Report',
-        description = f'{month}/{year} Report:',
+        description = f'{year}-{month} Report:',
         colour = 0x4682B4
     )
     embed.set_thumbnail(url = os.getenv("Salary_Image"))
@@ -368,7 +369,7 @@ def CreateGetEndOfMonthReportEmbed(members_list, month = None, year = None):
         embed.add_field(name = f'**{member["name"].upper()}**', value = member_data, inline = False)
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
-    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
     embed.set_footer(text = footer_text)
     return embed
 
@@ -404,7 +405,7 @@ def CreateGetEndOfYearReportEmbed(members_list, year = None):
         embed.add_field(name = f'**{member["name"].upper()}**', value = member_data, inline = False)
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
-    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
     embed.set_footer(text = footer_text)
     return embed
 
@@ -464,13 +465,13 @@ def CreateGetLeavesAcrossRangeOptions():
     get_leaves_across_range_options = [
         create_option(
             name = "startdate",
-            description = "start date (inclusive) in DD/MM/YYYY format",
+            description = "start date (inclusive) in YYYY-MM-DD format",
             option_type = SlashCommandOptionType.STRING,
             required = True
         ),
         create_option(
             name = "enddate",
-            description = "end date (inclusive) in DD/MM/YYYY format",
+            description = "end date (inclusive) in YYYY-MM-DD format",
             option_type = SlashCommandOptionType.STRING,
             required = True
         ),
@@ -487,7 +488,7 @@ def CreateGetLeavesAcrossRangeOptions():
 def CreateLeavesAcrossRangeEmbed(leaves, startdate, enddate, include_reason):
     embed = discord.Embed(
         title = f'Applied Leaves',
-        description = f'Dates range: \u200B \u200B**{startdate}** - **{enddate}**',
+        description = f'Dates range: \u200B \u200B**{startdate}** \u200B \u200B \u200B \u200B - \u200B \u200B \u200B \u200B **{enddate}**',
         colour = 0x4682B4
     )
     embed.set_thumbnail(url = os.getenv("Leave_Balance_Image"))
@@ -501,7 +502,7 @@ def CreateLeavesAcrossRangeEmbed(leaves, startdate, enddate, include_reason):
         embed.add_field(name = f'**{member_name.upper()}**', value = leaves_value, inline = False)
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
-    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%d/%m/%Y"))
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
     embed.set_footer(text = footer_text)
     return embed
 
@@ -511,10 +512,10 @@ def FormatLeavesAcrossRangeEmbed(leaves_group, include_reason):
         if (leaves_array[0]["leave_status"] != "Approved" and (not (include_reason))):
             continue
         leaves_value += f' \u200B \u200B ***Type:*** \u200B \u200B{leaves_array[0]["leave_type"]}\n'
-        leaves_value += f' \u200B \u200B ***From:*** \u200B \u200B{leaves_array[0]["date"].strftime("%d/%m/%Y")}  \u200B \u200B \u200B \u200B \u200B ***To:*** \u200B \u200B{leaves_array[-1]["date"].strftime("%d/%m/%Y")}\n'
+        leaves_value += f' \u200B \u200B ***From:*** \u200B \u200B{leaves_array[0]["date"].strftime("%Y-%m-%d")}  \u200B \u200B \u200B \u200B \u200B ***To:*** \u200B \u200B{leaves_array[-1]["date"].strftime("%Y-%m-%d")}\n'
         if include_reason:
             reason = leaves_array[0]["reason"]
-            leaves_value += f' \u200B \u200B ***Reason:*** \u200B \u200B{"None" or reason}\n'
+            leaves_value += f' \u200B \u200B ***Reason:*** \u200B \u200B{reason or "None"}\n'
             leaves_value += f' \u200B \u200B ***Status:*** \u200B \u200B{leaves_array[0]["leave_status"]}\n'
         leaves_value += '\n'
     return leaves_value
