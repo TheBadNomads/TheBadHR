@@ -190,11 +190,10 @@ def CreateRetroactiveLeaveInsertionOptions():
     return retroactive_application_options
 
 def CreateLeavesBalancesEmbed(member, author_id = None):
-    try:
-        if(author_id == member.id or author_id == None):
-            description_text = "Your balances are:"
-        else:
-            description_text = f"{member.display_name}'s balances are:"
+    if(author_id == member.id or author_id == None):
+        description_text = "Your balances are:"
+    else:
+        description_text = f"{member.display_name}'s balances are:"
         embed = discord.Embed(
             title = f'Leave Balances',
             description = description_text,
@@ -210,11 +209,7 @@ def CreateLeavesBalancesEmbed(member, author_id = None):
         embed.add_field(name = '\u200B', value = '\u200B', inline = False)
         footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
         embed.set_footer(text = footer_text)
-        return embed
-
-    except Exception as e:
-        print(e)
-        return None
+    return embed
 
 def CreateInformMemberOfLeaveStatusEmbed(request_id, status, admin_name, reason, leave_type, start_date, end_date):
     leaveImages = {
