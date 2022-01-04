@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime
 from Leave import leave_db
 
-path = input("Please enter a the path of your csv file:\n")
+path = input("Please enter the path of your csv file:\n")
 data = pd.read_csv(path)
 data_dic = data.iterrows()
 
