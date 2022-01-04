@@ -10,7 +10,7 @@ from discord.ext import commands
 from discord_slash import SlashCommand
 from discord_components import DiscordComponents
 from Member import member_db 
-from Leave import leave_interface
+from Leave import leave_interface, leave_db
 
 load_dotenv()
 
