@@ -1,12 +1,9 @@
-from datetime import datetime
+import datetime
 import discord
 import os
 import Utilities
 import Scheduler
-
-from discord import utils
 import UI
-import db
 
 from dotenv import load_dotenv
 from discord.ext import commands
@@ -35,14 +32,14 @@ async def on_raw_reaction_add(payload):
 
 @slash.slash(name = "RequestLeave", description = "Requests an annual leave", options = UI.CreateLeaveRequestOptions(), guild_ids = guild_ids)
 async def RequestLeave(ctx, leavetype, startdate, enddate, reason = ""):
-    message_content = await leave_interface.ProcessLeaveRequest(ctx, ctx.author, client, leavetype, datetime.strptime(startdate, "%Y-%m-%d"), datetime.strptime(enddate, "%Y-%m-%d"), reason)
+    message_content = await leave_interface.ProcessLeaveRequest(ctx, ctx.author, client, leavetype, datetime.datetime.strptime(startdate, "%Y-%m-%d"), datetime.datetime.strptime(enddate, "%Y-%m-%d"), reason)
     await ctx.author.send(content = message_content)
     await ctx.send(content = "Done", delete_after = deletion_timer)
 
 @slash.slash(name = "InsertMember", description = "Inserts a new member into the database", options = UI.CreateMemberInsertionOptions(), guild_ids = guild_ids)
 async def InsertMember(ctx, discorduser, name, email, startdate):
     if Utilities.IsAdmin(ctx.author):
-        member_db.InsertMember(discorduser.id, name, email, datetime.strptime(startdate, '%Y-%m-%d'))
+        member_db.InsertMember(discorduser.id, name, email, datetime.datetime.strptime(startdate, '%Y-%m-%d'))
         member_db_info = member_db.GetMemberByID(discorduser.id)
         embed = UI.CreateMemberInfoEmbed(discorduser, member_db_info)
         await ctx.author.send(embed = embed)
@@ -55,7 +52,7 @@ async def InsertMember(ctx, discorduser, name, email, startdate):
 async def InsertRetroactiveLeave(ctx, discorduser, leavetype, startdate, enddate, isemergency, isunpaid, reason = ""):
     await ctx.send(content = "Processing")
     if Utilities.IsAdmin(ctx.author):
-        await leave_interface.InsertRetroactiveLeave(discorduser, ctx.message.id, datetime.strptime(startdate, '%Y-%m-%d'), datetime.strptime(enddate, '%Y-%m-%d'), leavetype, isemergency, isunpaid, reason)
+        await leave_interface.InsertRetroactiveLeave(discorduser, ctx.message.id, datetime.datetime.strptime(startdate, '%Y-%m-%d'), datetime.datetime.strptime(enddate, '%Y-%m-%d'), leavetype, isemergency, isunpaid, reason)
         embed = UI.CreateLeavesBalancesEmbed(discorduser, ctx.author.id)
         await ctx.author.send(embed = embed)
     else:
@@ -74,8 +71,8 @@ async def ShowLeavesBalance(ctx):
     await ctx.send(content = "Done", delete_after = deletion_timer)
 
 @slash.slash(name = "IsMemberWorking", description = "Checks if a member is working on a given day", options = UI.CreateIsMemberWorkingOptions(), guild_ids = guild_ids)
-async def IsMemberWorking(ctx, discorduser, date = datetime.today().strftime('%Y-%m-%d')):
-    is_working, reason = leave_interface.IsMemberWorking(discorduser.id, datetime.strptime(date, '%Y-%m-%d'))
+async def IsMemberWorking(ctx, discorduser, date = datetime.datetime.today().strftime('%Y-%m-%d')):
+    is_working, reason = leave_interface.IsMemberWorking(discorduser.id, datetime.datetime.strptime(date, '%Y-%m-%d'))
     if Utilities.IsAdmin(ctx.author):
         await ctx.author.send(content = f"{is_working}, {reason}")
     else:
@@ -108,8 +105,8 @@ async def GetEndOfYearReport(ctx, members = "", year = None):
 @slash.slash(name="IsEveryoneHere", description = "Checks if all working 'Full Time' members are in the meeting channel", guild_ids = guild_ids)
 async def IsEveryoneHere(ctx):
 
-    today = datetime.today().date()
-    today = datetime(today.year, today.month, today.day)
+    today = datetime.datetime.today().date()
+    today = datetime.datetime(today.year, today.month, today.day)
 
     guild = client.guilds[0]
     meeting_channel = client.get_channel(int(os.getenv("MeetingChannel_id")))
@@ -135,7 +132,7 @@ async def IsEveryoneHere(ctx):
 @slash.slash(name = "CreditLeaves", description = "Inserts an extra credit for the provided leave type", options = UI.CreateCreditLeavesOptions(), guild_ids = guild_ids)
 async def CreditLeaves(ctx, discorduser, leavetype, dayscount = 1, reason = ""):
     if Utilities.IsAdmin(ctx.author):
-        leave_db.InsertExtraBalance(datetime.today(), ctx.author.id, discorduser.id, leavetype, reason, dayscount)
+        leave_db.InsertExtraBalance(datetime.datetime.today(), ctx.author.id, discorduser.id, leavetype, reason, dayscount)
         embed = UI.CreateLeavesBalancesEmbed(discorduser, ctx.author.id)
         await ctx.author.send(embed = embed)
     else:

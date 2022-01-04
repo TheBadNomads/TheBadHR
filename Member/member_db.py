@@ -1,9 +1,7 @@
-import Utilities as utils
 import os
+import datetime
 
 from db import db
-from datetime import datetime
-from Leave import leave_db
 
 def GetMemberByID(id):
     db.GetDBCursor().execute(f'SELECT * FROM [members] WHERE id = {id}')
