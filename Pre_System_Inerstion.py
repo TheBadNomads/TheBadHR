@@ -6,10 +6,10 @@ from datetime import datetime, timedelta
 from Member import member_db 
 from Leave import leave_db
 
-data = pd.read_excel(os.getenv("Pre_System_Leaves_excel_Path"))
-data_dic = data.T.to_dict().values()
+data = pd.read_csv(os.getenv("Pre_System_Leaves_excel_Path"))
+data_dic = data.iterrows()
 
-for record in data_dic:
+for index, record in data_dic:
     date = datetime(2021, 12, 1)
     days_count = record["Days_Count"]
     automatic_leave_id = -1
