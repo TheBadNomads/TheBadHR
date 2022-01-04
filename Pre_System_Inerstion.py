@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from Member import member_db 
 from Leave import leave_db
 
-data = pd.read_excel (os.getenv("Pre_System_Leaves_excel_Path"))
+data = pd.read_excel(os.getenv("Pre_System_Leaves_excel_Path"))
 data_dic = data.T.to_dict().values()
 
 for record in data_dic:
