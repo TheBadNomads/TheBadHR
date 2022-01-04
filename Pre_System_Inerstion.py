@@ -1,12 +1,10 @@
-import Utilities
 import pandas as pd
-import os
 
-from datetime import datetime, timedelta
-from Member import member_db 
+from datetime import datetime
 from Leave import leave_db
 
-data = pd.read_csv(os.getenv("Pre_System_Leaves_excel_Path"))
+path = input("Please enter a the path of your csv file:\n")
+data = pd.read_csv(path)
 data_dic = data.iterrows()
 
 for index, record in data_dic:
