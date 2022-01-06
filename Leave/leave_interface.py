@@ -28,24 +28,16 @@ async def SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_typ
     return message.id
 
 def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason):
-    if message_id == None:
-        return ("Failed")
-
-    try:
-        work_days = utils.GetWorkDays(start_date, end_date)
-        remaining_emergency_count = leave_db.GetRemainingEmergencyLeavesCount(member.id)
-        annual_leave_balance = leave_db.GetAnnualLeaveBalance(member.id)
-        for day in work_days:
-            is_emergency = utils.IsEmergencyLeave(day, leave_type)
-            is_unpaid = utils.IsUnpaidLeave(leave_type, annual_leave_balance, is_emergency, remaining_emergency_count)
-            if ((leave_type == "Annual") and not (is_unpaid)):
-                annual_leave_balance -= 1
-            leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
-        return (db.GetCaption(1))
-        
-    except Exception as e:
-        print(e)
-        return ("Failed")
+    work_days = utils.GetWorkDays(start_date, end_date)
+    remaining_emergency_count = leave_db.GetRemainingEmergencyLeavesCount(member.id)
+    annual_leave_balance = leave_db.GetAnnualLeaveBalance(member.id)
+    for day in work_days:
+        is_emergency = utils.IsEmergencyLeave(day, leave_type)
+        is_unpaid = utils.IsUnpaidLeave(leave_type, annual_leave_balance, is_emergency, remaining_emergency_count)
+        if ((leave_type == "Annual") and not (is_unpaid)):
+            annual_leave_balance -= 1
+        leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
+    return (db.GetCaption(1))
                 
 async def HandleLeaveReactions(client, payload):
     channel = client.get_channel(payload.channel_id)
@@ -70,12 +62,9 @@ async def HandleLeaveReactions(client, payload):
             await message.clear_reactions()
             await AddEmojisToLeaveMessage(message)
     elif leave_db.IsLeaveRequestPending(payload.message_id):
-        try:
-            leave_db.UpdateLeaveStatus(payload.message_id, action)
-            await UI.UpdateLeaveEmbed(payload.member, message, embed, action)
-            await InformMemberAboutLeaveStatus(client, payload.message_id, embed, payload.member, action)
-        except Exception as e:
-            print(e)
+        leave_db.UpdateLeaveStatus(payload.message_id, action)
+        await UI.UpdateLeaveEmbed(payload.member, message, embed, action)
+        await InformMemberAboutLeaveStatus(client, payload.message_id, embed, payload.member, action)
 
 async def InformMemberAboutLeaveStatus(client, request_id, embed, admin, status):
     member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
@@ -115,15 +104,11 @@ def IsLeaveRequestValid(member_id, start_date, end_date):
 
 async def InsertRetroactiveLeave(member, message_id, start_date, end_date, leave_type, is_requested_late, is_unpaid_retroactive, reason):
     is_request_valid, message = IsLeaveRequestValid(member.id, start_date, end_date)
-    try:
-        if is_request_valid:
-            result = AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason, is_requested_late, is_unpaid_retroactive)
-            return result
+    if is_request_valid:
+        result = AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason, is_requested_late, is_unpaid_retroactive)
+        return result
 
-        return message
-    except Exception as e:
-        print(e)
-        return ("Something went wrong, please try again later")
+    return message
 
 def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason, is_emergency, is_unpaid):
     work_days = utils.GetWorkDays(start_date, end_date)

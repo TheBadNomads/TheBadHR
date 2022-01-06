@@ -16,17 +16,11 @@ def GetMembers():
     return members
 
 def InsertMember(id:int, name:str, email:str, start_date:datetime):
-    try:
-        db.GetDBCursor().execute(
-            "INSERT INTO [members] (id, name, email, start_date) VALUES (?, ?, ?, ?)",
-            (id, name, email, start_date)
-        )    
-        db.GetDBConnection().commit()
-        return "Success"
-
-    except Exception as e:
-        db.GetDBConnection().rollback()
-        return "failed"
+    db.GetDBCursor().execute(
+        "INSERT INTO [members] (id, name, email, start_date) VALUES (?, ?, ?, ?)",
+        (id, name, email, start_date)
+    )    
+    db.GetDBConnection().commit()
 
 def CalculateProratedAnnualLeaves(member_id):
     start_month = GetMemberByID(member_id)["start_date"].month

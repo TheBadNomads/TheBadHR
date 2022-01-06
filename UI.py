@@ -190,31 +190,26 @@ def CreateRetroactiveLeaveInsertionOptions():
     return retroactive_application_options
 
 def CreateLeavesBalancesEmbed(member, author_id = None):
-    try:
-        if(author_id == member.id or author_id == None):
-            description_text = "Your balances are:"
-        else:
-            description_text = f"{member.display_name}'s balances are:"
-        embed = discord.Embed(
-            title = f'Leave Balances',
-            description = description_text,
-            colour = 0x4682B4
-        )
-        embed.set_thumbnail(url = os.getenv("Leave_Balance_Image"))
-        embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+    if(author_id == member.id or author_id == None):
+        description_text = "Your balances are:"
+    else:
+        description_text = f"{member.display_name}'s balances are:"
+    embed = discord.Embed(
+        title = f'Leave Balances',
+        description = description_text,
+        colour = 0x4682B4
+    )
+    embed.set_thumbnail(url = os.getenv("Leave_Balance_Image"))
+    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
 
-        embed.add_field(name = "Annual", value = leave_db.GetAnnualLeaveBalance(member.id), inline = True)
-        embed.add_field(name = '\u200B', value = '\u200B', inline = True)
-        embed.add_field(name = "Emergency", value = max(leave_db.GetRemainingEmergencyLeavesCount(member.id), 0), inline = True)
+    embed.add_field(name = "Annual", value = leave_db.GetAnnualLeaveBalance(member.id), inline = True)
+    embed.add_field(name = '\u200B', value = '\u200B', inline = True)
+    embed.add_field(name = "Emergency", value = max(leave_db.GetRemainingEmergencyLeavesCount(member.id), 0), inline = True)
 
-        embed.add_field(name = '\u200B', value = '\u200B', inline = False)
-        footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
-        embed.set_footer(text = footer_text)
-        return embed
-
-    except Exception as e:
-        print(e)
-        return None
+    embed.add_field(name = '\u200B', value = '\u200B', inline = False)
+    footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
+    embed.set_footer(text = footer_text)
+    return embed
 
 def CreateInformMemberOfLeaveStatusEmbed(request_id, status, admin_name, reason, leave_type, start_date, end_date):
     leaveImages = {

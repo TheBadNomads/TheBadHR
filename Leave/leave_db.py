@@ -73,40 +73,22 @@ def GetLeaveTypes():
     return leaves_types
 
 def InsertLeave(member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency, is_unpaid):
-    try:
-        db.GetDBCursor().execute(
-            "INSERT INTO [leaves] (member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency, is_unpaid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency, is_unpaid)
-        )
-        db.GetDBConnection().commit()
-        return "Success"
-
-    except Exception as e:
-        db.GetDBConnection().rollback()
-        return "Failed"
+    db.GetDBCursor().execute(
+        "INSERT INTO [leaves] (member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency, is_unpaid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency, is_unpaid)
+    )
+    db.GetDBConnection().commit()
 
 def InsertExtraBalance(date, creditor_id, recipient_id, leave_type, reason, days_count):
-    try:
-        db.GetDBCursor().execute(
-            "INSERT INTO [extraBalance] (date, creditor_id, recipient_id, leave_type, reason, days_count) VALUES (?, ?, ?, ?, ?, ?)",
-            (date, creditor_id, recipient_id, leave_type, reason, days_count)
-        )
-        db.GetDBConnection().commit()
-        return "Success"
-
-    except Exception as e:
-        db.GetDBConnection().rollback()
-        return "Failed"
+    db.GetDBCursor().execute(
+        "INSERT INTO [extraBalance] (date, creditor_id, recipient_id, leave_type, reason, days_count) VALUES (?, ?, ?, ?, ?, ?)",
+        (date, creditor_id, recipient_id, leave_type, reason, days_count)
+    )
+    db.GetDBConnection().commit()
 
 def UpdateLeaveStatus(request_id, leave_status):
-    try:
-        db.GetDBCursor().execute("UPDATE [leaves] SET leave_status = ? WHERE request_id = ?", leave_status, request_id)
-        db.GetDBConnection().commit()
-        return "Success"
-
-    except Exception as e:
-        db.GetDBConnection().rollback()
-        return "Failed"
+    db.GetDBCursor().execute("UPDATE [leaves] SET leave_status = ? WHERE request_id = ?", leave_status, request_id)
+    db.GetDBConnection().commit()
 
 def IsLeaveRequest(message_id):
     return len(GetLeavesByRequestID(message_id)) != 0
