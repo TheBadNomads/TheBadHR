@@ -105,20 +105,20 @@ def IsLeaveRequestValid(member_id, start_date, end_date):
 async def InsertRetroactiveLeave(member, message_id, start_date, end_date, leave_type, is_requested_late, is_unpaid_retroactive, reason):
     is_request_valid, message = IsLeaveRequestValid(member.id, start_date, end_date)
     if is_request_valid:
-        result = AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, "Approved", reason, is_requested_late, is_unpaid_retroactive)
+        result = AddRetroactiveLeaveToDB(member.id, message_id, start_date, end_date, leave_type, "Approved", reason, is_requested_late, is_unpaid_retroactive)
         return result
 
     return message
 
-def AddRetroactiveLeaveToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason, is_emergency, is_unpaid):
+def AddRetroactiveLeaveToDB(member_id, message_id, start_date, end_date, leave_type, leave_status, reason, is_emergency, is_unpaid):
     work_days = utils.GetWorkDays(start_date, end_date)
-    remaining_emergency_count = leave_db.GetRemainingEmergencyLeavesCount(member.id)
-    annual_leave_balance = leave_db.GetAnnualLeaveBalance(member.id)
+    remaining_emergency_count = leave_db.GetRemainingEmergencyLeavesCount(member_id)
+    annual_leave_balance = leave_db.GetAnnualLeaveBalance(member_id)
     for day in work_days:
         is_unpaid = ((is_unpaid) or (utils.IsUnpaidLeave(leave_type, annual_leave_balance, is_emergency, remaining_emergency_count)))
         if ((leave_type == "Annual") and not (is_unpaid)):
             annual_leave_balance -= 1
-        leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
+        leave_db.InsertLeave(member_id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
     return ("Retroactive leave was inserted successfully")
 
 def GetLeavesAcrossRange(start_date, end_date, member):
