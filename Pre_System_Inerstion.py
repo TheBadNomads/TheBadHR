@@ -1,7 +1,7 @@
 import pandas as pd
 
 from datetime import datetime
-from Leave import leave_db
+from Leave import leave_db, leave_interface
 
 path = input("Please enter the path of your csv file:\n")
 data = pd.read_csv(path)
@@ -38,4 +38,4 @@ for record in data_dic:
         days_count = record[11]
         member_id = members_dic[record[0]]
         for counter in range(days_count):
-            leave_db.InsertLeave(member_id, automatic_leave_id, "Annual", date, "", "", "Approved", is_emergency, record["Is_Unpaid"])
+            leave_interface.AddRetroactiveLeaveToDB(member_id, automatic_leave_id, date, date, "Annual", "Approved", "", is_emergency, None)
