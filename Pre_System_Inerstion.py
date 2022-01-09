@@ -1,7 +1,7 @@
 import csv
 
 from datetime import datetime
-from Leave import leave_db, leave_interface
+from Leave import leave_interface
 
 path = input("Please enter the path of your csv file:\n")
 members_dic = {
