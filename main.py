@@ -111,10 +111,10 @@ async def IsEveryoneHere(ctx):
     guild = client.guilds[0]
     meeting_channel = client.get_channel(int(os.getenv("MeetingChannel_id")))
     fulltime_role = discord.utils.get(guild.roles, name = "Full Time")
-    core_roles = os.getenv("Core_Attending_Role_ids").split(", ")
-    core_roles = set([discord.utils.get(guild.roles, id=int(role_id)) for role_id in core_roles])
+    non_core_roles = os.getenv("Non_Core_Attending_Role_ids").split(", ")
+    non_core_roles = set([discord.utils.get(guild.roles, id=int(role_id)) for role_id in non_core_roles])
     
-    fulltime_members = list(filter(lambda member: (fulltime_role in member.roles) and core_roles.intersection(set(member.roles)), guild.members))
+    fulltime_members = list(filter(lambda member: (fulltime_role in member.roles) and not non_core_roles.intersection(set(member.roles)), guild.members))
     fulltime_members_in_voicechannel = list(filter(lambda member : fulltime_role in member.roles, meeting_channel.members))
     not_here = list(set(fulltime_members) - set(fulltime_members_in_voicechannel))
 
