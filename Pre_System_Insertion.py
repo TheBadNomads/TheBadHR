@@ -21,24 +21,44 @@ date = datetime(2021, 12, 1)
 automatic_leave_id = -1
 is_emergency = False
 
-with open(path, "r") as f:
-    data = csv.reader(f, delimiter = "\t")
+# with open(path, "r") as f:
+#     data = csv.reader(f, delimiter = "\t")
+#     for line in data:
+#         cols = line[0].split(',')
+#         header_name = cols[0]
+#         if header_name == "":
+#             continue
+
+#         if header_name == "Total Leaves":
+#             break
+        
+#         if header_name in leave_types:
+#             is_emergency = False
+#             if header_name == "Emergency Leave":
+#                 is_emergency = True
+
+#         if header_name in members_dic:
+#             days_count = int(cols[11])
+#             member_id = members_dic[header_name]
+#             for counter in range(days_count):
+#                 leave_interface.AddRetroactiveLeaveToDB(member_id, automatic_leave_id, date, date, "Annual", "Approved", "", is_emergency, None)
+
+def AdjustSheetHeader():
+    file = open(path, 'r')
+    data = csv.reader(file, delimiter = "\t")
+    cols = []
     for line in data:
         cols = line[0].split(',')
-        header_name = cols[0]
-        if header_name == "":
-            continue
+        months = ["April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        for i in range(9):
+            cols[i + 1] = months[i]
+    file.close()
 
-        if header_name == "Total Leaves":
-            break
+    file2 = open(path, 'w')
+    writer = csv.writer(file2)
+    writer.writerows(cols)
+    file2.close()
         
-        if header_name in leave_types:
-            is_emergency = False
-            if header_name == "Emergency Leave":
-                is_emergency = True
 
-        if header_name in members_dic:
-            days_count = int(cols[11])
-            member_id = members_dic[header_name]
-            for counter in range(days_count):
-                leave_interface.AddRetroactiveLeaveToDB(member_id, automatic_leave_id, date, date, "Annual", "Approved", "", is_emergency, None)
+AdjustSheetHeader()
+
