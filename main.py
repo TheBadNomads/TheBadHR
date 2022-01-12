@@ -114,9 +114,9 @@ async def IsEveryoneHere(ctx):
     non_core_roles = os.getenv("Non_Core_Attending_Role_ids").split(", ")
     non_core_roles = set([discord.utils.get(guild.roles, id=int(role_id)) for role_id in non_core_roles])
     
-    fulltime_members = list(filter(lambda member: (fulltime_role in member.roles) and not non_core_roles.intersection(set(member.roles)), guild.members))
-    fulltime_members_in_voicechannel = list(filter(lambda member : fulltime_role in member.roles, meeting_channel.members))
-    not_here = list(set(fulltime_members) - set(fulltime_members_in_voicechannel))
+    core_attending_members = list(filter(lambda member: (fulltime_role in member.roles) and not non_core_roles.intersection(set(member.roles)), guild.members))
+    core_attending_members_in_voicechannel = list(filter(lambda member : fulltime_role in member.roles, meeting_channel.members))
+    not_here = list(set(core_attending_members) - set(core_attending_members_in_voicechannel))
 
     approved_leaves = list(filter(lambda member : (leave_interface.IsMemberOnLeave(member.id, today))[0], not_here))
     approved_leaves_names = [member.display_name for member in approved_leaves]
