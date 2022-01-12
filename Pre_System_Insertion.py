@@ -2,12 +2,13 @@ import csv
 import Utilities as utils
 import pandas
 import os
+import re
 
 import datetime
 from Leave import leave_interface, leave_db
 
 input_path = input("Please enter the input path of your csv file:\n")
-output_path = input("Please enter the output path of your csv file:\n")
+output_path = re.sub('.csv$', '_modified.csv', input_path)
 
 members_dic = {
     "Ant"     : 158010930200838144,
@@ -111,5 +112,6 @@ def InsertExtraBalance(days_count, member_id, date):
 def MainFunction():
     sheet_name = CreateNewSheet(CreateNewHeader(), CreateNewBody())
     InsertDataIntoDBFromCSV(sheet_name)
+    os.remove(output_path)
 
 MainFunction()
