@@ -92,6 +92,8 @@ def InsertDataIntoDBFromCSV(file_name):
             else:
                 InsertLeavesIntoDB(days_count_int_part + 1, member_id, date, is_emergency)
                 InsertExtraBalance(days_count_float_part, member_id, date)
+                
+    os.remove(output_path)
 
 def InsertLeavesIntoDB(days_count, member_id, date, is_emergency):
     if date.weekday() in [4, 5]:
@@ -112,6 +114,5 @@ def InsertExtraBalance(days_count, member_id, date):
 def MainFunction():
     sheet_name = CreateNewSheet(CreateNewHeader(), CreateNewBody())
     InsertDataIntoDBFromCSV(sheet_name)
-    os.remove(output_path)
 
 MainFunction()
