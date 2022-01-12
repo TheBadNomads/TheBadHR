@@ -2,6 +2,7 @@ import datetime
 import os
 
 from db import db
+from dateutil.relativedelta import relativedelta
 from Member import member_db
 
 def GetLeaveByID(id):
@@ -59,12 +60,14 @@ def GetApprovedSickLeaves(member_id, start_date, end_date):
 def GetAnnualLeaveBalance(member_id):
     initial_balance = member_db.CalculateProratedAnnualLeaves(member_id)
     extra_balance = GetExtraBalance(member_id, "Annual")
-    used_balance = len(list(filter(lambda leave: leave['leave_type'] == 'Annual' and leave['is_unpaid'] == False, GetLeavesByMemberID(member_id))))
+    start_date = datetime.datetime(datetime.date.today().year - 1, int(os.getenv("End_of_Year_Report_Month")), int(os.getenv("End_of_Year_Report_Day")))
+    end_date = start_date + relativedelta(years = 1)
+    used_balance = len(list(filter(lambda leave: leave['leave_type'] == 'Annual', GetApprovedPaidLeaves(member_id, start_date, end_date))))
     current_balance = initial_balance + extra_balance - used_balance
     return current_balance
 
 def GetExtraBalance(member_id, leave_type):
-    db.GetDBCursor().execute(f"SELECT SUM(days_count) FROM extraBalance WHERE recipient_id = {member_id} AND leave_type = '{leave_type}'")
+    db.GetDBCursor().execute(f"SELECT SUM(days_count) FROM extraBalance WHERE recipient_id = {member_id} AND leave_type = '{leave_type}' AND YEAR(date) = {datetime.date.today().year}")
     return db.GetDBCursor().fetchone()[0] or 0 
 
 def GetLeaveTypes():
