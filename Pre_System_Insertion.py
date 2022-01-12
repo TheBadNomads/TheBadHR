@@ -3,11 +3,13 @@ import Utilities as utils
 import pandas
 import os
 import re
+import calendar
 
 import datetime
 from Leave import leave_interface, leave_db
 
 input_path = input("Please enter the input path of your csv file:\n")
+sheet_year = input("Please enter the year of your csv file:\n")
 output_path = re.sub('.csv$', '_modified.csv', input_path)
 
 members_dic = {
@@ -22,7 +24,7 @@ members_dic = {
     "Brian"   : 174932293134188544,
     "Omar"    : 757347719135363192
 }
-automatic_leave_id = -1
+automatic_leave_id = 0
 
 def CreateNewHeader():
     file = open(input_path, 'r')
@@ -30,9 +32,13 @@ def CreateNewHeader():
     headers = next(data)[0].split(',')
     headers.pop(-1)
     headers.pop(-2)
-    months = ["April", "May", "June", "July", "August", "September", "October", "November", "December"]
-    for i in range(9):
-        headers[i + 1] = months[i]
+    months = list(calendar.month_name)
+    months.pop(0)
+    for i, month in enumerate(months):
+        if i < 9 :
+            headers[i + 1] = months[i]
+        else:
+            headers.append(f"{month}")
     headers[0] = "Name"
     headers.append("is_emergency")
     return headers
@@ -68,6 +74,8 @@ def CreateNewSheet(header, body = None):
     writer = csv.writer(file)
     writer.writerow(header)
     for line in body:
+        while len(line) < 14:
+            line.insert(1, "0.0")
         writer.writerow(line)
     file.close()
     return file.name
@@ -77,14 +85,12 @@ def InsertDataIntoDBFromCSV(file_name):
     for index, row in df.iterrows():
         member_id = members_dic[row[0]]
         is_emergency = row[-1]
-        for col in row.index[1:]:
-            if col == "is_emergency":
-                continue
+        for col in row.index[1:-1]:
             days_count = float(row[col])
             if days_count <= 0.0 :
                 continue
 
-            date = datetime.datetime(2021, datetime.datetime.strptime(col, '%B').month, 1)
+            date = datetime.datetime(int(sheet_year), datetime.datetime.strptime(col, '%B').month, 1)
             days_count_int_part = int(days_count)
             days_count_float_part = float(days_count - days_count_int_part)
             if days_count_float_part <= 0.0:
@@ -108,7 +114,7 @@ def GetNextWeekDay(date):
     return date + datetime.timedelta(days_ahead)
  
 def InsertExtraBalance(days_count, member_id, date):
-    finance_admin_id = int(os.getenv("Finance_Admins_ids").split(", ")[0])
+    finance_admin_id = int(os.getenv("Finance_Admin_id"))
     leave_db.InsertExtraBalance(date, finance_admin_id, member_id, "Annual", "", days_count)
 
 def MainFunction():
