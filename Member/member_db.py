@@ -23,7 +23,12 @@ def InsertMember(id:int, name:str, email:str, start_date:datetime):
     db.GetDBConnection().commit()
 
 def CalculateProratedAnnualLeaves(member_id):
-    start_month = GetMemberByID(member_id)["start_date"].month
+    start_date = GetMemberByID(member_id)["start_date"]
+    start_year = start_date.year
+    if datetime.date.today().year > start_year :
+        return int(os.getenv("Annual_Leaves_Max_Count"))
+        
+    start_month = start_date.month
     leaves_months_count = (12 - start_month) + 1
     starting_balance = int(os.getenv("Annual_Leaves_Max_Count"))
     leave_balance_per_month = starting_balance / 12
