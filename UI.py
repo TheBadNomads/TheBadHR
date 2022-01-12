@@ -297,7 +297,8 @@ def CreateIsEveryoneHereEmbed(approved_dict, missing_members, isAdmin):
     if approved_dict:
         embed.add_field(name = "Approved Leaves", value = '\n'.join(approved_dict.keys()), inline = True)
         if isAdmin:
-            embed.add_field(name = "Reasons", value = '\n'.join(approved_dict.values()), inline = True)
+            approved_reasons = [reason if reason != "" else "None" for reason in approved_dict.values()]
+            embed.add_field(name = "Reasons", value = '\n'.join(approved_reasons), inline = True)
 
     footer_text = (("\u200B " * embed_footer_spaces_count) + datetime.date.today().strftime("%Y-%m-%d"))
     embed.set_footer(text = footer_text)
