@@ -35,15 +35,6 @@ class db:
         db.getCursor().execute(query, params)
         return db.commit()
 
-    @staticmethod
-    def execute_multiple(queries):
-        for query in queries:
-            if isinstance(query, str):
-                db.execute(query)
-            else:
-                db.execute(*query)
-        return db.commit()
-
     def GetCaption(captionCode):
         captions = {
             1: "Your leave request has been sent",
