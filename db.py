@@ -37,8 +37,11 @@ class db:
 
     @staticmethod
     def execute_multiple(queries):
-        for item in queries:
-            db.execute(*item)
+        for query in queries:
+            if isinstance(query, str):
+                db.execute(query)
+            else:
+                db.execute(*query)
         return db.commit()
 
     def GetCaption(captionCode):
