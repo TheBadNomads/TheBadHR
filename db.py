@@ -51,4 +51,3 @@ class db:
         }
 
         return captions[captionCode] if captions[captionCode] != None else "Invalid caption code"
-
