@@ -32,7 +32,14 @@ class db:
 
     @staticmethod
     def execute(query, params = ()):
-        return db.getCursor().execute(query, params)
+        db.getCursor().execute(query, params)
+        return db.commit()
+
+    @staticmethod
+    def execute_multiple(queries):
+        for item in queries:
+            db.execute(*item)
+        return db.commit()
 
     def GetCaption(captionCode):
         captions = {
