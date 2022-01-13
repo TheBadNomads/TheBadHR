@@ -7,13 +7,11 @@ from Member import member_db
 
 def GetLeaveByID(id):
     db.execute(f'SELECT * FROM [leaves] WHERE id = {id}')
-    db.commit()
     leave = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()][0]
     return leave
 
 def GetLeavesByMemberID(member_id):
     db.execute(f"SELECT * FROM [leaves] WHERE member_id = {member_id}")
-    db.commit()
     leaves = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
     return leaves
 
@@ -22,47 +20,40 @@ def GetLeavesBetween(start_date, end_date, member):
     if (member != None):
         query += f' AND member_id = {member.id}'
     db.execute(query)
-    db.commit()
     leaves = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
     return leaves
 
 def GetLeavesByRequestID(request_id):
     db.execute(f'SELECT * FROM [leaves] WHERE request_id = {request_id}')
-    db.commit()
     leaves = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
     return leaves
 
 def GetLeaveStatus(request_id):
     db.execute(f'SELECT leave_status FROM [leaves] WHERE request_id = {request_id}')
-    db.commit()
     leave = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()][0]
     return leave["leave_status"]
 
 def GetApprovedPaidLeaves(member_id, start_date, end_date):
     query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND is_unpaid = 'False' AND date >= '{start_date}' AND date <= '{end_date}'"
     db.execute(query)
-    db.commit()
     leaves = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
     return leaves
 
 def GetApprovedEmergencyLeaves(member_id, start_date, end_date):
     query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND is_emergency = 'True' AND date >= '{start_date}' AND date <= '{end_date}'"
     db.execute(query)
-    db.commit()
     leaves = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
     return leaves
 
 def GetApprovedUnpaidLeaves(member_id, start_date, end_date):
     query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND is_unpaid = 'True' AND date >= '{start_date}' AND date <= '{end_date}'"
     db.execute(query)
-    db.commit()
     leaves = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
     return leaves
 
 def GetApprovedSickLeaves(member_id, start_date, end_date):
     query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND leave_type = 'Sick' AND date >= '{start_date}' AND date <= '{end_date}'"
     db.execute(query)
-    db.commit()
     leaves = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
     return leaves
 
@@ -77,12 +68,10 @@ def GetAnnualLeaveBalance(member_id):
 
 def GetExtraBalance(member_id, leave_type):
     db.execute(f"SELECT SUM(days_count) FROM extraBalance WHERE recipient_id = {member_id} AND leave_type = '{leave_type}' AND YEAR(date) = {datetime.date.today().year}")
-    db.commit()
     return db.getCursor().fetchone()[0] or 0 
 
 def GetLeaveTypes():
     db.execute('SELECT * FROM [leaveTypes]')
-    db.commit()
     leaves_types = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
     return leaves_types
 
@@ -91,18 +80,15 @@ def InsertLeave(member_id, request_id, leave_type, date, reason, remark, leave_s
         "INSERT INTO [leaves] (member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency, is_unpaid) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
         (member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency, is_unpaid)
     )
-    db.commit()
 
 def InsertExtraBalance(date, creditor_id, recipient_id, leave_type, reason, days_count):
     db.execute(
         "INSERT INTO [extraBalance] (date, creditor_id, recipient_id, leave_type, reason, days_count) VALUES (?, ?, ?, ?, ?, ?)",
         (date, creditor_id, recipient_id, leave_type, reason, days_count)
     )
-    db.commit()
 
 def UpdateLeaveStatus(request_id, leave_status):
     db.execute("UPDATE [leaves] SET leave_status = ? WHERE request_id = ?", leave_status, request_id)
-    db.commit()
 
 def IsLeaveRequest(message_id):
     return len(GetLeavesByRequestID(message_id)) != 0

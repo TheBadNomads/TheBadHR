@@ -5,14 +5,12 @@ from db import db
 
 def GetMemberByID(id):
     db.execute(f'SELECT * FROM [members] WHERE id = {id}')
-    db.commit()
     member = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()][0]
 
     return member
     
 def GetMembers():
     db.execute(f'SELECT * FROM [members]')
-    db.commit()
     members = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
 
     return members
@@ -22,7 +20,6 @@ def InsertMember(id:int, name:str, email:str, start_date:datetime):
         "INSERT INTO [members] (id, name, email, start_date) VALUES (?, ?, ?, ?)",
         (id, name, email, start_date)
     )
-    db.commit()
 
 def CalculateProratedAnnualLeaves(member_id):
     start_date = GetMemberByID(member_id)["start_date"]
