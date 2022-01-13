@@ -5,13 +5,13 @@ from db import db
 
 def GetMemberByID(id):
     db.execute(f'SELECT * FROM [members] WHERE id = {id}')
-    member = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()][0]
+    member = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
 
     return member
     
 def GetMembers():
     db.execute(f'SELECT * FROM [members]')
-    members = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
+    members = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
 
     return members
 

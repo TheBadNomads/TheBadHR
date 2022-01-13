@@ -11,7 +11,7 @@ class db:
     cursor = None
 
     @staticmethod
-    def getConnection():
+    def GetDBConnection():
         if(db.conn == None):
             BASE_DIR = os.path.dirname(os.path.abspath(__file__))
             db_path = os.path.join(BASE_DIR, os.getenv("DB_File"))
@@ -20,19 +20,19 @@ class db:
         return db.conn
 
     @staticmethod
-    def getCursor():
+    def GetDBCursor():
         if(db.cursor == None):
-            db.cursor = db.getConnection().cursor()
+            db.cursor = db.GetDBConnection().cursor()
 
         return db.cursor
 
     @staticmethod
     def commit():
-        return db.getConnection().commit()
+        return db.GetDBConnection().commit()
 
     @staticmethod
     def execute(query, params = ()):
-        db.getCursor().execute(query, params)
+        db.GetDBCursor().execute(query, params)
         return db.commit()
 
     def GetCaption(captionCode):

@@ -7,12 +7,12 @@ from Member import member_db
 
 def GetLeaveByID(id):
     db.execute(f'SELECT * FROM [leaves] WHERE id = {id}')
-    leave = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()][0]
+    leave = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
     return leave
 
 def GetLeavesByMemberID(member_id):
     db.execute(f"SELECT * FROM [leaves] WHERE member_id = {member_id}")
-    leaves = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
 
 def GetLeavesBetween(start_date, end_date, member):
@@ -20,41 +20,41 @@ def GetLeavesBetween(start_date, end_date, member):
     if (member != None):
         query += f' AND member_id = {member.id}'
     db.execute(query)
-    leaves = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
 
 def GetLeavesByRequestID(request_id):
     db.execute(f'SELECT * FROM [leaves] WHERE request_id = {request_id}')
-    leaves = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
 
 def GetLeaveStatus(request_id):
     db.execute(f'SELECT leave_status FROM [leaves] WHERE request_id = {request_id}')
-    leave = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()][0]
+    leave = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
     return leave["leave_status"]
 
 def GetApprovedPaidLeaves(member_id, start_date, end_date):
     query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND is_unpaid = 'False' AND date >= '{start_date}' AND date <= '{end_date}'"
     db.execute(query)
-    leaves = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
 
 def GetApprovedEmergencyLeaves(member_id, start_date, end_date):
     query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND is_emergency = 'True' AND date >= '{start_date}' AND date <= '{end_date}'"
     db.execute(query)
-    leaves = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
 
 def GetApprovedUnpaidLeaves(member_id, start_date, end_date):
     query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND is_unpaid = 'True' AND date >= '{start_date}' AND date <= '{end_date}'"
     db.execute(query)
-    leaves = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
 
 def GetApprovedSickLeaves(member_id, start_date, end_date):
     query = f"SELECT * FROM [leaves] WHERE member_id = {member_id} AND leave_status = 'Approved' AND leave_type = 'Sick' AND date >= '{start_date}' AND date <= '{end_date}'"
     db.execute(query)
-    leaves = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
+    leaves = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves
 
 def GetAnnualLeaveBalance(member_id):
@@ -68,11 +68,11 @@ def GetAnnualLeaveBalance(member_id):
 
 def GetExtraBalance(member_id, leave_type):
     db.execute(f"SELECT SUM(days_count) FROM extraBalance WHERE recipient_id = {member_id} AND leave_type = '{leave_type}' AND YEAR(date) = {datetime.date.today().year}")
-    return db.getCursor().fetchone()[0] or 0 
+    return db.GetDBCursor().fetchone()[0] or 0 
 
 def GetLeaveTypes():
     db.execute('SELECT * FROM [leaveTypes]')
-    leaves_types = [dict(zip([column[0] for column in db.getCursor().description], row)) for row in db.getCursor().fetchall()]
+    leaves_types = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
     return leaves_types
 
 def InsertLeave(member_id, request_id, leave_type, date, reason, remark, leave_status, is_emergency, is_unpaid):
