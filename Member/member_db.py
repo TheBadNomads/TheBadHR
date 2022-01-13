@@ -4,23 +4,22 @@ import datetime
 from db import db
 
 def GetMemberByID(id):
-    db.GetDBCursor().execute(f'SELECT * FROM [members] WHERE id = {id}')
+    db.execute(f'SELECT * FROM [members] WHERE id = {id}')
     member = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()][0]
 
     return member
     
 def GetMembers():
-    db.GetDBCursor().execute(f'SELECT * FROM [members]')
+    db.execute(f'SELECT * FROM [members]')
     members = [dict(zip([column[0] for column in db.GetDBCursor().description], row)) for row in db.GetDBCursor().fetchall()]
 
     return members
 
 def InsertMember(id:int, name:str, email:str, start_date:datetime):
-    db.GetDBCursor().execute(
+    db.execute(
         "INSERT INTO [members] (id, name, email, start_date) VALUES (?, ?, ?, ?)",
         (id, name, email, start_date)
-    )    
-    db.GetDBConnection().commit()
+    )
 
 def CalculateProratedAnnualLeaves(member_id):
     start_date = GetMemberByID(member_id)["start_date"]

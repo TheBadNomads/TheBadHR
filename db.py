@@ -1,8 +1,7 @@
-import pyodbc 
+import sqlite3
 import os
 
 from dotenv import load_dotenv
-from collections import defaultdict
 
 load_dotenv()
 
@@ -14,8 +13,10 @@ class db:
     @staticmethod
     def GetDBConnection():
         if(db.conn == None):
-            db.conn = pyodbc.connect(os.getenv("Connection_String"))
-
+            BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+            db_path = os.path.join(BASE_DIR, os.getenv("DB_File"))
+            db.conn = sqlite3.connect(db_path, detect_types = sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        
         return db.conn
 
     @staticmethod
@@ -24,6 +25,15 @@ class db:
             db.cursor = db.GetDBConnection().cursor()
 
         return db.cursor
+
+    @staticmethod
+    def commit():
+        return db.GetDBConnection().commit()
+
+    @staticmethod
+    def execute(query, params = ()):
+        db.GetDBCursor().execute(query, params)
+        return db.commit()
 
     def GetCaption(captionCode):
         captions = {
@@ -42,4 +52,3 @@ class db:
         }
 
         return captions[captionCode] if captions[captionCode] != None else "Invalid caption code"
-
