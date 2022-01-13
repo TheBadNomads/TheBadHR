@@ -1,6 +1,5 @@
 CREATE TABLE leaveTypes (
     name varchar(255) NOT NULL PRIMARY KEY,
-    starting_balance float NOT NULL
 );
 
 CREATE TABLE leaveStatus (
@@ -60,11 +59,11 @@ VALUES ('Approved');
 INSERT INTO leaveStatus (name)
 VALUES ('Rejected');
 
-INSERT INTO leaveTypes (name, starting_balance)
-VALUES ('Annual', 21);
+INSERT INTO leaveTypes (name)
+VALUES ('Annual');
 
-INSERT INTO leaveTypes (name, starting_balance)
-VALUES ('Sick', 365);
+INSERT INTO leaveTypes (name)
+VALUES ('Sick');
 
 INSERT INTO Captions (caption_title, caption_message_en)
 VALUES ('LeaveRequestSent', 'Your leave request has been sent');
