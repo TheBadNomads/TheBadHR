@@ -24,6 +24,10 @@ def IsAdmin(member):
     role = discord.utils.get(member.guild.roles, id = int(os.getenv("Admin_Role_id")))
     return (role in member.roles)
 
+def IsBotManager(member):
+    role = discord.utils.get(member.guild.roles, id = int(os.getenv("Bot_Manager_Role_id")))
+    return (role in member.roles)
+
 def GetMemberIDFromEmbed(embed):
     text = embed.description
     return int(re.match(r'<@!?(\d+)>', text).group(1))
