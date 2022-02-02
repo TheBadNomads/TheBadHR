@@ -14,7 +14,7 @@ from Leave import leave_interface, leave_db
 
 load_dotenv()
 
-client = commands.Bot(command_prefix = "!", intents = discord.Intents.all())
+client = commands.Bot(command_prefix = "!", intents = discord.Intents(guilds = True))
 slash = SlashCommand(client, sync_commands = True)
 
 guild_ids = [int(os.getenv("TestServer_id"))]
