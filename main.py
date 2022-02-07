@@ -110,7 +110,7 @@ async def IsEveryoneHere(ctx):
 
     guild = client.guilds[0]
     meeting_channel = client.get_channel(int(os.getenv("MeetingChannel_id")))
-    fulltime_role = discord.utils.get(guild.roles, name = "Full Time")
+    fulltime_role = discord.utils.get(guild.roles, id = int(os.getenv("Full_Time_Role_id")))
     non_core_roles = os.getenv("Non_Core_Attending_Role_ids").split(", ")
     non_core_roles = set([discord.utils.get(guild.roles, id=int(role_id)) for role_id in non_core_roles])
     
