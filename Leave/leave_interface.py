@@ -3,6 +3,7 @@ import Utilities as utils
 import os
 import UI
 import collections
+import hikari
 
 from Channels import Channels
 from db import db
@@ -22,10 +23,10 @@ async def SubmitRequest(ctx, member, client, start_date, end_date, leave_type, r
     
 async def SendLeaveRequestToChannel(ctx, client, start_date, end_date, leave_type, reason):
     embed = UI.CreateLeaveEmbed(ctx, start_date, end_date, leave_type, reason)
-    channel = Channels.GetLeaveApprovalsChannel(client)
-    message = await channel.send(embed = embed)
-    await AddEmojisToLeaveMessage(message)
-    return message.id
+    reply = await ctx.respond(embed = embed)
+    msg = await reply.message()
+    await AddEmojisToLeaveMessage(msg)
+    return msg.id
 
 def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, leave_status, reason):
     work_days = utils.GetWorkDays(start_date, end_date)
@@ -39,46 +40,49 @@ def AddLeaveRequestToDB(member, message_id, start_date, end_date, leave_type, le
         leave_db.InsertLeave(member.id, message_id, leave_type, day, reason, "", leave_status, is_emergency, is_unpaid)
     return (db.GetCaption(1))
                 
-async def HandleLeaveReactions(client, payload):
-    channel = client.get_channel(payload.channel_id)
-    message = await channel.fetch_message(payload.message_id)
-    embed = message.embeds[0]
+async def HandleLeaveReactions(client, payload, token):
+    async with hikari.RESTApp().acquire(token, hikari.TokenType.BOT) as client:
+        message = await client.fetch_message(payload.channel_id, payload.message_id)
     
-    action = UI.ParseEmoji(payload.emoji)
-    if action == None:
-        return
-
-    if payload.member.bot:
-        return
-    
-    if not (utils.IsAdmin(payload.member)):
-        return
+        embed = message.embeds[0]
         
-    if action == "Reverted":
-        if not (leave_db.IsLeaveRequestPending(payload.message_id)):
-            leave_db.UpdateLeaveStatus(payload.message_id, "Pending")
-            await UI.UpdateLeaveEmbed(payload.member, message, embed, "Pending")
-            await InformMemberAboutLeaveStatus(client, payload.message_id, embed, payload.member, action)
-            await message.clear_reactions()
-            await AddEmojisToLeaveMessage(message)
-    elif leave_db.IsLeaveRequestPending(payload.message_id):
-        leave_db.UpdateLeaveStatus(payload.message_id, action)
-        await UI.UpdateLeaveEmbed(payload.member, message, embed, action)
-        await InformMemberAboutLeaveStatus(client, payload.message_id, embed, payload.member, action)
+        action = UI.ParseEmoji(payload.emoji_id)
+        if action == None:
+            return
 
-async def InformMemberAboutLeaveStatus(client, request_id, embed, admin, status):
-    member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
+        if payload.member.is_bot:
+            return
+        
+        if not (utils.IsAdmin(payload.member)):
+            return
+            
+        if action == "Reverted":
+            if not (leave_db.IsLeaveRequestPending(payload.message_id)):
+                leave_db.UpdateLeaveStatus(payload.message_id, "Pending")
+                await UI.UpdateLeaveEmbed(client, payload.member, embed, "Pending", payload.channel_id, payload.message_id, token)
+                await InformMemberAboutLeaveStatus(client, payload.message_id, embed, payload.member, action, token)
+                await message.remove_all_reactions()
+                await AddEmojisToLeaveMessage(message)
+        elif leave_db.IsLeaveRequestPending(payload.message_id):
+            leave_db.UpdateLeaveStatus(payload.message_id, action)
+            await UI.UpdateLeaveEmbed(client, payload.member, embed, action, payload.channel_id, payload.message_id, token)
+            await InformMemberAboutLeaveStatus(client, payload.message_id, embed, payload.member, action, token)
 
-    reason = utils.GetFieldFromEmbed(embed, "reason")
-    leave_type = utils.GetFieldFromEmbed(embed, "leave type")
-    start_date = utils.GetFieldFromEmbed(embed, "start date")
-    end_date = utils.GetFieldFromEmbed(embed, "end date")
+async def InformMemberAboutLeaveStatus(client, request_id, embed, admin, status, token):
+    async with hikari.RESTApp().acquire(token, hikari.TokenType.BOT) as client:
+        member = await client.fetch_user(utils.GetMemberIDFromEmbed(embed))
 
-    start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
-    end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')
+        reason = utils.GetFieldFromEmbed(client, embed, "reason")
+        leave_type = utils.GetFieldFromEmbed(client, embed, "leave type")
+        start_date = utils.GetFieldFromEmbed(client, embed, "start date")
+        end_date = utils.GetFieldFromEmbed(client, embed, "end date")
 
-    reply_embed = UI.CreateInformMemberOfLeaveStatusEmbed(request_id, status, admin.display_name, reason, leave_type, start_date, end_date)
-    await member.send(embed = reply_embed)
+        start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
+        end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')
+
+        reply_embed = UI.CreateInformMemberOfLeaveStatusEmbed(request_id, status, admin.display_name, reason, leave_type, start_date, end_date)
+        channel = await client.create_dm_channel(member)
+        await channel.send(embed = reply_embed)
 
 def GetRequestedLeavesBetween(member_id, start_date, end_date):
     work_days = utils.GetWorkDays(start_date, end_date)
@@ -104,6 +108,7 @@ def IsLeaveRequestValid(member_id, start_date, end_date):
 
 async def InsertRetroactiveLeave(member, message_id, start_date, end_date, leave_type, is_requested_late, is_unpaid_retroactive, reason):
     is_request_valid, message = IsLeaveRequestValid(member.id, start_date, end_date)
+    print(is_request_valid)
     if is_request_valid:
         result = AddRetroactiveLeaveToDB(member.id, message_id, start_date, end_date, leave_type, "Approved", reason, is_requested_late, is_unpaid_retroactive)
         return result
@@ -159,6 +164,6 @@ def GetReasonOfLeaves(leaves_array):
     return leaves_array[0]["reason"]
 
 async def AddEmojisToLeaveMessage(message):
-    await message.add_reaction(os.getenv("Approve_Emoji"))
-    await message.add_reaction(os.getenv("Reject_Emoji"))
-    await message.add_reaction(os.getenv("Revert_Emoji"))
+    await message.add_reaction(os.getenv("Approve_Emoji_Name"), os.getenv("Approve_Emoji_ID"))
+    await message.add_reaction(os.getenv("Reject_Emoji_Name"), os.getenv("Reject_Emoji_ID"))
+    await message.add_reaction(os.getenv("Revert_Emoji_Name"), os.getenv("Revert_Emoji_ID"))

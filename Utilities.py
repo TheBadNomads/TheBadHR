@@ -1,4 +1,5 @@
-import discord
+import hikari
+import lightbulb
 import os
 import datetime
 import re
@@ -21,12 +22,12 @@ def GetWorkDays(startdate, enddate):
     return work_days
     
 def IsAdmin(member):
-    role = discord.utils.get(member.guild.roles, id = int(os.getenv("Admin_Role_id")))
-    return (role in member.roles)
+    role = lightbulb.utils.get(member.get_roles(), id = int(os.getenv("Admin_Role_id")))
+    return (role in member.get_roles())
 
 def IsBotManager(member):
-    role = discord.utils.get(member.guild.roles, id = int(os.getenv("Bot_Manager_Role_id")))
-    return (role in member.roles)
+    role = lightbulb.utils.get(member.get_roles(), id = int(os.getenv("Bot_Manager_Role_id")))
+    return (role in member.get_roles())
 
 def GetMemberIDFromEmbed(embed):
     text = embed.description
@@ -67,9 +68,9 @@ def IsUnpaidLeave(leave_type, leave_balance, is_emergency, remaining_emergency_c
 def GetDatesOfLeaves(leaves_array):
     return ([d['date'] for d in leaves_array])
 
-def GetFieldFromEmbed(embed, field_name):
-    embed_dict = embed.to_dict()
-    for field in embed_dict["fields"]:
+def GetFieldFromEmbed(client, embed, field_name):
+    embed_tuple = client.entity_factory.serialize_embed(embed = embed)
+    for field in embed_tuple[0]["fields"]:
         if field["name"].lower() == field_name.lower():
             return field["value"]
 
