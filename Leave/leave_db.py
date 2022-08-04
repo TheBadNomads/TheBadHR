@@ -67,7 +67,7 @@ def GetAnnualLeaveBalance(member_id):
     return current_balance
 
 def GetExtraBalance(member_id, leave_type):
-    db.execute(f"SELECT SUM(days_count) FROM extraBalance WHERE recipient_id = {member_id} AND leave_type = '{leave_type}' AND YEAR(date) = {datetime.date.today().year}")
+    db.execute(f"SELECT SUM(days_count) FROM extraBalance WHERE recipient_id = {member_id} AND leave_type = '{leave_type}' AND strftime('%Y', date) = {datetime.date.today().year}")
     return db.GetDBCursor().fetchone()[0] or 0 
 
 def GetLeaveTypes():
@@ -88,7 +88,7 @@ def InsertExtraBalance(date, creditor_id, recipient_id, leave_type, reason, days
     )
 
 def UpdateLeaveStatus(request_id, leave_status):
-    db.execute("UPDATE [leaves] SET leave_status = ? WHERE request_id = ?", leave_status, request_id)
+    db.execute("UPDATE [leaves] SET leave_status = ? WHERE request_id = ?", (leave_status, request_id))
 
 def IsLeaveRequest(message_id):
     return len(GetLeavesByRequestID(message_id)) != 0

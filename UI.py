@@ -383,9 +383,8 @@ async def UpdateEmbedLeaveStatus(client, embed, newStatus, channel, message, tok
 
 	embed = client.entity_factory.deserialize_embed(embed_tuple[0])
 
-	async with hikari.RESTApp().acquire(token, hikari.TokenType.BOT) as client:
-		message = await client.fetch_message(channel, message)
-		await client.edit_message(message = message, embed = embed, channel = channel)
+	message = await client.rest.fetch_message(channel, message)
+	await client.rest.edit_message(message = message, embed = embed, channel = channel)
 
 async def UpdateEmbedApprovedRejectedby(client, member, embed, channel, message, token):
 	embed_tuple = client.entity_factory.serialize_embed(embed = embed)
@@ -396,16 +395,15 @@ async def UpdateEmbedApprovedRejectedby(client, member, embed, channel, message,
 
 	embed = client.entity_factory.deserialize_embed(embed_tuple[0])
 
-	async with hikari.RESTApp().acquire(token, hikari.TokenType.BOT) as client:
-		message = await client.fetch_message(channel, message)
-		await client.edit_message(message = message, embed = embed, channel = channel)
+	message = await client.rest.fetch_message(channel, message)
+	await client.rest.edit_message(message = message, embed = embed, channel = channel)
 
 def ParseEmoji(emoji):
 	emoji_str = str(emoji)
 	reaction_emojis = {
-		os.getenv("Approve_Emoji_ID"): "Approved",
-		os.getenv("Reject_Emoji_ID"): "Rejected",
-		os.getenv("Revert_Emoji_ID"): "Reverted"
+		os.getenv("Approve_Emoji"): "Approved",
+		os.getenv("Reject_Emoji"): "Rejected",
+		os.getenv("Revert_Emoji"): "Reverted"
 	}
 	reaction_emojis = defaultdict(None, **reaction_emojis)
 
