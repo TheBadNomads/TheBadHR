@@ -24,7 +24,7 @@ CREATE TABLE leaves (
     remark varchar(255),
     leave_status varchar(255) NOT NULL,
     is_emergency BOOLEAN NOT NULL CHECK (is_emergency IN (0, 1)),
-    is_paid BOOLEAN NOT NULL CHECK (is_paid IN (0, 1)),
+    is_unpaid BOOLEAN NOT NULL CHECK (is_unpaid IN (0, 1)),
     FOREIGN KEY (leave_type) REFERENCES leaveTypes(name),
     FOREIGN KEY (member_id) REFERENCES members(id),
     FOREIGN KEY (leave_status) REFERENCES leaveStatus(name)
